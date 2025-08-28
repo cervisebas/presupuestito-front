@@ -47,9 +47,9 @@ export class AppMenu {
                         label: 'Proveedores',
                         icon: 'pi pi-building',
                         routerLink: ['/uikit/formlayout']
-                    },
-                ],
-            },
+                    }
+                ]
+            }
         ];
     }
 }
