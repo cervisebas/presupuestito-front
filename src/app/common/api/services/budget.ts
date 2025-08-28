@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { Endpoints } from '../constants/Endpoints';
 import { BudgetResponse } from '../interfaces/responses/BudgetResponse';
 import { BudgetRequest } from '../interfaces/requests/BudgetRequest';
@@ -56,6 +55,5 @@ export class Budget {
       `${Endpoints.BUDGET}/${id_budget}`,
     );
   }
-  
 
 }
