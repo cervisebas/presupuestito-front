@@ -1,4 +1,4 @@
-export interface InvoceItemRequest {
+export interface InvoiceItemRequest {
     itemId?: number;
     MaterialId: number;
     Quantity: number;
