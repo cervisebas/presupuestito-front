@@ -36,7 +36,7 @@ export class AppMenu {
                     {
                         label: 'Clientes',
                         icon: 'pi pi-users',
-                        routerLink: ['/uikit/formlayout']
+                        routerLink: ['/uikit/clientes']
                     },
                     {
                         label: 'Materiales',

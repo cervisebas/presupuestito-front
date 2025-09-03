@@ -14,6 +14,8 @@ import { TableDemo } from './tabledemo';
 import { OverlayDemo } from './overlaydemo';
 import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
+import { ClienteComponent } from './cliente.component';
+import { Component } from '@angular/core';
 
 export default [
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
@@ -31,5 +33,6 @@ export default [
     { path: 'overlay', data: { breadcrumb: 'Overlay' }, component: OverlayDemo },
     { path: 'tree', data: { breadcrumb: 'Tree' }, component: TreeDemo },
     { path: 'menu', data: { breadcrumb: 'Menu' }, component: MenuDemo },
+    { path: 'clientes',data: {breadcrumb:'Clientes'},component:ClienteComponent},
     { path: '**', redirectTo: '/notfound' }
 ] as Routes;
