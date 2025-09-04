@@ -14,33 +14,33 @@ export class Cost {
 
   public getCosts() {
     return this.http.get<CostResponse[]>(
-      Endpoints.FIXED_COST,
+      Endpoints.COSTS,
     );
   }
 
   public getCostById(id_cost: string) {
     return this.http.get<CostResponse>(
-      `${Endpoints.FIXED_COST}/${id_cost}`,
+      `${Endpoints.COSTS}/${id_cost}`,
     );
   }
 
   public createCost(data: CostRequest) {
     return this.http.post<void>(
-      Endpoints.FIXED_COST,
+      Endpoints.COSTS,
       data,
     );
   }
   
   public updateCost(data: CostRequest) {
     return this.http.put<void>(
-      Endpoints.FIXED_COST,
+      Endpoints.COSTS,
       data,
     );
   }
   
   public deleteCost(id_cost: number) {
     return this.http.delete<void>(
-      `${Endpoints.FIXED_COST}/${id_cost}`,
+      `${Endpoints.COSTS}/${id_cost}`,
     );
   }
   

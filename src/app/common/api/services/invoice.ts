@@ -44,4 +44,10 @@ export class Invoice {
       `${Endpoints.INVOICES}/${id_invoice}`,
     );
   }
+
+  public getInvoiceBySupplierId(id_supplier: string) {
+    return this.http.get<InvoiceResponse[]>(
+      `${Endpoints.INVOICES_BY_SUPPLIER}${id_supplier}`,
+    );
+  }
 }

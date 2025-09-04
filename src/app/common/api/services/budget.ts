@@ -56,4 +56,10 @@ export class Budget {
     );
   }
 
+  public CalculateBudgetPrice(id_budget: string) {
+    return this.http.get<number>(
+      `${Endpoints.BUDGET_PRICE}/${id_budget}`,
+    );
+  }
+
 }

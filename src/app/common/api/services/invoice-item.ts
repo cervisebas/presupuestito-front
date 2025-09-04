@@ -43,4 +43,6 @@ export class InvoiceItem {
       `${Endpoints.INVOICE_ITEM}/${id_invoice_item}`,
     );
   }
+
+  
 }
