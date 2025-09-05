@@ -16,7 +16,7 @@ import { AppMenuitem } from './app.menuitem';
     </ul> `
 })
 export class AppMenu {
-    model: MenuItem[] = [];
+    protected model: MenuItem[] = [];
 
     ngOnInit() {
         this.model = [
@@ -36,7 +36,7 @@ export class AppMenu {
                     {
                         label: 'Clientes',
                         icon: 'pi pi-users',
-                        routerLink: ['/uikit/clientes']
+                        routerLink: ['/clients']
                     },
                     {
                         label: 'Materiales',
