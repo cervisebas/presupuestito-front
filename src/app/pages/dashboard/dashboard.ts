@@ -10,4 +10,4 @@ import { StatsWidget } from './components/statswidget';
     </div>
   `,
 })
-export class Dashboard {}
+export class DashboardPage {}

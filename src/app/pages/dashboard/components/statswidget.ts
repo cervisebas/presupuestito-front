@@ -31,6 +31,7 @@ import { CardWidget } from './cardwidget';
       icon="pi-users"
       colorIcon="text-cyan-500"
       colorBoxIcon="bg-cyan-100"
+      goToLink="/clients"
     />
 
     <app-card-widget
