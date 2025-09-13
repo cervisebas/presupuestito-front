@@ -1,6 +1,6 @@
 export interface ItemRequest {
-    itemId?: number;
-    MaterialId: number;
-    WorkId: number;
-    Quantity: number;
+  itemId?: number;
+  MaterialId: number;
+  WorkId: number;
+  Quantity: number;
 }

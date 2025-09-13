@@ -5,14 +5,14 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { ClientPage } from './app/pages/client/client';
 
 export const appRoutes: Routes = [
-    {
-        path: '',
-        component: AppLayout,
-        children: [
-            { path: '', component: Dashboard },
-            { path: 'clients', component: ClientPage },
-        ]
-    },
-    { path: 'notfound', component: Notfound },
-    { path: '**', redirectTo: '/notfound' }
+  {
+    path: '',
+    component: AppLayout,
+    children: [
+      { path: '', component: Dashboard },
+      { path: 'clients', component: ClientPage },
+    ],
+  },
+  { path: 'notfound', component: Notfound },
+  { path: '**', redirectTo: '/notfound' },
 ];

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -10,34 +10,33 @@ import { Component, Input } from "@angular/core";
         <div class="flex justify-between mb-4">
           <div>
             <span class="block text-muted-color font-medium mb-4">
-              {{title}}
+              {{ title }}
             </span>
             <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
-              {{description}}
+              {{ description }}
             </div>
           </div>
-          <div class="flex items-center justify-center {{colorBoxIcon}} dark:bg-blue-400/10 rounded-border size-[2.5rem]">
-            <i class="pi {{icon}} {{colorIcon}} text-blue-500 text-xl!"></i>
+          <div class="flex items-center justify-center {{ colorBoxIcon }} dark:bg-blue-400/10 rounded-border size-[2.5rem]">
+            <i class="pi {{ icon }} {{ colorIcon }} text-blue-500 text-xl!"></i>
           </div>
         </div>
       </div>
     </div>
-  `
+  `,
 })
 export class CardWidget {
-  @Input({required: true})
+  @Input({ required: true })
   public title!: string;
 
-  @Input({required: true})
+  @Input({ required: true })
   public description!: string;
-  
-  @Input({required: true})
+
+  @Input({ required: true })
   public icon!: string;
-  
+
   @Input()
   public colorBoxIcon!: string;
-  
+
   @Input()
   public colorIcon!: string;
-  
 }

@@ -1,4 +1,4 @@
 export interface CostRequest {
-    CostValue: number;
-    Description: string;
+  CostValue: number;
+  Description: string;
 }
