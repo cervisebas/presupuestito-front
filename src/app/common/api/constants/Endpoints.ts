@@ -10,6 +10,7 @@ export const Endpoints = {
 
   CLIENTS: API_BASE_URL + '/Client',
   CLIENT_HISTORIES: API_BASE_URL + '/ClientHistory',
+  COSTS: API_BASE_URL + '/Cost',
   WORKS: API_BASE_URL + '/Work',
   ITEMS: API_BASE_URL + '/Item',
   MATERIALS: API_BASE_URL + '/Material',
@@ -18,10 +19,12 @@ export const Endpoints = {
   SUPPLIERS: API_BASE_URL + '/Supplier',
   SUPPLIER_HISTORIES: API_BASE_URL + '/SupplierHistory',
   INVOICES: API_BASE_URL + '/Invoice',
+  INVOICES_BY_SUPPLIER: API_BASE_URL + '/Invoice/BySupplier',
   INVOICE_ITEM: API_BASE_URL + '/InvoiceItem',
   EMPLOYEES: API_BASE_URL + '/Employee',
   EMPLOYEE_HISTORIES: API_BASE_URL + '/EmployeeHistory',
   SALARIES: API_BASE_URL + '/Salary',
   FIXED_COST: API_BASE_URL + '/FixedCost',
-  PAYMENTS: API_BASE_URL + '/payments',
+  PAYMENTS: API_BASE_URL + '/Payments',
+  PERSONS: API_BASE_URL + '/Person',
 };
