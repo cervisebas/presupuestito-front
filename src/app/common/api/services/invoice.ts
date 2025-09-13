@@ -31,4 +31,10 @@ export class Invoice {
   public deleteInvoice(id_invoice: number) {
     return this.http.delete<void>(`${Endpoints.INVOICES}/${id_invoice}`);
   }
+
+  public getInvoiceBySupplierId(id_supplier: string) {
+    return this.http.get<InvoiceResponse[]>(
+      `${Endpoints.INVOICES_BY_SUPPLIER}${id_supplier}`,
+    );
+  }
 }

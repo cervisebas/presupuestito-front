@@ -39,4 +39,10 @@ export class Budget {
   public deleteBudget(id_budget: number) {
     return this.http.delete<void>(`${Endpoints.BUDGET}/${id_budget}`);
   }
+
+  public calculateBudgetPrice(id_budget: string) {
+    return this.http.get<number>(
+      `${Endpoints.BUDGET_PRICE}/${id_budget}`,
+    );
+  }
 }
