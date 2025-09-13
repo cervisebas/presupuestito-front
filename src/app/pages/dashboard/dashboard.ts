@@ -5,7 +5,7 @@ import { StatsWidget } from './components/statswidget';
     selector: 'app-dashboard',
     imports: [StatsWidget],
     template: `
-        <div class="grid grid-cols-12 gap-8">
+        <div class="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
             <app-stats-widget
                 class="contents"
             />

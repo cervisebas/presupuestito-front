@@ -7,7 +7,7 @@ import { CardWidget } from "./cardwidget";
     imports: [CardWidget],
     template: `
         <app-card-widget
-            class="col-span-12 lg:col-span-6 xl:col-span-6"
+            class="col-span-3 lg:col-span-2 xl:col-span-1"
             title="Presupuestos"
             description="152"
             icon="pi-file-edit"
@@ -16,7 +16,7 @@ import { CardWidget } from "./cardwidget";
         />
         
         <app-card-widget
-            class="col-span-12 lg:col-span-6 xl:col-span-6"
+            class="col-span-3 lg:col-span-2 xl:col-span-1"
             title="Trabajos"
             description="120 Realizados"
             icon="pi-hammer"
@@ -25,7 +25,7 @@ import { CardWidget } from "./cardwidget";
         />
         
         <app-card-widget
-            class="col-span-12 lg:col-span-6 xl:col-span-6"
+            class="col-span-3 lg:col-span-2 xl:col-span-1"
             title="Clientes"
             description="28441"
             icon="pi-users"
@@ -34,7 +34,7 @@ import { CardWidget } from "./cardwidget";
         />
 
         <app-card-widget
-            class="col-span-12 lg:col-span-6 xl:col-span-6"
+            class="col-span-3 lg:col-span-2 xl:col-span-1"
             title="Materiales"
             description="152"
             icon="pi-box"
@@ -43,7 +43,7 @@ import { CardWidget } from "./cardwidget";
         />
 
         <app-card-widget
-            class="col-span-12 lg:col-span-6 xl:col-span-6"
+            class="col-span-3 lg:col-span-2 xl:col-span-1"
             title="Proveedores"
             description="152"
             icon="pi-building"
