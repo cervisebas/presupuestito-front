@@ -19,7 +19,9 @@ export class Budget {
   }
 
   public getBudgetByClientId(id_client: string) {
-    return this.http.get<BudgetResponse[]>(`${Endpoints.BUDGETS_BY_CLIENT}/${id_client}`);
+    return this.http.get<BudgetResponse[]>(
+      `${Endpoints.BUDGETS_BY_CLIENT}/${id_client}`,
+    );
   }
 
   public getBudgetCost(id_budget: string) {

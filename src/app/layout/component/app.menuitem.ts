@@ -1,6 +1,12 @@
 import { Component, HostBinding, Input } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -13,11 +19,27 @@ import { LayoutService } from '../service/layout.service';
   imports: [CommonModule, RouterModule, RippleModule],
   template: `
     <ng-container>
-      <div *ngIf="root && item.visible !== false" class="layout-menuitem-root-text">{{ item.label }}</div>
-      <a *ngIf="(!item.routerLink || item.items) && item.visible !== false" [attr.href]="item.url" (click)="itemClick($event)" [ngClass]="item.styleClass" [attr.target]="item.target" tabindex="0" pRipple>
+      <div
+        *ngIf="root && item.visible !== false"
+        class="layout-menuitem-root-text"
+      >
+        {{ item.label }}
+      </div>
+      <a
+        *ngIf="(!item.routerLink || item.items) && item.visible !== false"
+        [attr.href]="item.url"
+        (click)="itemClick($event)"
+        [ngClass]="item.styleClass"
+        [attr.target]="item.target"
+        tabindex="0"
+        pRipple
+      >
         <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
         <span class="layout-menuitem-text">{{ item.label }}</span>
-        <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
+        <i
+          class="pi pi-fw pi-angle-down layout-submenu-toggler"
+          *ngIf="item.items"
+        ></i>
       </a>
       <a
         *ngIf="item.routerLink && !item.items && item.visible !== false"
@@ -25,7 +47,14 @@ import { LayoutService } from '../service/layout.service';
         [ngClass]="item.styleClass"
         [routerLink]="item.routerLink"
         routerLinkActive="active-route"
-        [routerLinkActiveOptions]="item.routerLinkActiveOptions || { paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
+        [routerLinkActiveOptions]="
+          item.routerLinkActiveOptions || {
+            paths: 'exact',
+            queryParams: 'ignored',
+            matrixParams: 'ignored',
+            fragment: 'ignored',
+          }
+        "
         [fragment]="item.fragment"
         [queryParamsHandling]="item.queryParamsHandling"
         [preserveFragment]="item.preserveFragment"
@@ -39,12 +68,24 @@ import { LayoutService } from '../service/layout.service';
       >
         <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
         <span class="layout-menuitem-text">{{ item.label }}</span>
-        <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
+        <i
+          class="pi pi-fw pi-angle-down layout-submenu-toggler"
+          *ngIf="item.items"
+        ></i>
       </a>
 
-      <ul *ngIf="item.items && item.visible !== false" [@children]="submenuAnimation">
+      <ul
+        *ngIf="item.items && item.visible !== false"
+        [@children]="submenuAnimation"
+      >
         <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
-          <li app-menuitem [item]="child" [index]="i" [parentKey]="key" [class]="child['badgeClass']"></li>
+          <li
+            app-menuitem
+            [item]="child"
+            [index]="i"
+            [parentKey]="key"
+            [class]="child['badgeClass']"
+          ></li>
         </ng-template>
       </ul>
     </ng-container>
@@ -63,7 +104,10 @@ import { LayoutService } from '../service/layout.service';
           height: '*',
         }),
       ),
-      transition('collapsed <=> expanded', animate('400ms cubic-bezier(0.86, 0, 0.07, 1)')),
+      transition(
+        'collapsed <=> expanded',
+        animate('400ms cubic-bezier(0.86, 0, 0.07, 1)'),
+      ),
     ]),
   ],
   providers: [LayoutService],
@@ -89,31 +133,45 @@ export class AppMenuitem {
     public router: Router,
     private layoutService: LayoutService,
   ) {
-    this.menuSourceSubscription = this.layoutService.menuSource$.subscribe((value) => {
-      Promise.resolve(null).then(() => {
-        if (value.routeEvent) {
-          this.active = value.key === this.key || value.key.startsWith(this.key + '-') ? true : false;
-        } else {
-          if (value.key !== this.key && !value.key.startsWith(this.key + '-')) {
-            this.active = false;
+    this.menuSourceSubscription = this.layoutService.menuSource$.subscribe(
+      (value) => {
+        Promise.resolve(null).then(() => {
+          if (value.routeEvent) {
+            this.active =
+              value.key === this.key || value.key.startsWith(this.key + '-')
+                ? true
+                : false;
+          } else {
+            if (
+              value.key !== this.key &&
+              !value.key.startsWith(this.key + '-')
+            ) {
+              this.active = false;
+            }
           }
+        });
+      },
+    );
+
+    this.menuResetSubscription = this.layoutService.resetSource$.subscribe(
+      () => {
+        this.active = false;
+      },
+    );
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((params) => {
+        if (this.item.routerLink) {
+          this.updateActiveStateFromRoute();
         }
       });
-    });
-
-    this.menuResetSubscription = this.layoutService.resetSource$.subscribe(() => {
-      this.active = false;
-    });
-
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((params) => {
-      if (this.item.routerLink) {
-        this.updateActiveStateFromRoute();
-      }
-    });
   }
 
   ngOnInit() {
-    this.key = this.parentKey ? this.parentKey + '-' + this.index : String(this.index);
+    this.key = this.parentKey
+      ? this.parentKey + '-' + this.index
+      : String(this.index);
 
     if (this.item.routerLink) {
       this.updateActiveStateFromRoute();
@@ -121,7 +179,12 @@ export class AppMenuitem {
   }
 
   updateActiveStateFromRoute() {
-    let activeRoute = this.router.isActive(this.item.routerLink[0], { paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' });
+    let activeRoute = this.router.isActive(this.item.routerLink[0], {
+      paths: 'exact',
+      queryParams: 'ignored',
+      matrixParams: 'ignored',
+      fragment: 'ignored',
+    });
 
     if (activeRoute) {
       this.layoutService.onMenuStateChange({ key: this.key, routeEvent: true });

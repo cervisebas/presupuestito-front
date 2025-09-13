@@ -15,7 +15,9 @@ export class Invoice {
   }
 
   public getInvoiceById(id_invoice: string) {
-    return this.http.get<InvoiceResponse>(`${Endpoints.INVOICES}/${id_invoice}`);
+    return this.http.get<InvoiceResponse>(
+      `${Endpoints.INVOICES}/${id_invoice}`,
+    );
   }
 
   public createInvoice(data: InvoiceRequest) {

@@ -1,5 +1,11 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -10,14 +16,25 @@ import { Client } from '@/common/api/services/client';
 
 @Component({
   selector: 'app-client',
-  imports: [Toast, Button, FormsModule, FloatLabelModule, InputTextModule, ReactiveFormsModule],
+  imports: [
+    Toast,
+    Button,
+    FormsModule,
+    FloatLabelModule,
+    InputTextModule,
+    ReactiveFormsModule,
+  ],
   providers: [MessageService],
   template: `
     <div class="card p-6 max-w-4xl mx-auto">
       <h2 class="text-2xl font-semibold mb-6">Crear Cliente</h2>
       <p-toast />
 
-      <form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form
+        [formGroup]="clienteForm"
+        (ngSubmit)="guardarCliente()"
+        class="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
         <!-- Nombre (obligatorio) -->
         <div>
           <p-floatlabel>
@@ -26,7 +43,7 @@ import { Client } from '@/common/api/services/client';
           </p-floatlabel>
 
           @if (name.invalid && name.touched) {
-            <small class="text-red-500"> Nombre es obligatorio </small>
+            <small class="text-red-500">Nombre es obligatorio</small>
           }
         </div>
 
@@ -46,7 +63,7 @@ import { Client } from '@/common/api/services/client';
           </p-floatlabel>
 
           @if (address.invalid && address.touched) {
-            <small class="text-red-500"> Dirección es obligatoria </small>
+            <small class="text-red-500">Dirección es obligatoria</small>
           }
         </div>
 
@@ -58,7 +75,7 @@ import { Client } from '@/common/api/services/client';
           </p-floatlabel>
 
           @if (phoneNumber.invalid && phoneNumber.touched) {
-            <small class="text-red-500"> Celular es obligatorio </small>
+            <small class="text-red-500">Celular es obligatorio</small>
           }
         </div>
 
@@ -88,7 +105,13 @@ import { Client } from '@/common/api/services/client';
 
         <!-- Botón -->
         <div class="md:col-span-2 mt-4">
-          <p-button label="Guardar Cliente" icon="pi pi-save" [loading]="loading" type="submit" [disabled]="clienteForm.invalid" />
+          <p-button
+            label="Guardar Cliente"
+            icon="pi pi-save"
+            [loading]="loading"
+            type="submit"
+            [disabled]="clienteForm.invalid"
+          />
         </div>
       </form>
     </div>
@@ -154,7 +177,9 @@ export class ClientPage {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'No se pudo guardar el cliente: ' + (err.message || 'Error de conexión'),
+          detail:
+            'No se pudo guardar el cliente: ' +
+            (err.message || 'Error de conexión'),
         });
       },
       complete: () => {
