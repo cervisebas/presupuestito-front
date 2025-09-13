@@ -1,4 +1,4 @@
 export interface ClientHistoryRequest {
-  clientId: number;        
-  budgetsId?: number[];    
+  clientId: number;
+  budgetsId?: number[];
 }

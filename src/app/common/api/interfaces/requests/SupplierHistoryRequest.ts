@@ -1,4 +1,4 @@
 export interface SupplierHistoryRequest {
-  supplierId: number;    
-  invoicesId: number[];  
+  supplierId: number;
+  invoicesId: number[];
 }

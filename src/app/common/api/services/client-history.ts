@@ -5,17 +5,13 @@ import { ClientHistoryRequest } from '../interfaces/requests/ClientHistoryReques
 import { ClientHistoryResponse } from '../interfaces/responses/ClientHistoryResponse';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClientHistory {
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getClientHistories() {
-    return this.http.get<ClientHistoryResponse[]>(
-      Endpoints.CLIENT_HISTORIES,
-    );
+    return this.http.get<ClientHistoryResponse[]>(Endpoints.CLIENT_HISTORIES);
   }
 
   public getClientHistoryById(id_client_history: string) {
@@ -25,19 +21,13 @@ export class ClientHistory {
   }
 
   public createClientHistory(data: ClientHistoryRequest) {
-    return this.http.post<void>(
-      Endpoints.CLIENT_HISTORIES,
-      data,
-    );
+    return this.http.post<void>(Endpoints.CLIENT_HISTORIES, data);
   }
-  
+
   public updateClientHistory(data: ClientHistoryRequest) {
-    return this.http.put<void>(
-      Endpoints.CLIENT_HISTORIES,
-      data,
-    );
+    return this.http.put<void>(Endpoints.CLIENT_HISTORIES, data);
   }
-  
+
   public deleteClientHistory(id_client_history: number) {
     return this.http.delete<void>(
       `${Endpoints.CLIENT_HISTORIES}/${id_client_history}`,

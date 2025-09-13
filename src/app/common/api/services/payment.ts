@@ -7,15 +7,10 @@ import { PaymentRequest } from '../interfaces/requests/PaymentRequest';
   providedIn: 'root',
 })
 export class Payment {
-  
-      constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getPayments() {
-    return this.http.get<PaymentResponse[]>(
-      Endpoints.PAYMENTS,
-    );
+    return this.http.get<PaymentResponse[]>(Endpoints.PAYMENTS);
   }
 
   public getPaymentById(id_payment: string) {
@@ -25,22 +20,14 @@ export class Payment {
   }
 
   public createPayment(data: PaymentRequest) {
-    return this.http.post<void>(
-      Endpoints.PAYMENTS,
-      data,
-    );
+    return this.http.post<void>(Endpoints.PAYMENTS, data);
   }
-  
+
   public updatePayment(data: PaymentRequest) {
-    return this.http.put<void>(
-      Endpoints.PAYMENTS,
-      data,
-    );
+    return this.http.put<void>(Endpoints.PAYMENTS, data);
   }
-  
+
   public deletePayment(id_payment: number) {
-    return this.http.delete<void>(
-      `${Endpoints.PAYMENTS}/${id_payment}`,
-    );
+    return this.http.delete<void>(`${Endpoints.PAYMENTS}/${id_payment}`);
   }
 }
