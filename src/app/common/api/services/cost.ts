@@ -4,13 +4,10 @@ import { Endpoints } from '../constants/Endpoints';
 import { CostRequest } from '../interfaces/requests/CostRequest';
 import { CostResponse } from '../interfaces/responses/CostResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Cost {
-
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getCosts() {
     return this.http.get<CostResponse[]>(
@@ -30,18 +27,17 @@ export class Cost {
       data,
     );
   }
-  
+
   public updateCost(data: CostRequest) {
     return this.http.put<void>(
       Endpoints.COSTS,
       data,
     );
   }
-  
+
   public deleteCost(id_cost: number) {
     return this.http.delete<void>(
       `${Endpoints.COSTS}/${id_cost}`,
     );
   }
-  
 }

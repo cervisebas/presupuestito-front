@@ -4,7 +4,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { SubCategoryMaterialRequest } from '../interfaces/requests/SubCategoryMaterialRequest';
 import { SubCategoryMaterialResponse } from '../interfaces/responses/SubCategoryMaterialResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Subcategory {
      constructor(

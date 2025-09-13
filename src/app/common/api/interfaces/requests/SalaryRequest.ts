@@ -1,5 +1,5 @@
 export interface SalaryRequest {
-    Amount: number;
-    BillDate: Date;
-    EmployeeId: number;
+  Amount: number;
+  BillDate: Date;
+  EmployeeId: number;
 }

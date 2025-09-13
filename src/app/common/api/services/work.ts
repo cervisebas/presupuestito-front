@@ -4,7 +4,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { WorkRequest } from '../interfaces/requests/WorkRequest';
 import { WorkResponse } from '../interfaces/responses/WorkResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Work {
 

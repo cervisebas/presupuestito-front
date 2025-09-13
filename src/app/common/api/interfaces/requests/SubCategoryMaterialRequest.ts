@@ -1,5 +1,5 @@
 export interface SubCategoryMaterialRequest {
-    SubCategoryId?: number;
-    subCategoryName: string;
-    categoryId: number;
+  SubCategoryId?: number;
+  subCategoryName: string;
+  categoryId: number;
 }

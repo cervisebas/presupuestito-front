@@ -4,7 +4,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { MaterialRequest } from '../interfaces/requests/MaterialRequest';
 import{ MaterialResponse } from '../interfaces/responses/MaterialResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Material {
     constructor(

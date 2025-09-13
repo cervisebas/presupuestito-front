@@ -4,7 +4,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { PaymentResponse } from '../interfaces/responses/PaymentResponse';
 import { PaymentRequest } from '../interfaces/requests/PaymentRequest';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Payment {
   
@@ -43,9 +43,4 @@ export class Payment {
       `${Endpoints.PAYMENTS}/${id_payment}`,
     );
   }
-  
-  
-  
-
-
 }

@@ -4,7 +4,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { SupplierRequest } from '../interfaces/requests/SupplierRequest';
 import { SupplierResponse } from '../interfaces/responses/SupplierResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Supplier {
      constructor(
@@ -42,6 +42,5 @@ export class Supplier {
       `${Endpoints.SUPPLIERS}/${id_supplier}`,
     );
   }
-  
   
 }

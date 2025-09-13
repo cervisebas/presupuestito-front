@@ -4,7 +4,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { SalaryRequest } from '../interfaces/requests/SalaryRequest';
 import { SalaryResponse } from '../interfaces/responses/SalaryResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Salary {
       constructor(

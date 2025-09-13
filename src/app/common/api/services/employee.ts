@@ -4,18 +4,13 @@ import { Endpoints } from '../constants/Endpoints';
 import { EmployeeRequest } from '../interfaces/requests/EmployeeRequest';
 import { EmployeeResponse } from '../interfaces/responses/EmployeeResponse';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Employee {
-
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getEmployees() {
-    return this.http.get<EmployeeResponse[]>(
-      Endpoints.EMPLOYEES,
-    );
+    return this.http.get<EmployeeResponse[]>(Endpoints.EMPLOYEES);
   }
 
   public getEmployeeById(id_employee: string) {
@@ -25,23 +20,14 @@ export class Employee {
   }
 
   public createEmployee(data: EmployeeRequest) {
-    return this.http.post<void>(
-      Endpoints.EMPLOYEES,
-      data,
-    );
+    return this.http.post<void>(Endpoints.EMPLOYEES, data);
   }
-  
+
   public updateEmployee(data: EmployeeRequest) {
-    return this.http.put<void>(
-      Endpoints.EMPLOYEES,
-      data,
-    );
+    return this.http.put<void>(Endpoints.EMPLOYEES, data);
   }
-  
+
   public deleteEmployee(id_employee: number) {
-    return this.http.delete<void>(
-      `${Endpoints.EMPLOYEES}/${id_employee}`,
-    );
+    return this.http.delete<void>(`${Endpoints.EMPLOYEES}/${id_employee}`);
   }
-  
 }
