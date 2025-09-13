@@ -1,4 +1,4 @@
-import { environment } from "src/environments/environment";
+import { environment } from 'src/environments/environment';
 
 const API_BASE_URL = environment.backend_url;
 
@@ -24,4 +24,4 @@ export const Endpoints = {
   SALARIES: API_BASE_URL + '/Salary',
   FIXED_COST: API_BASE_URL + '/FixedCost',
   PAYMENTS: API_BASE_URL + '/payments',
-}
+};
