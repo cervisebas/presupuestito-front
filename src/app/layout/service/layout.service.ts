@@ -64,7 +64,11 @@ export class LayoutService {
 
   theme = computed(() => (this.layoutConfig()?.darkTheme ? 'light' : 'dark'));
 
-  isSidebarActive = computed(() => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive);
+  isSidebarActive = computed(
+    () =>
+      this.layoutState().overlayMenuActive ||
+      this.layoutState().staticMenuMobileActive,
+  );
 
   isDarkTheme = computed(() => this.layoutConfig().darkTheme);
 
@@ -140,7 +144,10 @@ export class LayoutService {
 
   onMenuToggle() {
     if (this.isOverlay()) {
-      this.layoutState.update((prev) => ({ ...prev, overlayMenuActive: !this.layoutState().overlayMenuActive }));
+      this.layoutState.update((prev) => ({
+        ...prev,
+        overlayMenuActive: !this.layoutState().overlayMenuActive,
+      }));
 
       if (this.layoutState().overlayMenuActive) {
         this.overlayOpen.next(null);
@@ -148,9 +155,16 @@ export class LayoutService {
     }
 
     if (this.isDesktop()) {
-      this.layoutState.update((prev) => ({ ...prev, staticMenuDesktopInactive: !this.layoutState().staticMenuDesktopInactive }));
+      this.layoutState.update((prev) => ({
+        ...prev,
+        staticMenuDesktopInactive:
+          !this.layoutState().staticMenuDesktopInactive,
+      }));
     } else {
-      this.layoutState.update((prev) => ({ ...prev, staticMenuMobileActive: !this.layoutState().staticMenuMobileActive }));
+      this.layoutState.update((prev) => ({
+        ...prev,
+        staticMenuMobileActive: !this.layoutState().staticMenuMobileActive,
+      }));
 
       if (this.layoutState().staticMenuMobileActive) {
         this.overlayOpen.next(null);

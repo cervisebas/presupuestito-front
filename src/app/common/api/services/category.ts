@@ -15,7 +15,9 @@ export class Category {
   }
 
   public getCategoryById(id_category: string) {
-    return this.http.get<CategoryResponse>(`${Endpoints.CATEGORIES}/${id_category}`);
+    return this.http.get<CategoryResponse>(
+      `${Endpoints.CATEGORIES}/${id_category}`,
+    );
   }
 
   public createCategory(data: CategoryRequest) {

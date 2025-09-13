@@ -14,7 +14,9 @@ export class Employee {
   }
 
   public getEmployeeById(id_employee: string) {
-    return this.http.get<EmployeeResponse>(`${Endpoints.EMPLOYEES}/${id_employee}`);
+    return this.http.get<EmployeeResponse>(
+      `${Endpoints.EMPLOYEES}/${id_employee}`,
+    );
   }
 
   public createEmployee(data: EmployeeRequest) {

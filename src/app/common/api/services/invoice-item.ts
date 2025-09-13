@@ -14,7 +14,9 @@ export class InvoiceItem {
   }
 
   public getInvoiceItemById(id_invoice_item: string) {
-    return this.http.get<InvoiceItemResponse>(`${Endpoints.INVOICE_ITEM}/${id_invoice_item}`);
+    return this.http.get<InvoiceItemResponse>(
+      `${Endpoints.INVOICE_ITEM}/${id_invoice_item}`,
+    );
   }
 
   public createInvoiceItem(data: InvoiceItemRequest) {
@@ -26,6 +28,8 @@ export class InvoiceItem {
   }
 
   public deleteInvoiceItem(id_invoice_item: number) {
-    return this.http.delete<void>(`${Endpoints.INVOICE_ITEM}/${id_invoice_item}`);
+    return this.http.delete<void>(
+      `${Endpoints.INVOICE_ITEM}/${id_invoice_item}`,
+    );
   }
 }

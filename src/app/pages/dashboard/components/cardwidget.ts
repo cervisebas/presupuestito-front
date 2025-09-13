@@ -12,11 +12,17 @@ import { Component, Input } from '@angular/core';
             <span class="block text-muted-color font-medium mb-4">
               {{ title }}
             </span>
-            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
+            <div
+              class="text-surface-900 dark:text-surface-0 font-medium text-xl"
+            >
               {{ description }}
             </div>
           </div>
-          <div class="flex items-center justify-center {{ colorBoxIcon }} dark:bg-blue-400/10 rounded-border size-[2.5rem]">
+          <div
+            class="flex items-center justify-center {{
+              colorBoxIcon
+            }} dark:bg-blue-400/10 rounded-border size-[2.5rem]"
+          >
             <i class="pi {{ icon }} {{ colorIcon }} text-blue-500 text-xl!"></i>
           </div>
         </div>

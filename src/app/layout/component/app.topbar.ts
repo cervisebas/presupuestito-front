@@ -12,12 +12,19 @@ import { LayoutService } from '../service/layout.service';
   template: `
     <div class="layout-topbar">
       <div class="layout-topbar-logo-container">
-        <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+        <button
+          class="layout-menu-button layout-topbar-action"
+          (click)="layoutService.onMenuToggle()"
+        >
           <i class="pi pi-bars"></i>
         </button>
         <a class="layout-topbar-logo" routerLink="/">
-          <img src="assets/presupuestito-icono.png" class="h-[3rem]" alt="Icono" />
-          <span class="text-yellow-950"> PRESUPUESTITO </span>
+          <img
+            src="assets/presupuestito-icono.png"
+            class="h-[3rem]"
+            alt="Icono"
+          />
+          <span class="text-yellow-950">PRESUPUESTITO</span>
         </a>
       </div>
     </div>
