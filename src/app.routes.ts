@@ -3,6 +3,7 @@ import { AppLayout } from './app/layout/component/app.layout';
 import { DashboardPage } from './app/pages/dashboard/dashboard';
 import { Notfound } from './app/pages/notfound/notfound';
 import { ClientPage } from './app/pages/client/client';
+import { MaterialPage } from '@/pages/material/material';
 
 export const appRoutes: Routes = [
   {
@@ -11,6 +12,7 @@ export const appRoutes: Routes = [
     children: [
       { path: '', component: DashboardPage },
       { path: 'clients', component: ClientPage },
+      { path: 'materials', component: MaterialPage },
     ],
   },
   { path: 'notfound', component: Notfound },

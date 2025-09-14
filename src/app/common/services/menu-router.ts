@@ -34,7 +34,7 @@ export class MenuRouter {
         {
           label: 'Materiales',
           icon: 'pi pi-box',
-          routerLink: ['/uikit/formlayout'],
+          routerLink: ['/materials'],
         },
         {
           label: 'Proveedores',
