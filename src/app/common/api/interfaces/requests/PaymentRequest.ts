@@ -1,5 +1,5 @@
 export interface PaymentRequest {
-    date: Date;
-    amount: number;
-    description: string;
+  date: Date;
+  amount: number;
+  description: string;
 }

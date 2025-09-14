@@ -7,9 +7,7 @@ import { SubCategoryMaterialResponse } from '../interfaces/responses/SubCategory
   providedIn: 'root',
 })
 export class Subcategory {
-     constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getSubcategories() {
     return this.http.get<SubCategoryMaterialResponse[]>(
@@ -24,23 +22,16 @@ export class Subcategory {
   }
 
   public createSubcategory(data: SubCategoryMaterialRequest) {
-    return this.http.post<void>(
-      Endpoints.SUB_CATEGORIES,
-      data,
-    );
+    return this.http.post<void>(Endpoints.SUB_CATEGORIES, data);
   }
-  
+
   public updateSubcategory(data: SubCategoryMaterialRequest) {
-    return this.http.put<void>(
-      Endpoints.SUB_CATEGORIES,
-      data,
-    );
+    return this.http.put<void>(Endpoints.SUB_CATEGORIES, data);
   }
-  
+
   public deleteSubcategory(id_subcategory: number) {
     return this.http.delete<void>(
       `${Endpoints.SUB_CATEGORIES}/${id_subcategory}`,
     );
   }
-  
 }

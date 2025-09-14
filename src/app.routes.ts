@@ -1,16 +1,18 @@
 import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
-import { Dashboard } from './app/pages/dashboard/dashboard';
+import { DashboardPage } from './app/pages/dashboard/dashboard';
 import { Notfound } from './app/pages/notfound/notfound';
 import { ClientPage } from './app/pages/client/client';
+import { MaterialPage } from '@/pages/material/material';
 
 export const appRoutes: Routes = [
   {
     path: '',
     component: AppLayout,
     children: [
-      { path: '', component: Dashboard },
+      { path: '', component: DashboardPage },
       { path: 'clients', component: ClientPage },
+      { path: 'materials', component: MaterialPage },
     ],
   },
   { path: 'notfound', component: Notfound },

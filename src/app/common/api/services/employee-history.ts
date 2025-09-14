@@ -5,12 +5,10 @@ import { EmployeeHistoryRequest } from '../interfaces/requests/EmployeeHistoryRe
 import { EmployeeHistoryResponse } from '../interfaces/responses/EmployeeHistoryResponse';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EmployeeHistory {
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getEmployeeHistories() {
     return this.http.get<EmployeeHistoryResponse[]>(
@@ -25,19 +23,13 @@ export class EmployeeHistory {
   }
 
   public createEmployeeHistory(data: EmployeeHistoryRequest) {
-    return this.http.post<void>(
-      Endpoints.EMPLOYEE_HISTORIES,
-      data,
-    );
+    return this.http.post<void>(Endpoints.EMPLOYEE_HISTORIES, data);
   }
-  
+
   public updateEmployeeHistory(data: EmployeeHistoryRequest) {
-    return this.http.put<void>(
-      Endpoints.EMPLOYEE_HISTORIES,
-      data,
-    );
+    return this.http.put<void>(Endpoints.EMPLOYEE_HISTORIES, data);
   }
-  
+
   public deleteEmployeeHistory(id_employee_history: number) {
     return this.http.delete<void>(
       `${Endpoints.EMPLOYEE_HISTORIES}/${id_employee_history}`,

@@ -5,12 +5,10 @@ import { SupplierHistoryRequest } from '../interfaces/requests/SupplierHistoryRe
 import { SupplierHistoryResponse } from '../interfaces/responses/SupplierHistoryResponse';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SupplierHistory {
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getSupplierHistories() {
     return this.http.get<SupplierHistoryResponse[]>(
@@ -25,19 +23,13 @@ export class SupplierHistory {
   }
 
   public createSupplierHistory(data: SupplierHistoryRequest) {
-    return this.http.post<void>(
-      Endpoints.SUPPLIER_HISTORIES,
-      data,
-    );
+    return this.http.post<void>(Endpoints.SUPPLIER_HISTORIES, data);
   }
-  
+
   public updateSupplierHistory(data: SupplierHistoryRequest) {
-    return this.http.put<void>(
-      Endpoints.SUPPLIER_HISTORIES,
-      data,
-    );
+    return this.http.put<void>(Endpoints.SUPPLIER_HISTORIES, data);
   }
-  
+
   public deleteSupplierHistory(id_supplier_history: number) {
     return this.http.delete<void>(
       `${Endpoints.SUPPLIER_HISTORIES}/${id_supplier_history}`,

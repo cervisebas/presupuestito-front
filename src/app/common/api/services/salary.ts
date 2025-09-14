@@ -7,41 +7,25 @@ import { SalaryResponse } from '../interfaces/responses/SalaryResponse';
   providedIn: 'root',
 })
 export class Salary {
-      constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getSalaries() {
-    return this.http.get<SalaryResponse[]>(
-      Endpoints.SALARIES,
-    );
+    return this.http.get<SalaryResponse[]>(Endpoints.SALARIES);
   }
 
   public getSalaryById(id_salary: string) {
-    return this.http.get<SalaryResponse>(
-      `${Endpoints.SALARIES}/${id_salary}`,
-    );
+    return this.http.get<SalaryResponse>(`${Endpoints.SALARIES}/${id_salary}`);
   }
 
   public createSalary(data: SalaryRequest) {
-    return this.http.post<void>(
-      Endpoints.SALARIES,
-      data,
-    );
+    return this.http.post<void>(Endpoints.SALARIES, data);
   }
-  
+
   public updateSalary(data: SalaryRequest) {
-    return this.http.put<void>(
-      Endpoints.SALARIES,
-      data,
-    );
+    return this.http.put<void>(Endpoints.SALARIES, data);
   }
-  
+
   public deleteSalary(id_salary: number) {
-    return this.http.delete<void>(
-      `${Endpoints.SALARIES}/${id_salary}`,
-    );
+    return this.http.delete<void>(`${Endpoints.SALARIES}/${id_salary}`);
   }
-  
-  
 }

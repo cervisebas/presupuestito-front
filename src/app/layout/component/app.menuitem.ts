@@ -67,7 +67,21 @@ import { LayoutService } from '../service/layout.service';
         pRipple
       >
         <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-        <span class="layout-menuitem-text">{{ item.label }}</span>
+        <span
+          [routerLink]="item.routerLink"
+          routerLinkActive="underline"
+          class="layout-menuitem-text"
+          [routerLinkActiveOptions]="
+            item.routerLinkActiveOptions || {
+              paths: 'exact',
+              queryParams: 'ignored',
+              matrixParams: 'ignored',
+              fragment: 'ignored',
+            }
+          "
+        >
+          {{ item.label }}
+        </span>
         <i
           class="pi pi-fw pi-angle-down layout-submenu-toggler"
           *ngIf="item.items"
@@ -76,6 +90,7 @@ import { LayoutService } from '../service/layout.service';
 
       <ul
         *ngIf="item.items && item.visible !== false"
+        class="flex flex-col gap-2"
         [@children]="submenuAnimation"
       >
         <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
