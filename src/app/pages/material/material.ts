@@ -1,7 +1,5 @@
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
-import { Category } from '@/common/api/services/category';
 import { Material } from '@/common/api/services/material';
-import { Subcategory } from '@/common/api/services/subcategory';
 import { LoadingContainer } from '@/common/components/loading-container';
 import { Component, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
@@ -59,16 +57,27 @@ import { ArraySearch } from '@/common/services/array-search';
                 <p-sortIcon field="materialName" />
               </div>
             </th>
-            <th pSortableColumn="materialDescription" style="width: 20%">
+            <!-- <th pSortableColumn="materialDescription" style="width: 20%">
               <div class="flex items-center gap-2">
                 Descripción
                 <p-sortIcon field="materialDescription" />
               </div>
-            </th>
+            </th> -->
             <th pSortableColumn="materialBrand" style="width: 20%">
               <div class="flex items-center gap-2">
                 Marca
                 <p-sortIcon field="materialBrand" />
+              </div>
+            </th>
+            <th
+              pSortableColumn="subCategoryMaterialId.categoryId.categoryName"
+              style="width: 20%"
+            >
+              <div class="flex items-center gap-2">
+                Rubro
+                <p-sortIcon
+                  field="subCategoryMaterialId.categoryId.categoryName"
+                />
               </div>
             </th>
             <th
@@ -88,8 +97,9 @@ import { ArraySearch } from '@/common/services/array-search';
         <ng-template #body let-product>
           <tr>
             <td>{{ product.materialName }}</td>
-            <td>{{ product.materialDescription }}</td>
+            <!-- <td>{{ product.materialDescription }}</td> -->
             <td>{{ product.materialBrand }}</td>
+            <td>{{ product.subCategoryMaterialId.categoryId.categoryName }}</td>
             <td>{{ product.subCategoryMaterialId.subCategoryName }}</td>
             <td>
               <div class="flex flex-row gap-4">
@@ -140,6 +150,7 @@ export class MaterialPage implements OnInit {
         'materialBrand',
         'materialUnitMeasure',
         'subCategoryMaterialId.subCategoryName',
+        'subCategoryMaterialId.categoryId.categoryName',
       ],
       event,
     );

@@ -19,7 +19,7 @@ export class ArraySearch {
     });
     const list = fuse.search(searchValue);
 
-    const res = list.map((v) => v.item);
+    const res = list.filter((v) => v.score && v.score < 0.2).map((v) => v.item);
 
     return res as T;
   }
