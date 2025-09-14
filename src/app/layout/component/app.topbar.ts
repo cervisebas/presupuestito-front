@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
-import { CommonModule, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { LayoutService } from '../service/layout.service';
 import { MenuRouter } from '@/common/services/menu-router';
+import { AppLogo } from './app.logo';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [RouterModule, StyleClassModule, NgClass],
+  imports: [RouterModule, StyleClassModule, NgClass, AppLogo],
   template: `
     <div class="layout-topbar !px-3 md:!px-[2rem] !shadow-sm">
       <div class="layout-topbar-logo-container">
@@ -29,13 +30,8 @@ import { MenuRouter } from '@/common/services/menu-router';
           {{ title }}
         </h2>
 
-        <a class="hidden layout-topbar-logo md:!inline-flex" routerLink="/">
-          <img
-            src="assets/presupuestito-icono.png"
-            class="h-[3rem]"
-            alt="Icono"
-          />
-          <span class="text-yellow-950">PRESUPUESTITO</span>
+        <a class="hidden md:!inline-flex" routerLink="/">
+          <app-logo />
         </a>
       </div>
     </div>
