@@ -6,7 +6,7 @@ import { AppMenu } from './app.menu';
   standalone: true,
   imports: [AppMenu],
   template: `
-    <div class="layout-sidebar">
+    <div class="layout-sidebar !shadow-md">
       <app-menu />
     </div>
   `,

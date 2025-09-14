@@ -19,9 +19,13 @@ import { Router } from '@angular/router';
           <span class="block text-muted-color font-medium mb-4">
             {{ title }}
           </span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
-            {{ description }}
-          </div>
+          @if (description !== undefined) {
+            <div
+              class="text-surface-900 dark:text-surface-0 font-medium text-xl"
+            >
+              {{ description }}
+            </div>
+          }
         </div>
         <div
           class="flex items-center justify-center {{
@@ -38,8 +42,8 @@ export class CardWidget {
   @Input({ required: true })
   public title!: string;
 
-  @Input({ required: true })
-  public description!: string;
+  @Input()
+  public description?: number | string;
 
   @Input({ required: true })
   public icon!: string;

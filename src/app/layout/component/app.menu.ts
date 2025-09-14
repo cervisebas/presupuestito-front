@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { MenuRouter } from '@/common/services/menu-router';
 
 @Component({
   selector: 'app-menu',
@@ -24,43 +25,9 @@ import { AppMenuitem } from './app.menuitem';
 export class AppMenu {
   protected model: MenuItem[] = [];
 
+  constructor(private menuRouter: MenuRouter) {}
+
   ngOnInit() {
-    this.model = [
-      {
-        label: 'Menu',
-        items: [
-          {
-            label: 'Inicio',
-            icon: 'pi pi-home',
-            routerLink: ['/'],
-          },
-          {
-            label: 'Presupuestar',
-            icon: 'pi pi-file-edit',
-            routerLink: ['/uikit/formlayout'],
-          },
-          {
-            label: 'Trabajos',
-            icon: 'pi pi-hammer',
-            routerLink: ['/uikit/formlayout'],
-          },
-          {
-            label: 'Clientes',
-            icon: 'pi pi-users',
-            routerLink: ['/clients'],
-          },
-          {
-            label: 'Materiales',
-            icon: 'pi pi-box',
-            routerLink: ['/uikit/formlayout'],
-          },
-          {
-            label: 'Proveedores',
-            icon: 'pi pi-building',
-            routerLink: ['/uikit/formlayout'],
-          },
-        ],
-      },
-    ];
+    this.model = this.menuRouter.getMenuItems();
   }
 }

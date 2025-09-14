@@ -15,7 +15,7 @@ import { LayoutService } from '../service/layout.service';
     <div class="layout-wrapper" [ngClass]="containerClass">
       <app-topbar></app-topbar>
       <app-sidebar></app-sidebar>
-      <div class="layout-main-container">
+      <div class="layout-main-container !px-4 md:!px-[2rem]">
         <div class="layout-main">
           <router-outlet></router-outlet>
         </div>
