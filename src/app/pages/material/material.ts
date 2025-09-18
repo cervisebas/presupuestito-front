@@ -1,7 +1,7 @@
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
 import { Material } from '@/common/api/services/material';
 import { LoadingContainer } from '@/common/components/loading-container';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { InputIcon } from 'primeng/inputicon';
@@ -9,6 +9,7 @@ import { IconField } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
+import { MaterialForm } from './modals/material-form';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,6 +21,7 @@ import { ArraySearch } from '@/common/services/array-search';
     DebounceInput,
     InputTextModule,
     LoadingContainer,
+    MaterialForm,
   ],
   template: `
     <app-loading-container [loading]="loading" [error]="error">
@@ -39,7 +41,11 @@ import { ArraySearch } from '@/common/services/array-search';
           />
         </p-iconfield>
 
-        <p-button label="Añadir" icon="pi pi-plus" />
+        <p-button
+          label="Añadir"
+          icon="pi pi-plus"
+          (onClick)="materialForm?.open()"
+        />
       </div>
 
       <p-table
@@ -57,12 +63,6 @@ import { ArraySearch } from '@/common/services/array-search';
                 <p-sortIcon field="materialName" />
               </div>
             </th>
-            <!-- <th pSortableColumn="materialDescription" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Descripción
-                <p-sortIcon field="materialDescription" />
-              </div>
-            </th> -->
             <th pSortableColumn="materialBrand" style="width: 20%">
               <div class="flex items-center gap-2">
                 Marca
@@ -97,7 +97,6 @@ import { ArraySearch } from '@/common/services/array-search';
         <ng-template #body let-product>
           <tr>
             <td>{{ product.materialName }}</td>
-            <!-- <td>{{ product.materialDescription }}</td> -->
             <td>{{ product.materialBrand }}</td>
             <td>{{ product.subCategoryMaterialId.categoryId.categoryName }}</td>
             <td>{{ product.subCategoryMaterialId.subCategoryName }}</td>
@@ -124,6 +123,8 @@ import { ArraySearch } from '@/common/services/array-search';
         </ng-template>
       </p-table>
     </app-loading-container>
+
+    <app-material-form />
   `,
 })
 export class MaterialPage implements OnInit {
@@ -131,6 +132,9 @@ export class MaterialPage implements OnInit {
   protected loading = true;
   protected $materialData: MaterialResponse[] = [];
   protected materialData: MaterialResponse[] = [];
+
+  @ViewChild(MaterialForm)
+  protected materialForm?: MaterialForm;
 
   constructor(
     private material: Material,
