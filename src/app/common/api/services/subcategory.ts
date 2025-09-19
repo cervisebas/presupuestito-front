@@ -22,7 +22,10 @@ export class Subcategory {
   }
 
   public createSubcategory(data: SubCategoryMaterialRequest) {
-    return this.http.post<void>(Endpoints.SUB_CATEGORIES, data);
+    return this.http.post<SubCategoryMaterialResponse>(
+      Endpoints.SUB_CATEGORIES,
+      data,
+    );
   }
 
   public updateSubcategory(data: SubCategoryMaterialRequest) {

@@ -124,7 +124,7 @@ import { MaterialForm } from './modals/material-form';
       </p-table>
     </app-loading-container>
 
-    <app-material-form />
+    <app-material-form (reloadTable)="loadData()" />
   `,
 })
 export class MaterialPage implements OnInit {
@@ -160,7 +160,7 @@ export class MaterialPage implements OnInit {
     );
   }
 
-  private loadData() {
+  protected loadData() {
     this.error = null;
     this.loading = true;
 

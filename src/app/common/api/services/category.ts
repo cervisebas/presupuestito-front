@@ -21,7 +21,7 @@ export class Category {
   }
 
   public createCategory(data: CategoryRequest) {
-    return this.http.post<void>(Endpoints.CATEGORIES, data);
+    return this.http.post<CategoryResponse>(Endpoints.CATEGORIES, data);
   }
 
   public updateCategory(data: CategoryRequest) {
