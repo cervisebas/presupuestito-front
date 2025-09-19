@@ -107,11 +107,14 @@ import { MaterialForm } from './modals/material-form';
                   severity="info"
                   aria-label="Información"
                 />
+
                 <p-button
                   icon="pi pi-pencil"
                   severity="warn"
                   aria-label="Editar"
+                  (onClick)="materialForm?.open(product)"
                 />
+
                 <p-button
                   icon="pi pi-trash"
                   severity="danger"

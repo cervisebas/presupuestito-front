@@ -21,6 +21,7 @@ import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
 import { Material } from '@/common/api/services/material';
 import { LoadingService } from '@/common/services/loading';
+import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
 
 @Component({
   selector: 'app-material-form',
@@ -42,7 +43,7 @@ import { LoadingService } from '@/common/services/loading';
       [closable]="true"
       [closeOnEscape]="false"
       [(visible)]="visible"
-      header="Añadir nuevo material"
+      [header]="isEditing ? 'Editar material' : 'Añadir nuevo material'"
       [blockScroll]="false"
       styleClass="w-[30rem] h-[95vh] max-w-[95vw]"
       contentStyleClass="size-full"
@@ -139,14 +140,19 @@ import { LoadingService } from '@/common/services/loading';
       <ng-template #footer>
         <div class="w-full flex flex-row">
           <div class="flex flex-1 justify-end gap-2">
-            <p-button
-              label="Limpiar"
-              severity="secondary"
-              (onClick)="formGroup.reset()"
-            />
+            @if (!isEditing) {
+              <p-button
+                label="Limpiar"
+                severity="secondary"
+                (onClick)="formGroup.reset()"
+              />
+            }
 
-            <!-- [disabled]="formGroup.invalid" -->
-            <p-button label="Siguiente" (onClick)="create()" />
+            <p-button
+              label="Guardar"
+              [disabled]="formGroup.invalid"
+              (onClick)="saveData()"
+            />
           </div>
         </div>
       </ng-template>
@@ -184,6 +190,8 @@ export class MaterialForm {
   private $categoryList?: CategoryResponse[];
   private $subCategoryList?: SubCategoryMaterialResponse[];
 
+  private $editData?: MaterialResponse;
+
   constructor(
     private categoryService: Category,
     private subcategoryService: Subcategory,
@@ -192,114 +200,195 @@ export class MaterialForm {
     private loadingService: LoadingService,
   ) {}
 
-  public open() {
+  public async open(editData?: MaterialResponse) {
     this.formGroup.reset();
     this.visible = true;
+    this.$editData = editData;
 
-    this.loadCategories();
+    try {
+      this.loadingService.setLoading(true);
+      await this.loadCategories();
+      await this.loadEditData();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+    }
+  }
+
+  private async loadEditData() {
+    if (this.$editData) {
+      const data = this.$editData;
+
+      this.formGroup.setValue({
+        name: data.materialName,
+        description: data.materialDescription,
+        brand: data.materialBrand,
+        color: data.materialColor,
+        size: Number(data.materialMeasure),
+        unitSize: data.materialUnitMeasure,
+        category: data.subCategoryMaterialId.categoryId.categoryName,
+        subCategory: null,
+      });
+
+      await this.loadSubCategories();
+
+      this.formGroup.controls.subCategory.setValue(
+        data.subCategoryMaterialId.subCategoryName,
+      );
+    }
   }
 
   private async loadCategories() {
-    const { category, subCategory } = this.formGroup.controls;
+    try {
+      const { category, subCategory } = this.formGroup.controls;
 
-    category.disable();
-    subCategory.disable();
+      // Se desabilitan los campos "Rubros" y "Subrubros"
+      category.disable();
+      subCategory.disable();
 
-    this.categoryLoading = true;
-    this.categoryService.getCategories().subscribe({
-      next: (value) => {
-        category.enable();
-        subCategory.enable();
-        this.$categoryList = value;
-        this.categoryList = value.map((v) => v.categoryName);
-        this.categoryLoading = false;
-      },
-    });
+      // Se establece como cargando el campo "Rubros" y se obtienen los datos.
+      this.categoryLoading = true;
+      const categories = await lastValueFrom(
+        this.categoryService.getCategories(),
+      );
+
+      // Una vez obtenidos los datos, se rehabilitan los campos deshabilitados.
+      category.enable();
+      subCategory.enable();
+
+      // Se guardan los datos en los atributos y termina la carga.
+      this.$categoryList = categories;
+      this.categoryList = categories.map((v) => v.categoryName);
+      this.categoryLoading = false;
+    } catch (error) {
+      // En caso de error de se muestra en consola lo que sucedio y se notifica al usaurio.
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al crear material',
+        detail:
+          'Ocurrio un error inesperado al cargar los rubros, por favor pruebe de nuevo más tarde.',
+      });
+    }
   }
 
   protected async loadSubCategories() {
-    const { category, subCategory } = this.formGroup.controls;
+    try {
+      const { category, subCategory } = this.formGroup.controls;
 
-    if (!category.value) {
-      return;
-    }
+      // Si el campo "Rubro" esta en blanco, se omite la carga de datos.
+      if (!category.value) {
+        return;
+      }
 
-    subCategory.disable();
-    subCategory.reset();
+      // Se deshabilita el campo "Sub-Rubro" y se elimina el valor establecido.
+      subCategory.disable();
+      subCategory.reset();
 
-    if (!this.categoryList.includes(category.value)) {
-      subCategory.enable();
-
-      return;
-    }
-
-    this.subCategoryLoading = true;
-    this.subcategoryService.getSubcategories().subscribe({
-      next: (value) => {
-        this.$subCategoryList = value;
-        this.subCategoryLoading = false;
+      // Si el campo "Rubro" es nuevo, no se omite la carga de datos.
+      if (!this.categoryList.includes(category.value)) {
         subCategory.enable();
 
-        const Category = this.$categoryList?.find(
-          (v) => v.categoryName === category.value,
-        );
+        return;
+      }
 
-        if (!Category) {
-          return;
-        }
+      // Se establece como cargando el campo "Sub-Rubros" y se obtienen los datos.
+      this.subCategoryLoading = true;
+      const subcategories = await lastValueFrom(
+        this.subcategoryService.getSubcategories(),
+      );
 
-        this.subCategoryList = value
-          .filter((v) => v.categoryId.categoryId === Category.categoryId)
-          .map((v) => v.subCategoryName);
-      },
-    });
+      // Una vez obtenidos los datos, se rehabilitan el campo deshabilitado.
+      subCategory.enable();
+
+      // Se guardan los datos en los atributos y termina la carga.
+      this.$subCategoryList = subcategories;
+      this.subCategoryLoading = false;
+
+      const Category = this.$categoryList?.find(
+        (v) => v.categoryName === category.value,
+      );
+
+      if (!Category) {
+        return;
+      }
+
+      this.subCategoryList = subcategories
+        .filter((v) => v.categoryId.categoryId === Category.categoryId)
+        .map((v) => v.subCategoryName);
+    } catch (error) {
+      // En caso de error de se muestra en consola lo que sucedio y se notifica al usaurio.
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al crear material',
+        detail:
+          'Ocurrio un error inesperado al cargar los sub-rubros, por favor pruebe de nuevo más tarde.',
+      });
+    }
   }
 
-  protected async create() {
+  private async getCategoryId(categoryName: string) {
+    // Se comprueba si el Rubro es nuevo o no.
+    const findCategory = this.$categoryList?.find(
+      (v) => v.categoryName.toLowerCase() === categoryName?.toLowerCase(),
+    );
+
+    // Si es nuevo, se crea un nuevo Rubro con el nombre ingresado.
+    if (!findCategory) {
+      const newCategory = await lastValueFrom(
+        this.categoryService.createCategory({
+          CategoryName: categoryName!,
+        }),
+      );
+
+      return newCategory.categoryId;
+    }
+
+    // Si no es nuevo, se retorna el ID del Rubro existente.
+    return findCategory.categoryId;
+  }
+
+  private async getSubCategoryId(subCategoryName: string, categoryId: number) {
+    // Se comprueba si el Sub-Rubro es nuevo o no.
+    const findSubCategory = this.$subCategoryList?.find(
+      (v) => v.subCategoryName.toLowerCase() === subCategoryName?.toLowerCase(),
+    );
+
+    // Si es nuevo, se crea un nuevo Sub-Rubro con el nombre ingresado.
+    if (!findSubCategory) {
+      const newSubcategory = await lastValueFrom(
+        this.subcategoryService.createSubcategory({
+          subCategoryName: subCategoryName!,
+          categoryId: categoryId,
+        }),
+      );
+
+      return newSubcategory.subCategoryMaterialId;
+    }
+
+    // Si no es nuevo, se retorna el ID del Sub-Rubro existente.
+    return findSubCategory.subCategoryMaterialId;
+  }
+
+  protected async saveData() {
     try {
       this.loadingService.setLoading(true);
 
+      // Se obtienen los datos del formulario
       const formValue = this.formGroup.value;
-      let categoryId = -1,
-        subCategoryId = -1;
 
-      const findCategory = this.$categoryList?.find(
-        (v) =>
-          v.categoryName.toLowerCase() === formValue.category?.toLowerCase(),
+      // Se guarda el ID del Rubro y Sub-Rubro
+      const categoryId = await this.getCategoryId(formValue.category!);
+      const subCategoryId = await this.getSubCategoryId(
+        formValue.subCategory!,
+        categoryId,
       );
 
-      if (!findCategory) {
-        const newCategory = await lastValueFrom(
-          this.categoryService.createCategory({
-            CategoryName: formValue.category!,
-          }),
-        );
-
-        categoryId = newCategory.categoryId;
-      } else {
-        categoryId = findCategory.categoryId;
-      }
-
-      const findSubCategory = this.$subCategoryList?.find(
-        (v) =>
-          v.subCategoryName.toLowerCase() ===
-          formValue.subCategory?.toLowerCase(),
-      );
-
-      if (!findSubCategory) {
-        const newSubcategory = await lastValueFrom(
-          this.subcategoryService.createSubcategory({
-            subCategoryName: formValue.subCategory!,
-            categoryId: categoryId,
-          }),
-        );
-
-        subCategoryId = newSubcategory.subCategoryMaterialId;
-      } else {
-        subCategoryId = findSubCategory.subCategoryMaterialId;
-      }
-
+      // Se arma el objeto que se enviara a la consulta.
       const data: MaterialRequest = {
+        MaterialId: this.$editData?.materialId,
         MaterialName: formValue.name!,
         MaterialDescription: formValue.description!,
         MaterialColor: formValue.color!,
@@ -309,14 +398,18 @@ export class MaterialForm {
         SubCategoryMaterialId: subCategoryId,
       };
 
-      await lastValueFrom(this.materialService.createMaterial(data));
-      this.visible = false;
+      if (this.isEditing) {
+        await lastValueFrom(this.materialService.updateMaterial(data));
+      } else {
+        await lastValueFrom(this.materialService.createMaterial(data));
+      }
 
+      this.visible = false;
       this.reloadTable.emit();
       this.messageService.add({
         severity: 'success',
         summary: '¡Material creado!',
-        detail: `Se creo el material "${data.MaterialName}" correctamente.`,
+        detail: `Se ${this.isEditing ? 'edito' : 'creo'} el material "${data.MaterialName}" correctamente.`,
       });
     } catch (error) {
       console.error(error);
@@ -329,5 +422,9 @@ export class MaterialForm {
     } finally {
       this.loadingService.setLoading(false);
     }
+  }
+
+  protected get isEditing() {
+    return Boolean(this.$editData);
   }
 }

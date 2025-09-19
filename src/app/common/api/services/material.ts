@@ -24,7 +24,10 @@ export class Material {
   }
 
   public updateMaterial(data: MaterialRequest) {
-    return this.http.put<void>(Endpoints.MATERIALS, data);
+    return this.http.put<void>(
+      `${Endpoints.MATERIALS}/${data.MaterialId}`,
+      data,
+    );
   }
 
   public deleteMaterial(id_material: number) {
