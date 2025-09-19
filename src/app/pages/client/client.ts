@@ -1,186 +1,208 @@
-import { Component } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { InputTextModule } from 'primeng/inputtext';
-import { ClientRequest } from '@/common/api/interfaces/requests/ClientRequest';
+import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
 import { Client } from '@/common/api/services/client';
+import { LoadingContainer } from '@/common/components/loading-container';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { TableModule } from 'primeng/table';
+import { Button } from 'primeng/button';
+import { InputIcon } from 'primeng/inputicon';
+import { IconField } from 'primeng/iconfield';
+import { InputTextModule } from 'primeng/inputtext';
+import { DebounceInput } from '@/common/directives/debounce-input';
+import { ArraySearch } from '@/common/services/array-search';
+import { ClientForm } from './modals/client-form';
 
 @Component({
-  selector: 'app-client',
+  selector: 'app-dashboard',
   imports: [
-    Toast,
     Button,
-    FormsModule,
-    FloatLabelModule,
+    InputIcon,
+    IconField,
+    TableModule,
+    DebounceInput,
     InputTextModule,
-    ReactiveFormsModule,
+    LoadingContainer,
+    ClientForm,
   ],
-  providers: [MessageService],
   template: `
-    <div class="card p-6 max-w-4xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Crear Cliente</h2>
-      <p-toast />
-
-      <form
-        [formGroup]="clienteForm"
-        (ngSubmit)="guardarCliente()"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6"
+    <app-loading-container [loading]="loading" [error]="error">
+      <div
+        class="px-5 pb-4 pt-4 flex flex-row justify-between items-center bg-(--p-paginator-background) rounded-t-(--p-paginator-border-radius) gap-4"
       >
-        <!-- Nombre (obligatorio) -->
-        <div>
-          <p-floatlabel>
-            <input pInputText formControlName="name" id="name" />
-            <label for="name">Nombre *</label>
-          </p-floatlabel>
-
-          @if (name.invalid && name.touched) {
-            <small class="text-red-500">Nombre es obligatorio</small>
-          }
-        </div>
-
-        <!-- Apellido -->
-        <div>
-          <p-floatlabel>
-            <input pInputText formControlName="lastName" id="lastName" />
-            <label for="lastName">Apellido</label>
-          </p-floatlabel>
-        </div>
-
-        <!-- Dirección (address) -->
-        <div class="md:col-span-2">
-          <p-floatlabel>
-            <input pInputText formControlName="address" id="address" />
-            <label for="address">Dirección *</label>
-          </p-floatlabel>
-
-          @if (address.invalid && address.touched) {
-            <small class="text-red-500">Dirección es obligatoria</small>
-          }
-        </div>
-
-        <!-- Celular (obligatorio) -->
-        <div>
-          <p-floatlabel>
-            <input pInputText formControlName="phoneNumber" id="phoneNumber" />
-            <label for="phoneNumber">Celular *</label>
-          </p-floatlabel>
-
-          @if (phoneNumber.invalid && phoneNumber.touched) {
-            <small class="text-red-500">Celular es obligatorio</small>
-          }
-        </div>
-
-        <!-- Correo -->
-        <div>
-          <p-floatlabel>
-            <input pInputText formControlName="email" id="email" type="email" />
-            <label for="email">Correo</label>
-          </p-floatlabel>
-        </div>
-
-        <!-- DNI -->
-        <div>
-          <p-floatlabel>
-            <input pInputText formControlName="dni" id="dni" />
-            <label for="dni">DNI</label>
-          </p-floatlabel>
-        </div>
-
-        <!-- CUIT -->
-        <div>
-          <p-floatlabel>
-            <input pInputText formControlName="cuit" id="cuit" />
-            <label for="cuit">CUIT</label>
-          </p-floatlabel>
-        </div>
-
-        <!-- Botón -->
-        <div class="md:col-span-2 mt-4">
-          <p-button
-            label="Guardar Cliente"
-            icon="pi pi-save"
-            [loading]="loading"
-            type="submit"
-            [disabled]="clienteForm.invalid"
+        <p-iconfield class="w-full md:max-w-[300px]">
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            debounceInput
+            type="search"
+            class="w-full"
+            placeholder="Buscar"
+            [enableDebounce]="true"
+            (onDebounce)="onSearch($event)"
           />
-        </div>
-      </form>
-    </div>
+        </p-iconfield>
+
+        <p-button
+          label="Añadir"
+          icon="pi pi-plus"
+          (onClick)="clientForm?.open()"
+        />
+      </div>
+
+      <p-table
+        [value]="clientData"
+        [paginator]="true"
+        [rows]="20"
+        size="large"
+        [tableStyle]="{ 'min-width': '100rem' }"
+      >
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="name" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Nombre
+                <p-sortIcon field="name" />
+              </div>
+            </th>
+            <th pSortableColumn="lastname" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Apellido
+                <p-sortIcon field="lastname" />
+              </div>
+            </th>
+            <th pSortableColumn="street" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Calle
+                <p-sortIcon field="street" />
+              </div>
+            </th>
+            <th pSortableColumn="streetNumber" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Altura
+                <p-sortIcon field="streetNumber" />
+              </div>
+            </th>
+            <th pSortableColumn="locality" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Localidad
+                <p-sortIcon field="locality" />
+              </div>
+            </th>
+            <th pSortableColumn="phoneNumber" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Telefono
+                <p-sortIcon field="phoneNumber" />
+              </div>
+            </th>
+            <th pSortableColumn="email" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Email
+                <p-sortIcon field="email" />
+              </div>
+            </th>
+            <th pSortableColumn="dni" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Dni
+                <p-sortIcon field="dni" />
+              </div>
+            </th>
+            <th pSortableColumn="cuit" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Cuit
+                <p-sortIcon field="cuit" />
+              </div>
+            </th>
+
+            <th style="width: 10%">
+              <div class="flex items-center gap-2">Acciónes</div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-client>
+          <tr>
+            <td>{{ client.personId.name }}</td>
+            <td>{{ client.personId.lastname }}</td>
+            <td>{{ client.personId.street }}</td>
+            <td>{{ client.personId.streetNumber }}</td>
+            <td>{{ client.personId.locality }}</td>
+            <td>{{ client.personId.phoneNumber }}</td>
+            <td>{{ client.personId.email }}</td>
+            <td>{{ client.personId.dni }}</td>
+            <td>{{ client.personId.cuit }}</td>
+            <td>
+              <div class="flex flex-row gap-4">
+                <p-button
+                  icon="pi pi-info-circle"
+                  severity="info"
+                  aria-label="Información"
+                />
+                <p-button
+                  icon="pi pi-pencil"
+                  severity="warn"
+                  aria-label="Editar"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  aria-label="Eliminar"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </app-loading-container>
+
+    <app-client-form />
   `,
 })
-export class ClientPage {
-  protected clienteForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    lastName: new FormControl('', [Validators.required]),
-    address: new FormControl('', [Validators.required]),
-    phoneNumber: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.email]),
-    dni: new FormControl(''),
-    cuit: new FormControl(''),
-  });
-  protected loading = false;
+export class ClientPage implements OnInit {
+  protected error = null;
+  protected loading = true;
+  protected $clientData: ClientResponse[] = [];
+  protected clientData: ClientResponse[] = [];
+
+  @ViewChild(ClientForm)
+  protected clientForm?: ClientForm;
 
   constructor(
-    private clienteService: Client,
-    private messageService: MessageService,
+    private client: Client,
+    private arraySearch: ArraySearch,
   ) {}
 
-  // Getters para validación
-  get name() {
-    return this.clienteForm.get('name')!;
-  }
-  get lastName() {
-    return this.clienteForm.get('lastName')!;
-  }
-  get address() {
-    return this.clienteForm.get('address')!;
-  }
-  get phoneNumber() {
-    return this.clienteForm.get('phoneNumber')!;
+  public ngOnInit() {
+    this.loadData();
   }
 
-  protected guardarCliente() {
-    if (this.clienteForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Faltan datos',
-        detail: 'Nombre, apellido, dirección y celular son obligatorios',
-      });
+  protected onSearch(event: string) {
+    this.clientData = this.arraySearch.search(
+      this.$clientData,
+      [
+        'name',
+        'lastname',
+        'street',
+        'streetNumber',
+        'locality',
+        'phoneNumber',
+        'email',
+        'dni',
+        'cuit',
+      ],
+      event,
+    );
+  }
 
-      return;
-    }
-
+  private loadData() {
+    this.error = null;
     this.loading = true;
 
-    // El objeto ya está en el formato correcto: name, lastName, phoneNumber, etc.
-    const cliente = this.clienteForm.value as ClientRequest;
-
-    this.clienteService.createClient(cliente).subscribe({
-      next: (response) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: `Cliente creado con ID: ${response}`,
-        });
-        this.clienteForm.reset();
+    this.client.getClients().subscribe({
+      next: (client: ClientResponse[]) => {
+        this.$clientData = [...client];
+        this.clientData = client;
       },
       error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail:
-            'No se pudo guardar el cliente: ' +
-            (err.message || 'Error de conexión'),
-        });
+        this.error = err;
+        this.loading = false;
       },
       complete: () => {
         this.loading = false;

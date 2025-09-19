@@ -1,5 +1,5 @@
 export interface CategoryRequest {
-  CategoryId: string;
+  CategoryId?: string;
   CategoryName: string;
-  CategoryModel: string;
+  //CategoryModel: string;
 }

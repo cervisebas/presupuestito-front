@@ -1,5 +1,5 @@
-import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
-import { Material } from '@/common/api/services/material';
+import { SupplierResponse } from '@/common/api/interfaces/responses/SupplierResponse';
+import { Supplier } from '@/common/api/services/supplier';
 import { LoadingContainer } from '@/common/components/loading-container';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableModule } from 'primeng/table';
@@ -9,7 +9,7 @@ import { IconField } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
-import { MaterialForm } from './modals/material-form';
+import { SupplierForm } from './modals/supplier-form';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +21,7 @@ import { MaterialForm } from './modals/material-form';
     DebounceInput,
     InputTextModule,
     LoadingContainer,
-    MaterialForm,
+    SupplierForm,
   ],
   template: `
     <app-loading-container [loading]="loading" [error]="error">
@@ -44,62 +44,90 @@ import { MaterialForm } from './modals/material-form';
         <p-button
           label="Añadir"
           icon="pi pi-plus"
-          (onClick)="materialForm?.open()"
+          (onClick)="clientForm?.open()"
         />
       </div>
 
       <p-table
-        [value]="materialData"
+        [value]="clientData"
         [paginator]="true"
         [rows]="20"
         size="large"
-        [tableStyle]="{ 'min-width': '60rem' }"
+        [tableStyle]="{ 'min-width': '100rem' }"
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="materialName" style="width: 20%">
+            <th pSortableColumn="name" style="width: 10%">
               <div class="flex items-center gap-2">
                 Nombre
-                <p-sortIcon field="materialName" />
+                <p-sortIcon field="name" />
               </div>
             </th>
-            <th pSortableColumn="materialBrand" style="width: 20%">
+            <th pSortableColumn="lastname" style="width: 10%">
               <div class="flex items-center gap-2">
-                Marca
-                <p-sortIcon field="materialBrand" />
+                Apellido
+                <p-sortIcon field="lastname" />
               </div>
             </th>
-            <th
-              pSortableColumn="subCategoryMaterialId.categoryId.categoryName"
-              style="width: 20%"
-            >
+            <th pSortableColumn="street" style="width: 10%">
               <div class="flex items-center gap-2">
-                Rubro
-                <p-sortIcon
-                  field="subCategoryMaterialId.categoryId.categoryName"
-                />
+                Calle
+                <p-sortIcon field="street" />
               </div>
             </th>
-            <th
-              pSortableColumn="subCategoryMaterialId.subCategoryName"
-              style="width: 20%"
-            >
+            <th pSortableColumn="streetNumber" style="width: 10%">
               <div class="flex items-center gap-2">
-                Sub-Rubro
-                <p-sortIcon field="subCategoryMaterialId.subCategoryName" />
+                Altura
+                <p-sortIcon field="streetNumber" />
               </div>
             </th>
-            <th style="width: 20%">
+            <th pSortableColumn="locality" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Localidad
+                <p-sortIcon field="locality" />
+              </div>
+            </th>
+            <th pSortableColumn="phoneNumber" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Telefono
+                <p-sortIcon field="phoneNumber" />
+              </div>
+            </th>
+            <th pSortableColumn="email" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Email
+                <p-sortIcon field="email" />
+              </div>
+            </th>
+            <th pSortableColumn="dni" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Dni
+                <p-sortIcon field="dni" />
+              </div>
+            </th>
+            <th pSortableColumn="cuit" style="width: 10%">
+              <div class="flex items-center gap-2">
+                Cuit
+                <p-sortIcon field="cuit" />
+              </div>
+            </th>
+
+            <th style="width: 10%">
               <div class="flex items-center gap-2">Acciónes</div>
             </th>
           </tr>
         </ng-template>
-        <ng-template #body let-product>
+        <ng-template #body let-client>
           <tr>
-            <td>{{ product.materialName }}</td>
-            <td>{{ product.materialBrand }}</td>
-            <td>{{ product.subCategoryMaterialId.categoryId.categoryName }}</td>
-            <td>{{ product.subCategoryMaterialId.subCategoryName }}</td>
+            <td>{{ client.personId.name }}</td>
+            <td>{{ client.personId.lastname }}</td>
+            <td>{{ client.personId.street }}</td>
+            <td>{{ client.personId.streetNumber }}</td>
+            <td>{{ client.personId.locality }}</td>
+            <td>{{ client.personId.phoneNumber }}</td>
+            <td>{{ client.personId.email }}</td>
+            <td>{{ client.personId.dni }}</td>
+            <td>{{ client.personId.cuit }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
@@ -124,20 +152,20 @@ import { MaterialForm } from './modals/material-form';
       </p-table>
     </app-loading-container>
 
-    <app-material-form (reloadTable)="loadData()" />
+    <app-client-form />
   `,
 })
-export class MaterialPage implements OnInit {
+export class SupplierPage implements OnInit {
   protected error = null;
   protected loading = true;
-  protected $materialData: MaterialResponse[] = [];
-  protected materialData: MaterialResponse[] = [];
+  protected $clientData: ClientResponse[] = [];
+  protected clientData: ClientResponse[] = [];
 
-  @ViewChild(MaterialForm)
-  protected materialForm?: MaterialForm;
+  @ViewChild(ClientForm)
+  protected clientForm?: ClientForm;
 
   constructor(
-    private material: Material,
+    private client: Client,
     private arraySearch: ArraySearch,
   ) {}
 
@@ -146,28 +174,31 @@ export class MaterialPage implements OnInit {
   }
 
   protected onSearch(event: string) {
-    this.materialData = this.arraySearch.search(
-      this.$materialData,
+    this.clientData = this.arraySearch.search(
+      this.$clientData,
       [
-        'materialName',
-        'materialDescription',
-        'materialBrand',
-        'materialUnitMeasure',
-        'subCategoryMaterialId.subCategoryName',
-        'subCategoryMaterialId.categoryId.categoryName',
+        'name',
+        'lastname',
+        'street',
+        'streetNumber',
+        'locality',
+        'phoneNumber',
+        'email',
+        'dni',
+        'cuit',
       ],
       event,
     );
   }
 
-  protected loadData() {
+  private loadData() {
     this.error = null;
     this.loading = true;
 
-    this.material.getMaterials().subscribe({
-      next: (material) => {
-        this.$materialData = [...material];
-        this.materialData = material;
+    this.client.getClients().subscribe({
+      next: (client: ClientResponse[]) => {
+        this.$clientData = [...client];
+        this.clientData = client;
       },
       error: (err) => {
         this.error = err;
