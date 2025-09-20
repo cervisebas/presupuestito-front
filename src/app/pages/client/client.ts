@@ -53,66 +53,29 @@ import { ClientForm } from './modals/client-form';
         [paginator]="true"
         [rows]="20"
         size="large"
-        [tableStyle]="{ 'min-width': '100rem' }"
+        [tableStyle]="{ 'min-width': '60rem' }"
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="name" style="width: 10%">
+            <th pSortableColumn="name" style="width: 20%">
               <div class="flex items-center gap-2">
                 Nombre
                 <p-sortIcon field="name" />
               </div>
             </th>
-            <th pSortableColumn="lastname" style="width: 10%">
+            <th pSortableColumn="lastname" style="width: 20%">
               <div class="flex items-center gap-2">
                 Apellido
                 <p-sortIcon field="lastname" />
               </div>
             </th>
-            <th pSortableColumn="street" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Calle
-                <p-sortIcon field="street" />
-              </div>
-            </th>
-            <th pSortableColumn="streetNumber" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Altura
-                <p-sortIcon field="streetNumber" />
-              </div>
-            </th>
-            <th pSortableColumn="locality" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Localidad
-                <p-sortIcon field="locality" />
-              </div>
-            </th>
-            <th pSortableColumn="phoneNumber" style="width: 10%">
+            <th pSortableColumn="phoneNumber" style="width: 20%">
               <div class="flex items-center gap-2">
                 Telefono
                 <p-sortIcon field="phoneNumber" />
               </div>
             </th>
-            <th pSortableColumn="email" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Email
-                <p-sortIcon field="email" />
-              </div>
-            </th>
-            <th pSortableColumn="dni" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Dni
-                <p-sortIcon field="dni" />
-              </div>
-            </th>
-            <th pSortableColumn="cuit" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Cuit
-                <p-sortIcon field="cuit" />
-              </div>
-            </th>
-
-            <th style="width: 10%">
+            <th style="width: 20%">
               <div class="flex items-center gap-2">Acciónes</div>
             </th>
           </tr>
@@ -121,13 +84,7 @@ import { ClientForm } from './modals/client-form';
           <tr>
             <td>{{ client.personId.name }}</td>
             <td>{{ client.personId.lastname }}</td>
-            <td>{{ client.personId.street }}</td>
-            <td>{{ client.personId.streetNumber }}</td>
-            <td>{{ client.personId.locality }}</td>
             <td>{{ client.personId.phoneNumber }}</td>
-            <td>{{ client.personId.email }}</td>
-            <td>{{ client.personId.dni }}</td>
-            <td>{{ client.personId.cuit }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
@@ -139,6 +96,7 @@ import { ClientForm } from './modals/client-form';
                   icon="pi pi-pencil"
                   severity="warn"
                   aria-label="Editar"
+                  (onClick)="clientForm?.open(client)"
                 />
                 <p-button
                   icon="pi pi-trash"
@@ -152,7 +110,7 @@ import { ClientForm } from './modals/client-form';
       </p-table>
     </app-loading-container>
 
-    <app-client-form />
+    <app-client-form (reloadTable)="loadData()" />
   `,
 })
 export class ClientPage implements OnInit {
@@ -191,7 +149,7 @@ export class ClientPage implements OnInit {
     );
   }
 
-  private loadData() {
+  protected loadData() {
     this.error = null;
     this.loading = true;
 
