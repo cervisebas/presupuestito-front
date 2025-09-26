@@ -7,9 +7,14 @@ import { Button } from 'primeng/button';
 import { InputIcon } from 'primeng/inputicon';
 import { IconField } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
 import { MaterialForm } from './modals/material-form';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { NgStyle } from '@angular/common';
+import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +27,12 @@ import { MaterialForm } from './modals/material-form';
     InputTextModule,
     LoadingContainer,
     MaterialForm,
+    ConfirmDialogModule,
+    ToastModule,
+    NgStyle,
+    CurrencyPipe,
   ],
+  providers: [ConfirmationService, MessageService],
   template: `
     <app-loading-container [loading]="loading" [error]="error">
       <div
@@ -57,47 +67,28 @@ import { MaterialForm } from './modals/material-form';
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="materialName" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Nombre
-                <p-sortIcon field="materialName" />
-              </div>
-            </th>
-            <th pSortableColumn="materialBrand" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Marca
-                <p-sortIcon field="materialBrand" />
-              </div>
-            </th>
-            <th
-              pSortableColumn="subCategoryMaterialId.categoryId.categoryName"
-              style="width: 20%"
-            >
-              <div class="flex items-center gap-2">
-                Rubro
-                <p-sortIcon
-                  field="subCategoryMaterialId.categoryId.categoryName"
-                />
-              </div>
-            </th>
-            <th
-              pSortableColumn="subCategoryMaterialId.subCategoryName"
-              style="width: 20%"
-            >
-              <div class="flex items-center gap-2">
-                Sub-Rubro
-                <p-sortIcon field="subCategoryMaterialId.subCategoryName" />
-              </div>
-            </th>
-            <th style="width: 20%">
-              <div class="flex items-center gap-2">Acciónes</div>
-            </th>
+            @for (item of tableHeaderItems; track $index) {
+              <th
+                [pSortableColumn]="item.key || undefined"
+                [ngStyle]="{
+                  width: 100 / tableHeaderItems.length + '%',
+                }"
+              >
+                <div class="flex items-center gap-2">
+                  {{ item.label }}
+                  @if (item.key) {
+                    <p-sortIcon field="materialName" />
+                  }
+                </div>
+              </th>
+            }
           </tr>
         </ng-template>
         <ng-template #body let-product>
           <tr>
             <td>{{ product.materialName }}</td>
             <td>{{ product.materialBrand }}</td>
+            <td>{{ product.price | currency }}</td>
             <td>{{ product.subCategoryMaterialId.categoryId.categoryName }}</td>
             <td>{{ product.subCategoryMaterialId.subCategoryName }}</td>
             <td>
@@ -119,6 +110,7 @@ import { MaterialForm } from './modals/material-form';
                   icon="pi pi-trash"
                   severity="danger"
                   aria-label="Eliminar"
+                  (onClick)="deleteMaterial($event, product)"
                 />
               </div>
             </td>
@@ -126,6 +118,9 @@ import { MaterialForm } from './modals/material-form';
         </ng-template>
       </p-table>
     </app-loading-container>
+
+    <p-confirmdialog styleClass="max-w-9/10" />
+    <p-toast position="bottom-right" />
 
     <app-material-form (reloadTable)="loadData()" />
   `,
@@ -139,9 +134,38 @@ export class MaterialPage implements OnInit {
   @ViewChild(MaterialForm)
   protected materialForm?: MaterialForm;
 
+  protected tableHeaderItems = [
+    {
+      key: 'materialName',
+      label: 'Nombre',
+    },
+    {
+      key: 'materialBrand',
+      label: 'Marca',
+    },
+    {
+      key: 'price',
+      label: 'Precio',
+    },
+    {
+      key: 'subCategoryMaterialId.categoryId.categoryName',
+      label: 'Rubro',
+    },
+    {
+      key: 'subCategoryMaterialId.subCategoryName',
+      label: 'Sub-Rubro',
+    },
+    {
+      key: null,
+      label: 'Acciónes',
+    },
+  ];
+
   constructor(
     private material: Material,
     private arraySearch: ArraySearch,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
   ) {}
 
   public ngOnInit() {
@@ -178,6 +202,40 @@ export class MaterialPage implements OnInit {
       },
       complete: () => {
         this.loading = false;
+      },
+    });
+  }
+
+  protected deleteMaterial(event: Event, material: MaterialResponse) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: `¿Esta seguro/a que desea eliminar el material "${material.materialName}"? Esta acción no se prodra deshacer.`,
+      header: 'Confirme eliminación',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancelar',
+      rejectButtonProps: {
+        label: 'Cancelar',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Eliminar',
+        severity: 'danger',
+      },
+
+      accept: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Confirmed',
+          detail: 'Record deleted',
+        });
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+        });
       },
     });
   }

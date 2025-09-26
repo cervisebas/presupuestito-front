@@ -2,6 +2,7 @@ import { SubCategoryMaterialResponse } from './SubCategoryMaterialResponse';
 
 export interface MaterialResponse {
   materialId: number;
+  price: number;
   materialName: string;
   materialDescription: string;
   materialColor: string;

@@ -1,5 +1,6 @@
 export interface MaterialRequest {
   MaterialId?: number;
+  price: number;
   MaterialName: string;
   MaterialDescription: string;
   MaterialColor: string;
