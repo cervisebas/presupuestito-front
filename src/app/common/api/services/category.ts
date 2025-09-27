@@ -14,7 +14,7 @@ export class Category {
     return this.http.get<CategoryResponse[]>(Endpoints.CATEGORIES);
   }
 
-  public getCategoryById(id_category: string) {
+  public getCategoryById(id_category: number) {
     return this.http.get<CategoryResponse>(
       `${Endpoints.CATEGORIES}/${id_category}`,
     );
