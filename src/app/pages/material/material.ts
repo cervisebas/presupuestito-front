@@ -15,6 +15,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { NgStyle } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
+import { LoadingService } from '@/common/services/loading';
 
 @Component({
   selector: 'app-dashboard',
@@ -166,6 +167,7 @@ export class MaterialPage implements OnInit {
     private arraySearch: ArraySearch,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
+    private loadingService: LoadingService,
   ) {}
 
   public ngOnInit() {
@@ -222,19 +224,28 @@ export class MaterialPage implements OnInit {
         label: 'Eliminar',
         severity: 'danger',
       },
-
       accept: () => {
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Confirmed',
-          detail: 'Record deleted',
-        });
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Rejected',
-          detail: 'You have rejected',
+        this.loadingService.setLoading(true);
+        this.material.deleteMaterial(material.materialId).subscribe({
+          next: () => {
+            this.loadingService.setLoading(false);
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Material eliminado',
+              detail: `Se elimino correctamente el material "${material.materialName}".`,
+            });
+            this.loadData();
+          },
+          error: (error) => {
+            console.error(error);
+            this.loadingService.setLoading(false);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error al eliminar material',
+              detail:
+                'Ocurrio un error inesperado al eliminar el material, por favor pruebe de nuevo más tarde.',
+            });
+          },
         });
       },
     });
