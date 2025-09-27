@@ -7,9 +7,18 @@ import { Button } from 'primeng/button';
 import { InputIcon } from 'primeng/inputicon';
 import { IconField } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
 import { MaterialForm } from './modals/material-form';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { NgStyle } from '@angular/common';
+import { CurrencyPipe } from '@/common/pipes/currency-pipe';
+import { LoadingService } from '@/common/services/loading';
+import { DevService } from '@/common/services/dev-service';
+import { MaterialTestService } from './services/material-test-service';
+import { MaterialInfo } from './modals/material-info';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +31,13 @@ import { MaterialForm } from './modals/material-form';
     InputTextModule,
     LoadingContainer,
     MaterialForm,
+    ConfirmDialogModule,
+    ToastModule,
+    NgStyle,
+    CurrencyPipe,
+    MaterialInfo,
   ],
+  providers: [ConfirmationService, MessageService],
   template: `
     <app-loading-container [loading]="loading" [error]="error">
       <div
@@ -41,11 +56,22 @@ import { MaterialForm } from './modals/material-form';
           />
         </p-iconfield>
 
-        <p-button
-          label="Añadir"
-          icon="pi pi-plus"
-          (onClick)="materialForm?.open()"
-        />
+        <div class="flex flex-row gap-4">
+          @if (devService.isDevMode()) {
+            <p-button
+              label="Añadir 20 elementos"
+              icon="pi pi-plus"
+              severity="help"
+              (onClick)="createManyElements()"
+            />
+          }
+
+          <p-button
+            label="Añadir"
+            icon="pi pi-plus"
+            (onClick)="materialForm?.open()"
+          />
+        </div>
       </div>
 
       <p-table
@@ -57,47 +83,28 @@ import { MaterialForm } from './modals/material-form';
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="materialName" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Nombre
-                <p-sortIcon field="materialName" />
-              </div>
-            </th>
-            <th pSortableColumn="materialBrand" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Marca
-                <p-sortIcon field="materialBrand" />
-              </div>
-            </th>
-            <th
-              pSortableColumn="subCategoryMaterialId.categoryId.categoryName"
-              style="width: 20%"
-            >
-              <div class="flex items-center gap-2">
-                Rubro
-                <p-sortIcon
-                  field="subCategoryMaterialId.categoryId.categoryName"
-                />
-              </div>
-            </th>
-            <th
-              pSortableColumn="subCategoryMaterialId.subCategoryName"
-              style="width: 20%"
-            >
-              <div class="flex items-center gap-2">
-                Sub-Rubro
-                <p-sortIcon field="subCategoryMaterialId.subCategoryName" />
-              </div>
-            </th>
-            <th style="width: 20%">
-              <div class="flex items-center gap-2">Acciónes</div>
-            </th>
+            @for (item of tableHeaderItems; track $index) {
+              <th
+                [pSortableColumn]="item.key || undefined"
+                [ngStyle]="{
+                  width: 100 / tableHeaderItems.length + '%',
+                }"
+              >
+                <div class="flex items-center gap-2">
+                  {{ item.label }}
+                  @if (item.key) {
+                    <p-sortIcon field="materialName" />
+                  }
+                </div>
+              </th>
+            }
           </tr>
         </ng-template>
         <ng-template #body let-product>
           <tr>
             <td>{{ product.materialName }}</td>
             <td>{{ product.materialBrand }}</td>
+            <td>{{ product.price | currency }}</td>
             <td>{{ product.subCategoryMaterialId.categoryId.categoryName }}</td>
             <td>{{ product.subCategoryMaterialId.subCategoryName }}</td>
             <td>
@@ -106,6 +113,7 @@ import { MaterialForm } from './modals/material-form';
                   icon="pi pi-info-circle"
                   severity="info"
                   aria-label="Información"
+                  (onClick)="materialInfo?.open(product)"
                 />
 
                 <p-button
@@ -119,6 +127,7 @@ import { MaterialForm } from './modals/material-form';
                   icon="pi pi-trash"
                   severity="danger"
                   aria-label="Eliminar"
+                  (onClick)="deleteMaterial($event, product)"
                 />
               </div>
             </td>
@@ -127,7 +136,11 @@ import { MaterialForm } from './modals/material-form';
       </p-table>
     </app-loading-container>
 
+    <p-confirmdialog styleClass="max-w-9/10" />
+    <p-toast position="bottom-right" />
+
     <app-material-form (reloadTable)="loadData()" />
+    <app-material-info />
   `,
 })
 export class MaterialPage implements OnInit {
@@ -139,9 +152,44 @@ export class MaterialPage implements OnInit {
   @ViewChild(MaterialForm)
   protected materialForm?: MaterialForm;
 
+  @ViewChild(MaterialInfo)
+  protected materialInfo?: MaterialInfo;
+
+  protected tableHeaderItems = [
+    {
+      key: 'materialName',
+      label: 'Nombre',
+    },
+    {
+      key: 'materialBrand',
+      label: 'Marca',
+    },
+    {
+      key: 'price',
+      label: 'Precio',
+    },
+    {
+      key: 'subCategoryMaterialId.categoryId.categoryName',
+      label: 'Rubro',
+    },
+    {
+      key: 'subCategoryMaterialId.subCategoryName',
+      label: 'Sub-Rubro',
+    },
+    {
+      key: null,
+      label: 'Acciónes',
+    },
+  ];
+
   constructor(
     private material: Material,
     private arraySearch: ArraySearch,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private loadingService: LoadingService,
+    protected devService: DevService,
+    private materialTestService: MaterialTestService,
   ) {}
 
   public ngOnInit() {
@@ -180,5 +228,61 @@ export class MaterialPage implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  protected deleteMaterial(event: Event, material: MaterialResponse) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: `¿Esta seguro/a que desea eliminar el material "${material.materialName}"? Esta acción no se prodra deshacer.`,
+      header: 'Confirme eliminación',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancelar',
+      rejectButtonProps: {
+        label: 'Cancelar',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Eliminar',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.loadingService.setLoading(true);
+        this.material.deleteMaterial(material.materialId).subscribe({
+          next: () => {
+            this.loadingService.setLoading(false);
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Material eliminado',
+              detail: `Se elimino correctamente el material "${material.materialName}".`,
+            });
+            this.loadData();
+          },
+          error: (error) => {
+            console.error(error);
+            this.loadingService.setLoading(false);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error al eliminar material',
+              detail:
+                'Ocurrio un error inesperado al eliminar el material, por favor pruebe de nuevo más tarde.',
+            });
+          },
+        });
+      },
+    });
+  }
+
+  protected async createManyElements() {
+    this.loadingService.setLoading(true);
+
+    try {
+      await this.materialTestService.createManyMaterials(20);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+      this.loadData();
+    }
   }
 }

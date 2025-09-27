@@ -15,7 +15,7 @@ export class Subcategory {
     );
   }
 
-  public getSubcategoryById(id_subcategory: string) {
+  public getSubcategoryById(id_subcategory: number) {
     return this.http.get<SubCategoryMaterialResponse>(
       `${Endpoints.SUB_CATEGORIES}/${id_subcategory}`,
     );
