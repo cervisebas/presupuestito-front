@@ -16,6 +16,9 @@ import { ToastModule } from 'primeng/toast';
 import { NgStyle } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { LoadingService } from '@/common/services/loading';
+import { DevService } from '@/common/services/dev-service';
+import { MaterialTestService } from './services/material-test-service';
+import { MaterialInfo } from './modals/material-info';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,6 +35,7 @@ import { LoadingService } from '@/common/services/loading';
     ToastModule,
     NgStyle,
     CurrencyPipe,
+    MaterialInfo,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -52,11 +56,22 @@ import { LoadingService } from '@/common/services/loading';
           />
         </p-iconfield>
 
-        <p-button
-          label="Añadir"
-          icon="pi pi-plus"
-          (onClick)="materialForm?.open()"
-        />
+        <div class="flex flex-row gap-4">
+          @if (devService.isDevMode()) {
+            <p-button
+              label="Añadir 20 elementos"
+              icon="pi pi-plus"
+              severity="help"
+              (onClick)="createManyElements()"
+            />
+          }
+
+          <p-button
+            label="Añadir"
+            icon="pi pi-plus"
+            (onClick)="materialForm?.open()"
+          />
+        </div>
       </div>
 
       <p-table
@@ -98,6 +113,7 @@ import { LoadingService } from '@/common/services/loading';
                   icon="pi pi-info-circle"
                   severity="info"
                   aria-label="Información"
+                  (onClick)="materialInfo?.open(product)"
                 />
 
                 <p-button
@@ -124,6 +140,7 @@ import { LoadingService } from '@/common/services/loading';
     <p-toast position="bottom-right" />
 
     <app-material-form (reloadTable)="loadData()" />
+    <app-material-info />
   `,
 })
 export class MaterialPage implements OnInit {
@@ -134,6 +151,9 @@ export class MaterialPage implements OnInit {
 
   @ViewChild(MaterialForm)
   protected materialForm?: MaterialForm;
+
+  @ViewChild(MaterialInfo)
+  protected materialInfo?: MaterialInfo;
 
   protected tableHeaderItems = [
     {
@@ -168,6 +188,8 @@ export class MaterialPage implements OnInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private loadingService: LoadingService,
+    protected devService: DevService,
+    private materialTestService: MaterialTestService,
   ) {}
 
   public ngOnInit() {
@@ -249,5 +271,18 @@ export class MaterialPage implements OnInit {
         });
       },
     });
+  }
+
+  protected async createManyElements() {
+    this.loadingService.setLoading(true);
+
+    try {
+      await this.materialTestService.createManyMaterials(20);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+      this.loadData();
+    }
   }
 }
