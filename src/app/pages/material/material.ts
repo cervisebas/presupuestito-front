@@ -19,6 +19,8 @@ import { LoadingService } from '@/common/services/loading';
 import { DevService } from '@/common/services/dev-service';
 import { MaterialTestService } from './services/material-test-service';
 import { MaterialInfo } from './modals/material-info';
+import { MaterialFilter } from './components/material-filter';
+import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,6 +38,7 @@ import { MaterialInfo } from './modals/material-info';
     NgStyle,
     CurrencyPipe,
     MaterialInfo,
+    MaterialFilter,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -57,6 +60,8 @@ import { MaterialInfo } from './modals/material-info';
         </p-iconfield>
 
         <div class="flex flex-row gap-4">
+          <app-material-filter (onFilter)="onFilter($event)" />
+
           @if (devService.isDevMode()) {
             <p-button
               label="Añadir 20 elementos"
@@ -155,6 +160,9 @@ export class MaterialPage implements OnInit {
   @ViewChild(MaterialInfo)
   protected materialInfo?: MaterialInfo;
 
+  @ViewChild(MaterialFilter)
+  private materialFilter?: MaterialFilter;
+
   protected tableHeaderItems = [
     {
       key: 'materialName',
@@ -182,6 +190,9 @@ export class MaterialPage implements OnInit {
     },
   ];
 
+  private filterValue?: MaterialFilterSettings;
+  private searchValue = '';
+
   constructor(
     private material: Material,
     private arraySearch: ArraySearch,
@@ -197,6 +208,33 @@ export class MaterialPage implements OnInit {
   }
 
   protected onSearch(event: string) {
+    this.searchValue = event;
+    this.applySearch();
+    this.applyFilters();
+  }
+
+  protected loadData() {
+    this.error = null;
+    this.loading = true;
+
+    this.materialFilter?.loadData();
+    this.material.getMaterials().subscribe({
+      next: (material) => {
+        this.$materialData = [...material];
+        this.materialData = material;
+        this.applyFilters();
+      },
+      error: (err) => {
+        this.error = err;
+        this.loading = false;
+      },
+      complete: () => {
+        this.loading = false;
+      },
+    });
+  }
+
+  private applySearch() {
     this.materialData = this.arraySearch.search(
       this.$materialData,
       [
@@ -207,26 +245,34 @@ export class MaterialPage implements OnInit {
         'subCategoryMaterialId.subCategoryName',
         'subCategoryMaterialId.categoryId.categoryName',
       ],
-      event,
+      this.searchValue,
     );
   }
 
-  protected loadData() {
-    this.error = null;
-    this.loading = true;
+  private applyFilters() {
+    if (!this.filterValue) {
+      return;
+    }
 
-    this.material.getMaterials().subscribe({
-      next: (material) => {
-        this.$materialData = [...material];
-        this.materialData = material;
-      },
-      error: (err) => {
-        this.error = err;
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
-      },
+    if (
+      !this.filterValue.categoryId &&
+      !this.filterValue.subCategoryMaterialId
+    ) {
+      return;
+    }
+
+    this.materialData = this.materialData.filter((material) => {
+      if (this.filterValue?.categoryId) {
+        return (
+          material.subCategoryMaterialId.categoryId.categoryId ===
+          this.filterValue.categoryId
+        );
+      }
+
+      return (
+        material.subCategoryMaterialId.subCategoryMaterialId ===
+        this.filterValue?.subCategoryMaterialId
+      );
     });
   }
 
@@ -284,5 +330,11 @@ export class MaterialPage implements OnInit {
       this.loadingService.setLoading(false);
       this.loadData();
     }
+  }
+
+  protected onFilter(_filter: MaterialFilterSettings) {
+    this.filterValue = _filter;
+    this.applySearch();
+    this.applyFilters();
   }
 }
