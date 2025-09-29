@@ -22,6 +22,7 @@ import { ButtonModule } from 'primeng/button';
 import { Material } from '@/common/api/services/material';
 import { LoadingService } from '@/common/services/loading';
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-material-form',
@@ -34,6 +35,7 @@ import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResp
     ReactiveFormsModule,
     ToastModule,
     ButtonModule,
+    InputNumberModule,
   ],
   providers: [MessageService],
   template: `
@@ -83,6 +85,19 @@ import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResp
             formControlName="brand"
           />
           <label for="brand-input">Marca</label>
+        </p-floatlabel>
+
+        <p-floatlabel variant="on" class="w-full">
+          <p-inputnumber
+            inputId="price-input"
+            mode="currency"
+            currency="ARS"
+            locale="es-AR"
+            formControlName="price"
+            styleClass="w-full"
+          />
+
+          <label for="price-input">Precio</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -170,8 +185,9 @@ export class MaterialForm {
     name: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.required]),
     brand: new FormControl('', [Validators.required]),
+    price: new FormControl(1, [Validators.required, Validators.min(1)]),
     color: new FormControl('', [Validators.required]),
-    size: new FormControl<number | null>(null, [
+    size: new FormControl<number | null>(1, [
       Validators.required,
       Validators.min(1),
     ]),
@@ -201,7 +217,10 @@ export class MaterialForm {
   ) {}
 
   public async open(editData?: MaterialResponse) {
-    this.formGroup.reset();
+    this.formGroup.reset({
+      price: 1,
+      size: 1,
+    });
     this.visible = true;
     this.$editData = editData;
 
@@ -224,6 +243,7 @@ export class MaterialForm {
         name: data.materialName,
         description: data.materialDescription,
         brand: data.materialBrand,
+        price: data.price,
         color: data.materialColor,
         size: Number(data.materialMeasure),
         unitSize: data.materialUnitMeasure,
@@ -389,6 +409,7 @@ export class MaterialForm {
       // Se arma el objeto que se enviara a la consulta.
       const data: MaterialRequest = {
         MaterialId: this.$editData?.materialId,
+        price: Number(formValue.price),
         MaterialName: formValue.name!,
         MaterialDescription: formValue.description!,
         MaterialColor: formValue.color!,
