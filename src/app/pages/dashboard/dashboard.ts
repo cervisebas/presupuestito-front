@@ -57,6 +57,7 @@ import { CardWidget } from './components/cardwidget';
           icon="pi-building"
           colorIcon="text-yellow-500"
           colorBoxIcon="bg-purple-100"
+          goToLink="/suppliers"
         />
       </div>
     </app-loading-container>

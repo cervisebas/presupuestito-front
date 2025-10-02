@@ -18,6 +18,7 @@ import { LoadingService } from '@/common/services/loading';
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
 import { ClientRequest } from '@/common/api/interfaces/requests/ClientRequest';
 import { Client } from '@/common/api/services/client';
+import { InputNumberModule } from 'primeng/inputnumber';
 @Component({
   selector: 'app-client-form',
   imports: [
