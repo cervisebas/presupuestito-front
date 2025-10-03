@@ -10,7 +10,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
 import { SupplierForm } from './modals/supplier-form';
-
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { LoadingService } from '@/common/services/loading';
+import { DevService } from '@/common/services/dev-service';
+import { SupplierInfo } from './modals/supplier-info';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Toast } from 'primeng/toast';
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -22,7 +27,11 @@ import { SupplierForm } from './modals/supplier-form';
     InputTextModule,
     LoadingContainer,
     SupplierForm,
+    SupplierInfo,
+    ConfirmDialog,
+    Toast,
   ],
+  providers: [ConfirmationService, MessageService],
   template: `
     <app-loading-container [loading]="loading" [error]="error">
       <div
@@ -44,106 +53,66 @@ import { SupplierForm } from './modals/supplier-form';
         <p-button
           label="Añadir"
           icon="pi pi-plus"
-          (onClick)="clientForm?.open()"
+          (onClick)="supplierForm?.open()"
         />
       </div>
 
       <p-table
-        [value]="clientData"
+        [value]="supplierData"
         [paginator]="true"
         [rows]="20"
         size="large"
-        [tableStyle]="{ 'min-width': '100rem' }"
+        [tableStyle]="{ 'min-width': '60rem' }"
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="name" style="width: 10%">
+            <th pSortableColumn="name" style="width: 20%">
               <div class="flex items-center gap-2">
-                Nombre
+                Empresa
                 <p-sortIcon field="name" />
               </div>
             </th>
-            <th pSortableColumn="lastname" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Apellido
-                <p-sortIcon field="lastname" />
-              </div>
-            </th>
-            <th pSortableColumn="street" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Calle
-                <p-sortIcon field="street" />
-              </div>
-            </th>
-            <th pSortableColumn="streetNumber" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Altura
-                <p-sortIcon field="streetNumber" />
-              </div>
-            </th>
-            <th pSortableColumn="locality" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Localidad
-                <p-sortIcon field="locality" />
-              </div>
-            </th>
-            <th pSortableColumn="phoneNumber" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Telefono
-                <p-sortIcon field="phoneNumber" />
-              </div>
-            </th>
-            <th pSortableColumn="email" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Email
-                <p-sortIcon field="email" />
-              </div>
-            </th>
-            <th pSortableColumn="dni" style="width: 10%">
-              <div class="flex items-center gap-2">
-                Dni
-                <p-sortIcon field="dni" />
-              </div>
-            </th>
-            <th pSortableColumn="cuit" style="width: 10%">
+            <th pSortableColumn="cuit" style="width: 20%">
               <div class="flex items-center gap-2">
                 Cuit
                 <p-sortIcon field="cuit" />
               </div>
             </th>
-
-            <th style="width: 10%">
+            <th pSortableColumn="phoneNumber" style="width: 20%">
+              <div class="flex items-center gap-2">
+                Telefono
+                <p-sortIcon field="phoneNumber" />
+              </div>
+            </th>
+            <th style="width: 20%">
               <div class="flex items-center gap-2">Acciónes</div>
             </th>
           </tr>
         </ng-template>
-        <ng-template #body let-client>
+        <ng-template #body let-supplier>
           <tr>
-            <td>{{ client.personId.name }}</td>
-            <td>{{ client.personId.lastname }}</td>
-            <td>{{ client.personId.street }}</td>
-            <td>{{ client.personId.streetNumber }}</td>
-            <td>{{ client.personId.locality }}</td>
-            <td>{{ client.personId.phoneNumber }}</td>
-            <td>{{ client.personId.email }}</td>
-            <td>{{ client.personId.dni }}</td>
-            <td>{{ client.personId.cuit }}</td>
+            <td>{{ supplier.personId?.name || '-' }}</td>
+            <td>{{ supplier.personId?.cuit || '-' }}</td>
+            <td>{{ supplier.personId?.phoneNumber || '-' }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
                   icon="pi pi-info-circle"
                   severity="info"
                   aria-label="Información"
+                  (onClick)="SupplierInfo?.open(supplier)"
                 />
                 <p-button
                   icon="pi pi-pencil"
                   severity="warn"
                   aria-label="Editar"
+                  (onClick)="supplierForm?.open(supplier)"
                 />
                 <p-button
                   icon="pi pi-trash"
                   severity="danger"
                   aria-label="Eliminar"
+                  (onClick)="deleteSupplier($event, supplier)"
                 />
               </div>
             </td>
@@ -152,21 +121,50 @@ import { SupplierForm } from './modals/supplier-form';
       </p-table>
     </app-loading-container>
 
-    <app-client-form />
+    <p-confirmdialog styleClass="max-w-9/10" />
+    <p-toast position="bottom-right" />
+
+    <app-supplier-info />
+    <app-supplier-form (reloadTable)="loadData()" />
   `,
 })
 export class SupplierPage implements OnInit {
   protected error = null;
   protected loading = true;
-  protected $clientData: ClientResponse[] = [];
-  protected clientData: ClientResponse[] = [];
+  protected $supplierData: SupplierResponse[] = [];
+  protected supplierData: SupplierResponse[] = [];
 
-  @ViewChild(ClientForm)
-  protected clientForm?: ClientForm;
+  @ViewChild(SupplierForm)
+  protected supplierForm?: SupplierForm;
 
+  @ViewChild(SupplierInfo)
+  protected SupplierInfo?: SupplierInfo;
+
+  protected tableHeaderItems = [
+    {
+      key: 'name',
+      label: 'Empresa',
+    },
+    {
+      key: 'cuit',
+      label: 'Cuit',
+    },
+    {
+      key: 'phoneNumber',
+      label: 'Telefono',
+    },
+    {
+      key: null,
+      label: 'Acciónes',
+    },
+  ];
   constructor(
-    private client: Client,
+    private supplier: Supplier,
     private arraySearch: ArraySearch,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private loadingService: LoadingService,
+    protected devService: DevService,
   ) {}
 
   public ngOnInit() {
@@ -174,8 +172,8 @@ export class SupplierPage implements OnInit {
   }
 
   protected onSearch(event: string) {
-    this.clientData = this.arraySearch.search(
-      this.$clientData,
+    this.supplierData = this.arraySearch.search(
+      this.$supplierData,
       [
         'name',
         'lastname',
@@ -191,14 +189,14 @@ export class SupplierPage implements OnInit {
     );
   }
 
-  private loadData() {
+  protected loadData() {
     this.error = null;
     this.loading = true;
 
-    this.client.getClients().subscribe({
-      next: (client: ClientResponse[]) => {
-        this.$clientData = [...client];
-        this.clientData = client;
+    this.supplier.getSuppliers().subscribe({
+      next: (supplier: SupplierResponse[]) => {
+        this.$supplierData = [...supplier];
+        this.supplierData = supplier;
       },
       error: (err) => {
         this.error = err;
@@ -206,6 +204,49 @@ export class SupplierPage implements OnInit {
       },
       complete: () => {
         this.loading = false;
+      },
+    });
+  }
+
+  protected deleteSupplier(event: Event, supplier: SupplierResponse) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: `¿Esta seguro/a que desea eliminar el proveedor "${supplier.personId.name}"? Esta acción no se prodra deshacer.`,
+      header: 'Confirme eliminación',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancelar',
+      rejectButtonProps: {
+        label: 'Cancelar',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Eliminar',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.loadingService.setLoading(true);
+        this.supplier.deleteSupplier(supplier.supplierId).subscribe({
+          next: () => {
+            this.loadingService.setLoading(false);
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Proveedor eliminado',
+              detail: `Se elimino correctamente el proveedor "${supplier.personId.name}".`,
+            });
+            this.loadData();
+          },
+          error: (error) => {
+            console.error(error);
+            this.loadingService.setLoading(false);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error al eliminar proveedor',
+              detail:
+                'Ocurrio un error inesperado al eliminar el proveedor, por favor pruebe de nuevo más tarde.',
+            });
+          },
+        });
       },
     });
   }
