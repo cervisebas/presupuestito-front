@@ -19,7 +19,7 @@ export class MenuRouter {
         {
           label: 'Presupuestar',
           icon: 'pi pi-file-edit',
-          routerLink: ['/uikit/formlayout'],
+          routerLink: ['/budgets'],
         },
         {
           label: 'Trabajos',

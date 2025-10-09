@@ -1,5 +1,3 @@
-import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
-import { Material } from '@/common/api/services/material';
 import { LoadingContainer } from '@/common/components/loading-container';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableModule } from 'primeng/table';
@@ -10,20 +8,20 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
-import { MaterialForm } from './modals/material-form';
+import { BudgetForm } from './modals/budget-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { NgStyle } from '@angular/common';
+import { DatePipe, NgStyle } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { LoadingService } from '@/common/services/loading';
 import { DevService } from '@/common/services/dev-service';
-import { MaterialTestService } from './services/material-test-service';
 import { MaterialInfo } from './modals/material-info';
 import { MaterialFilter } from './components/material-filter';
-import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
+import { Budget } from '@/common/api/services/budget';
+import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-budget',
   imports: [
     Button,
     InputIcon,
@@ -32,13 +30,13 @@ import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
     DebounceInput,
     InputTextModule,
     LoadingContainer,
-    MaterialForm,
+    BudgetForm,
     ConfirmDialogModule,
     ToastModule,
     NgStyle,
     CurrencyPipe,
     MaterialInfo,
-    MaterialFilter,
+    DatePipe,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -60,17 +58,6 @@ import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
         </p-iconfield>
 
         <div class="flex flex-row gap-4">
-          <app-material-filter (onFilter)="onFilter($event)" />
-
-          @if (devService.isDevMode()) {
-            <p-button
-              label="Añadir 20 elementos"
-              icon="pi pi-plus"
-              severity="help"
-              (onClick)="createManyElements()"
-            />
-          }
-
           <p-button
             label="Añadir"
             icon="pi pi-plus"
@@ -80,7 +67,7 @@ import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
       </div>
 
       <p-table
-        [value]="materialData"
+        [value]="budgetData"
         [paginator]="true"
         [rows]="20"
         size="large"
@@ -107,11 +94,14 @@ import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
         </ng-template>
         <ng-template #body let-product>
           <tr>
-            <td>{{ product.materialName }}</td>
-            <td>{{ product.materialBrand }}</td>
-            <td>{{ product.price | currency }}</td>
-            <td>{{ product.subCategoryMaterialId.categoryId.categoryName }}</td>
-            <td>{{ product.subCategoryMaterialId.subCategoryName }}</td>
+            <td>
+              {{ product.clientId.personId.name }}
+              {{ ' ' }}
+              {{ product.clientId.personId.lastName }}
+            </td>
+            <td>{{ product.dateCreated | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ product.budgetStatus }}</td>
+            <td>{{ product.cost | currency }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
@@ -144,18 +134,18 @@ import { MaterialFilterSettings } from './interfaces/MaterialFilterSettings';
     <p-confirmdialog styleClass="max-w-9/10" />
     <p-toast position="bottom-right" />
 
-    <app-material-form (reloadTable)="loadData()" />
+    <app-budget-form (reloadTable)="loadData()" />
     <app-material-info />
   `,
 })
-export class MaterialPage implements OnInit {
+export class BudgetPage implements OnInit {
   protected error = null;
   protected loading = true;
-  protected $materialData: MaterialResponse[] = [];
-  protected materialData: MaterialResponse[] = [];
+  protected $budgetData: BudgetResponse[] = [];
+  protected budgetData: BudgetResponse[] = [];
 
-  @ViewChild(MaterialForm)
-  protected materialForm?: MaterialForm;
+  @ViewChild(BudgetForm)
+  protected materialForm?: BudgetForm;
 
   @ViewChild(MaterialInfo)
   protected materialInfo?: MaterialInfo;
@@ -165,24 +155,20 @@ export class MaterialPage implements OnInit {
 
   protected tableHeaderItems = [
     {
-      key: 'materialName',
-      label: 'Nombre',
+      key: 'clientId.personId.name',
+      label: 'Cliente',
     },
     {
-      key: 'materialBrand',
-      label: 'Marca',
+      key: 'dateCreated',
+      label: 'Fecha',
     },
     {
-      key: 'price',
+      key: 'budgetStatus',
+      label: 'Estado',
+    },
+    {
+      key: 'cost',
       label: 'Precio',
-    },
-    {
-      key: 'subCategoryMaterialId.categoryId.categoryName',
-      label: 'Rubro',
-    },
-    {
-      key: 'subCategoryMaterialId.subCategoryName',
-      label: 'Sub-Rubro',
     },
     {
       key: null,
@@ -190,17 +176,16 @@ export class MaterialPage implements OnInit {
     },
   ];
 
-  private filterValue?: MaterialFilterSettings;
+  //private filterValue?: MaterialFilterSettings;
   private searchValue = '';
 
   constructor(
-    private material: Material,
+    private budget: Budget,
     private arraySearch: ArraySearch,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private loadingService: LoadingService,
     protected devService: DevService,
-    private materialTestService: MaterialTestService,
   ) {}
 
   public ngOnInit() {
@@ -210,7 +195,7 @@ export class MaterialPage implements OnInit {
   protected onSearch(event: string) {
     this.searchValue = event;
     this.applySearch();
-    this.applyFilters();
+    //this.applyFilters();
   }
 
   protected loadData() {
@@ -218,11 +203,11 @@ export class MaterialPage implements OnInit {
     this.loading = true;
 
     this.materialFilter?.loadData();
-    this.material.getMaterials().subscribe({
-      next: (material) => {
-        this.$materialData = [...material];
-        this.materialData = material;
-        this.applyFilters();
+    this.budget.getBudgets().subscribe({
+      next: (budgets) => {
+        this.$budgetData = [...budgets];
+        this.budgetData = budgets;
+        //this.applyFilters();
       },
       error: (err) => {
         this.error = err;
@@ -235,51 +220,26 @@ export class MaterialPage implements OnInit {
   }
 
   private applySearch() {
-    this.materialData = this.arraySearch.search(
-      this.$materialData,
+    this.budgetData = this.arraySearch.search(
+      this.$budgetData,
       [
-        'materialName',
-        'materialDescription',
-        'materialBrand',
-        'materialUnitMeasure',
-        'subCategoryMaterialId.subCategoryName',
-        'subCategoryMaterialId.categoryId.categoryName',
+        'clientId.personId.name',
+        'clientId.personId.lastName',
+        'budgetStatus',
+        'dateCreated',
+        'descriptionBudget',
       ],
       this.searchValue,
     );
   }
 
-  private applyFilters() {
-    if (!this.filterValue) {
-      return;
-    }
+  protected deleteMaterial(event: Event, budget: BudgetResponse) {
+    const clientName =
+      budget.clientId.personId.name + ' ' + budget.clientId.personId.lastName;
 
-    if (
-      !this.filterValue.categoryId &&
-      !this.filterValue.subCategoryMaterialId
-    ) {
-      return;
-    }
-
-    this.materialData = this.materialData.filter((material) => {
-      if (this.filterValue?.categoryId) {
-        return (
-          material.subCategoryMaterialId.categoryId.categoryId ===
-          this.filterValue.categoryId
-        );
-      }
-
-      return (
-        material.subCategoryMaterialId.subCategoryMaterialId ===
-        this.filterValue?.subCategoryMaterialId
-      );
-    });
-  }
-
-  protected deleteMaterial(event: Event, material: MaterialResponse) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: `¿Esta seguro/a que desea eliminar el material "${material.materialName}"? Esta acción no se prodra deshacer.`,
+      message: `¿Esta seguro/a que desea eliminar el presupuesto de "${clientName}"? Esta acción eliminara ${budget.works.length} ${budget.works.length === 1 ? 'trabajo' : 'trabajos'} y no se prodra deshacer.`,
       header: 'Confirme eliminación',
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancelar',
@@ -294,13 +254,13 @@ export class MaterialPage implements OnInit {
       },
       accept: () => {
         this.loadingService.setLoading(true);
-        this.material.deleteMaterial(material.materialId).subscribe({
+        this.budget.deleteBudget(budget.budgetId).subscribe({
           next: () => {
             this.loadingService.setLoading(false);
             this.messageService.add({
               severity: 'info',
               summary: 'Material eliminado',
-              detail: `Se elimino correctamente el material "${material.materialName}".`,
+              detail: `Se elimino correctamente el presupuesto de "${clientName}"?.`,
             });
             this.loadData();
           },
@@ -309,9 +269,9 @@ export class MaterialPage implements OnInit {
             this.loadingService.setLoading(false);
             this.messageService.add({
               severity: 'error',
-              summary: 'Error al eliminar material',
+              summary: 'Error al eliminar presupuesto',
               detail:
-                'Ocurrio un error inesperado al eliminar el material, por favor pruebe de nuevo más tarde.',
+                'Ocurrio un error inesperado al eliminar el presupuesto, por favor pruebe de nuevo más tarde.',
             });
           },
         });
@@ -319,22 +279,9 @@ export class MaterialPage implements OnInit {
     });
   }
 
-  protected async createManyElements() {
-    this.loadingService.setLoading(true);
-
-    try {
-      await this.materialTestService.createManyMaterials(20);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.loadingService.setLoading(false);
-      this.loadData();
-    }
-  }
-
-  protected onFilter(_filter: MaterialFilterSettings) {
+  /* protected onFilter(_filter: MaterialFilterSettings) {
     this.filterValue = _filter;
     this.applySearch();
-    this.applyFilters();
-  }
+    //this.applyFilters();
+  } */
 }
