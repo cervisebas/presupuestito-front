@@ -52,7 +52,18 @@ import { Supplier } from '@/common/api/services/supplier';
             autocomplete="off"
             formControlName="name"
           />
-          <label for="name-input">Empresa</label>
+          <label for="name-input">Nombre</label>
+        </p-floatlabel>
+
+        <p-floatlabel variant="on" class="w-full">
+          <input
+            pInputText
+            id="name-input"
+            class="w-full"
+            autocomplete="off"
+            formControlName="lastname"
+          />
+          <label for="name-input">Apellido</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">

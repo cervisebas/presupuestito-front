@@ -66,22 +66,22 @@ import { Toast } from 'primeng/toast';
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="name" style="width: 20%">
+            <th pSortableColumn="personId.name" style="width: 20%">
               <div class="flex items-center gap-2">
                 Empresa
-                <p-sortIcon field="name" />
+                <p-sortIcon field="personId.name" />
               </div>
             </th>
-            <th pSortableColumn="cuit" style="width: 20%">
+            <th pSortableColumn="personId.cuit" style="width: 20%">
               <div class="flex items-center gap-2">
                 Cuit
-                <p-sortIcon field="cuit" />
+                <p-sortIcon field="personId.cuit" />
               </div>
             </th>
-            <th pSortableColumn="phoneNumber" style="width: 20%">
+            <th pSortableColumn="personId.phoneNumber" style="width: 20%">
               <div class="flex items-center gap-2">
                 Telefono
-                <p-sortIcon field="phoneNumber" />
+                <p-sortIcon field="personId.phoneNumber" />
               </div>
             </th>
             <th style="width: 20%">
@@ -142,15 +142,15 @@ export class SupplierPage implements OnInit {
 
   protected tableHeaderItems = [
     {
-      key: 'name',
+      key: 'personId.name',
       label: 'Empresa',
     },
     {
-      key: 'cuit',
+      key: 'personId.cuit',
       label: 'Cuit',
     },
     {
-      key: 'phoneNumber',
+      key: 'personId.phoneNumber',
       label: 'Telefono',
     },
     {
@@ -175,15 +175,15 @@ export class SupplierPage implements OnInit {
     this.supplierData = this.arraySearch.search(
       this.$supplierData,
       [
-        'name',
-        'lastname',
-        'street',
-        'streetNumber',
-        'locality',
-        'phoneNumber',
-        'email',
-        'dni',
-        'cuit',
+        'personId.name',
+        'personId.lastname',
+        'personId.street',
+        'personId.streetNumber',
+        'personId.locality',
+        'personId.phoneNumber',
+        'personId.email',
+        'personId.dni',
+        'personId.cuit',
       ],
       event,
     );

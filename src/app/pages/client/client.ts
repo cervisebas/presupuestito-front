@@ -67,22 +67,22 @@ import { Toast } from 'primeng/toast';
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="name" style="width: 20%">
+            <th pSortableColumn="personId.name" style="width: 20%">
               <div class="flex items-center gap-2">
                 Nombre
-                <p-sortIcon field="name" />
+                <p-sortIcon field="personId.name" />
               </div>
             </th>
-            <th pSortableColumn="lastname" style="width: 20%">
+            <th pSortableColumn="personId.lastName" style="width: 20%">
               <div class="flex items-center gap-2">
                 Apellido
-                <p-sortIcon field="lastname" />
+                <p-sortIcon field="personId.lastName" />
               </div>
             </th>
-            <th pSortableColumn="phoneNumber" style="width: 20%">
+            <th pSortableColumn="personId.phoneNumber" style="width: 20%">
               <div class="flex items-center gap-2">
                 Telefono
-                <p-sortIcon field="phoneNumber" />
+                <p-sortIcon field="personId.phoneNumber" />
               </div>
             </th>
             <th style="width: 20%">
@@ -93,7 +93,7 @@ import { Toast } from 'primeng/toast';
         <ng-template #body let-client>
           <tr>
             <td>{{ client.personId?.name || '-' }}</td>
-            <td>{{ client.personId?.lastname || '-' }}</td>
+            <td>{{ client.personId?.lastName || '-' }}</td>
             <td>{{ client.personId?.phoneNumber || '-' }}</td>
             <td>
               <div class="flex flex-row gap-4">
@@ -143,15 +143,15 @@ export class ClientPage implements OnInit {
 
   protected tableHeaderItems = [
     {
-      key: 'name',
+      key: 'personId.name',
       label: 'Nombre',
     },
     {
-      key: 'lastname',
+      key: 'personId.lastName',
       label: 'Apellido',
     },
     {
-      key: 'phoneNumber',
+      key: 'personId.phoneNumber',
       label: 'Telefono',
     },
     {
@@ -177,15 +177,15 @@ export class ClientPage implements OnInit {
     this.clientData = this.arraySearch.search(
       this.$clientData,
       [
-        'name',
-        'lastname',
-        'street',
-        'streetNumber',
-        'locality',
-        'phoneNumber',
-        'email',
-        'dni',
-        'cuit',
+        'personId.name',
+        'personId.lastName',
+        'personId.street',
+        'personId.streetNumber',
+        'personId.locality',
+        'personId.phoneNumber',
+        'personId.email',
+        'personId.dni',
+        'personId.cuit',
       ],
       event,
     );
