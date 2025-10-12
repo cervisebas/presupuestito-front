@@ -15,7 +15,7 @@ import { DatePipe, NgStyle } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { LoadingService } from '@/common/services/loading';
 import { DevService } from '@/common/services/dev-service';
-import { MaterialInfo } from './modals/material-info';
+import { BudgetInfo } from './modals/budget-info';
 import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 
@@ -34,8 +34,8 @@ import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse
     ToastModule,
     NgStyle,
     CurrencyPipe,
-    MaterialInfo,
     DatePipe,
+    BudgetInfo,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -107,7 +107,7 @@ import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse
                   icon="pi pi-info-circle"
                   severity="info"
                   aria-label="Información"
-                  (onClick)="materialInfo?.open(product)"
+                  (onClick)="budgetInfo?.open(product)"
                 />
 
                 <p-button
@@ -134,7 +134,7 @@ import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse
     <p-toast position="bottom-right" />
 
     <app-budget-form (reloadTable)="loadData()" />
-    <app-material-info />
+    <app-budget-info />
   `,
 })
 export class BudgetPage implements OnInit {
@@ -146,8 +146,8 @@ export class BudgetPage implements OnInit {
   @ViewChild(BudgetForm)
   protected materialForm?: BudgetForm;
 
-  @ViewChild(MaterialInfo)
-  protected materialInfo?: MaterialInfo;
+  @ViewChild(BudgetInfo)
+  protected budgetInfo?: BudgetInfo;
 
   protected tableHeaderItems = [
     {

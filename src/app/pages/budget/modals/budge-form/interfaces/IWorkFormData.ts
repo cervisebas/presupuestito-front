@@ -10,6 +10,7 @@ export interface IWorkFormData {
 
   materials: {
     itemId?: number;
+    alreadyExist?: boolean;
     materialName?: string;
     materialId: number | null;
     quantity: number;

@@ -4,4 +4,5 @@ export interface ItemResponse {
   itemId: number;
   oMaterial: MaterialResponse;
   quantity: number;
+  price: number;
 }
