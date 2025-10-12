@@ -16,9 +16,10 @@ import { BudgetInformationStep } from './steps/budget-information';
 import { DialogOptionsDirective } from '@/common/directives/dialog-options';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 import { AddWorkStep } from './steps/add-works';
-import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
 import { BudgetSummaryStep } from './steps/budget-summary';
-import { IWorkFormData } from './interfaces/IWorkFormData';
+import { IBudgetData } from './interfaces/IBudgetData';
+import { LoadingService } from '@/common/services/loading';
+import { SendBudgetService } from './services/send-budget';
 
 @Component({
   selector: 'app-budget-form',
@@ -87,8 +88,6 @@ import { IWorkFormData } from './interfaces/IWorkFormData';
         </div>
       </ng-template>
     </p-dialog>
-
-    <p-toast />
   `,
 })
 export class BudgetForm {
@@ -104,22 +103,60 @@ export class BudgetForm {
   @ViewChild(AddWorkStep)
   private addWorkStep?: AddWorkStep;
 
+  @ViewChild(BudgetSummaryStep)
+  private budgetSummaryStep?: BudgetSummaryStep;
+
   @Output()
   public reloadTable = new EventEmitter<void>();
 
   protected visible = false;
+  protected isEditing = false;
 
-  protected data?: {
-    info: BudgetRequest;
-    works: IWorkFormData[];
-  };
+  protected data?: IBudgetData;
 
-  protected saveData() {
-    // TODO: Implement this
+  constructor(
+    private loadingService: LoadingService,
+    private messageService: MessageService,
+    private sendBudget: SendBudgetService,
+  ) {}
+
+  protected async saveData() {
+    if (!this.data) {
+      return;
+    }
+
+    try {
+      this.loadingService.setLoading(true);
+
+      await this.sendBudget.create(this.data);
+
+      this.visible = false;
+      this.messageService.add({
+        severity: 'success',
+        summary: `Presupuesto ${this.isEditing ? 'editado' : 'creado'}!`,
+        detail: `Se ${this.isEditing ? 'edito' : 'creo'} el presupuesto correctamente.`,
+      });
+
+      this.reloadTable.emit();
+    } catch (error) {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Error al ${this.isEditing ? 'editar' : 'crear'} presupuesto`,
+        detail: `Ocurrio un error inesperado al ${this.isEditing ? 'editar' : 'crear'} el presupuesto, por favor pruebe de nuevo más tarde.`,
+      });
+    } finally {
+      this.loadingService.setLoading(false);
+    }
   }
 
   public open(budget?: BudgetResponse) {
     this.swiper?.toPage(0);
+
+    this.budgetInformationStep?.clearForm();
+    this.addWorkStep?.clearForm();
+    this.budgetSummaryStep?.clearForm();
+
     this.visible = true;
   }
 

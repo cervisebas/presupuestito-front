@@ -18,7 +18,7 @@ export class Work {
   }
 
   public createWork(data: WorkRequest) {
-    return this.http.post<void>(Endpoints.WORKS, data);
+    return this.http.post<WorkResponse>(Endpoints.WORKS, data);
   }
 
   public updateWork(data: WorkRequest) {

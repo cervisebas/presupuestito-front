@@ -19,6 +19,7 @@ import { FluidModule } from 'primeng/fluid';
 import { TextareaModule } from 'primeng/textarea';
 import { ISteapForm } from '../interfaces/ISteapForm';
 import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
+import { IClearForm } from '@/common/interfaces/IClearForm';
 
 @Component({
   selector: 'app-bugde-information',
@@ -92,7 +93,7 @@ import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
   styles: '',
 })
 export class BudgetInformationStep
-  implements OnInit, DialogOptionsBase, ISteapForm<BudgetRequest>
+  implements OnInit, DialogOptionsBase, ISteapForm<BudgetRequest>, IClearForm
 {
   protected readonly budgetStatements = BudgetStatements;
 
@@ -145,6 +146,11 @@ export class BudgetInformationStep
     const clientId = Number(this.formGroup.controls.client.value);
 
     return this.$clientList?.find((client) => client.clientId === clientId)!;
+  }
+
+  public clearForm(): void {
+    this.loadClients();
+    this.formGroup.reset();
   }
 
   public getData(): BudgetRequest {

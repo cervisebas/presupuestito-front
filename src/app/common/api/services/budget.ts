@@ -29,7 +29,7 @@ export class Budget {
   }
 
   public createBudget(data: BudgetRequest) {
-    return this.http.post<void>(Endpoints.BUDGET, data);
+    return this.http.post<BudgetResponse>(Endpoints.BUDGET, data);
   }
 
   public updateBudget(data: BudgetRequest) {

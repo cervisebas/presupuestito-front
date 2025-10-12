@@ -1,4 +1,3 @@
-import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
 import { DialogOptionsBase } from '@/common/classes/DialogOptions';
 import { Component, Input, OnInit } from '@angular/core';
 import { LoadingContainer } from '@/common/components/loading-container';
@@ -9,8 +8,9 @@ import { Toast } from 'primeng/toast';
 import { Client } from '@/common/api/services/client';
 import { MessageService } from 'primeng/api';
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
+import { IClearForm } from '@/common/interfaces/IClearForm';
+import { IBudgetData } from '../interfaces/IBudgetData';
 import moment from 'moment';
-import { IWorkFormData } from '../interfaces/IWorkFormData';
 
 @Component({
   selector: 'app-budget-summary',
@@ -224,12 +224,11 @@ import { IWorkFormData } from '../interfaces/IWorkFormData';
   `,
   styles: '',
 })
-export class BudgetSummaryStep implements OnInit, DialogOptionsBase {
+export class BudgetSummaryStep
+  implements OnInit, DialogOptionsBase, IClearForm
+{
   @Input()
-  public data?: {
-    info: BudgetRequest;
-    works: IWorkFormData[];
-  };
+  public data?: IBudgetData;
 
   protected clientLoading = true;
   private $clientList?: ClientResponse[];
@@ -261,6 +260,10 @@ export class BudgetSummaryStep implements OnInit, DialogOptionsBase {
     } finally {
       this.clientLoading = false;
     }
+  }
+
+  public clearForm(): void {
+    this.loadClients();
   }
 
   protected get diffDays() {

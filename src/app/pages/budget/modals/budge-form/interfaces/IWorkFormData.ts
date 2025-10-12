@@ -9,6 +9,7 @@ export interface IWorkFormData {
   status: string;
 
   materials: {
+    itemId?: number;
     materialName?: string;
     materialId: number | null;
     quantity: number;

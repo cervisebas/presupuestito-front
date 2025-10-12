@@ -9,6 +9,7 @@ import { IWorkFormData } from '../interfaces/IWorkFormData';
 import { BudgetStatements } from '@/pages/budget/constants/BudgetStatements';
 import { Button } from 'primeng/button';
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
+import { IClearForm } from '@/common/interfaces/IClearForm';
 
 @Component({
   selector: 'app-add-works',
@@ -47,7 +48,7 @@ import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResp
   styles: '',
 })
 export class AddWorkStep
-  implements OnInit, DialogOptionsBase, ISteapForm<IWorkFormData[]>
+  implements OnInit, DialogOptionsBase, ISteapForm<IWorkFormData[]>, IClearForm
 {
   @ViewChildren(WorkItem)
   private workItems?: QueryList<WorkItem>;
@@ -117,6 +118,12 @@ export class AddWorkStep
         this.materialLoading = false;
       },
     });
+  }
+
+  public clearForm() {
+    this.loadMaterials();
+    this.works = [];
+    this.addWork();
   }
 
   public getData(): IWorkFormData[] {
