@@ -8,7 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
-import { BudgetForm } from './modals/budget-form';
+import { BudgetForm } from './modals/budge-form/budget-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DatePipe, NgStyle } from '@angular/common';
@@ -16,7 +16,6 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { LoadingService } from '@/common/services/loading';
 import { DevService } from '@/common/services/dev-service';
 import { MaterialInfo } from './modals/material-info';
-import { MaterialFilter } from './components/material-filter';
 import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 
@@ -150,9 +149,6 @@ export class BudgetPage implements OnInit {
   @ViewChild(MaterialInfo)
   protected materialInfo?: MaterialInfo;
 
-  @ViewChild(MaterialFilter)
-  private materialFilter?: MaterialFilter;
-
   protected tableHeaderItems = [
     {
       key: 'clientId.personId.name',
@@ -202,7 +198,6 @@ export class BudgetPage implements OnInit {
     this.error = null;
     this.loading = true;
 
-    this.materialFilter?.loadData();
     this.budget.getBudgets().subscribe({
       next: (budgets) => {
         this.$budgetData = [...budgets];
