@@ -1,6 +1,5 @@
 import { DialogOptionsBase } from '@/common/classes/DialogOptions';
-import { Component, OnInit } from '@angular/core';
-import { WorkRequest } from '@/common/api/interfaces/requests/WorkRequest';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ISteapForm } from '../interfaces/ISteapForm';
 import { WorkItem } from '../components/work-item';
 import { Material } from '@/common/api/services/material';
@@ -9,6 +8,7 @@ import { LoadingContainer } from '@/common/components/loading-container';
 import { IWorkFormData } from '../interfaces/IWorkFormData';
 import { BudgetStatements } from '@/pages/budget/constants/BudgetStatements';
 import { Button } from 'primeng/button';
+import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
 
 @Component({
   selector: 'app-add-works',
@@ -22,7 +22,7 @@ import { Button } from 'primeng/button';
   template: `
     <app-loading-container [loading]="materialLoading" [error]="materialError">
       <div
-        class="flex w-full flex-col gap-4 h-full overflow-x-hidden overflow-y-scroll pb-6"
+        class="flex w-full flex-col gap-4 h-full overflow-x-auto overflow-y-scroll pb-6"
       >
         @for (work of works; track work?.id) {
           <app-work-item
@@ -47,8 +47,11 @@ import { Button } from 'primeng/button';
   styles: '',
 })
 export class AddWorkStep
-  implements OnInit, DialogOptionsBase, ISteapForm<WorkRequest[]>
+  implements OnInit, DialogOptionsBase, ISteapForm<IWorkFormData[]>
 {
+  @ViewChildren(WorkItem)
+  private workItems?: QueryList<WorkItem>;
+
   protected readonly budgetStatements = BudgetStatements;
 
   protected materialLoading = true;
@@ -57,6 +60,7 @@ export class AddWorkStep
   protected works: IWorkFormData[] = [];
 
   protected materialList: ISelectItem<number>[] = [];
+  protected $materialList: MaterialResponse[] = [];
 
   constructor(private materialService: Material) {}
 
@@ -71,8 +75,9 @@ export class AddWorkStep
   protected addWork() {
     this.works.push({
       id: Date.now(),
-      name: 'Nuevo trabajo',
+      name: `Trabajo ${this.works.length + 1}`,
       estimatedHours: 0,
+      cost: 0,
       limitDate: new Date(),
       notes: '',
       status: this.budgetStatements.at(0)!.value,
@@ -98,6 +103,7 @@ export class AddWorkStep
 
     this.materialService.getMaterials().subscribe({
       next: (material) => {
+        this.$materialList = material;
         this.materialList = material.map((value) => ({
           label: value.materialName,
           value: value.materialId,
@@ -113,19 +119,41 @@ export class AddWorkStep
     });
   }
 
-  public getData(): WorkRequest[] {
-    throw new Error('Method not implemented.');
+  public getData(): IWorkFormData[] {
+    return this.works.map((work) => ({
+      ...work,
+      materials: work.materials.map<IWorkFormData['materials'][0]>(
+        (material) => {
+          const materialItem = this.$materialList.find(
+            (item) => item.materialId === material.materialId,
+          );
+
+          return {
+            ...material,
+            materialName: materialItem?.materialName,
+            pricePeerUnit: materialItem?.price,
+            priceTotal: (materialItem?.price ?? 0) * material.quantity,
+            quantityUnit: materialItem?.materialUnitMeasure,
+            quantityTotal:
+              Number(materialItem?.materialMeasure) * material.quantity,
+          };
+        },
+      ),
+    }));
   }
 
   public get dialogEnableNext() {
-    return false;
+    const statusForms =
+      this.workItems?.map((workItem) => workItem.invalidForm) || [];
+
+    return statusForms.every((val) => val === false);
   }
 
-  public get dialogTitle(): string {
+  public get dialogTitle() {
     return 'Trabajos';
   }
 
-  public get dialogStyle(): string | undefined {
+  public get dialogStyle() {
     return 'w-[50rem] h-[95dvh]';
   }
 }

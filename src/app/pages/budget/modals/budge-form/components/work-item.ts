@@ -29,6 +29,7 @@ import { NgClass } from '@angular/common';
 import { Button } from 'primeng/button';
 import { IWorkFormData } from '../interfaces/IWorkFormData';
 import { Subscription } from 'rxjs';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-work-item',
@@ -47,6 +48,7 @@ import { Subscription } from 'rxjs';
     SelectModule,
     NgClass,
     Button,
+    TooltipModule,
   ],
   template: `
     <form [formGroup]="formGroup" class="flex w-full">
@@ -56,7 +58,7 @@ import { Subscription } from 'rxjs';
         </ng-template>
 
         <p-accordion>
-          <p-accordion-panel value="0" class="!border-0">
+          <p-accordion-panel value="info" class="!border-0">
             <p-accordion-header
               [ngClass]="{
                 '!bg-red-200': infoError,
@@ -98,9 +100,22 @@ import { Subscription } from 'rxjs';
                     formControlName="limitDate"
                     iconDisplay="input"
                     [showIcon]="true"
+                    dateFormat="dd/mm/yy"
                     appendTo="body"
                   />
                 </div>
+
+                <p-floatlabel variant="on" class="w-full">
+                  <p-inputnumber
+                    inputId="work-cost"
+                    class="w-full"
+                    formControlName="cost"
+                    mode="currency"
+                    currency="ARS"
+                    locale="es-AR"
+                  />
+                  <label for="work-cost">Ganancias</label>
+                </p-floatlabel>
 
                 <p-floatlabel variant="on" class="w-full">
                   <textarea
@@ -126,7 +141,7 @@ import { Subscription } from 'rxjs';
             </p-accordion-content>
           </p-accordion-panel>
 
-          <p-accordion-panel value="1" class="!border-0">
+          <p-accordion-panel value="items" class="!border-0">
             <p-accordion-header
               [ngClass]="{
                 '!bg-red-200': materialError,
@@ -233,15 +248,20 @@ import { Subscription } from 'rxjs';
           </p-accordion-panel>
         </p-accordion>
 
-        <p-button
-          class="w-full"
-          styleClass="w-full mt-5"
-          icon="pi pi-plus"
-          label="Eliminar trabajo"
-          severity="danger"
-          [disabled]="disableRemove"
-          (onClick)="onRemove.emit()"
-        />
+        <div class="w-full flex flex-row justify-end items-center pt-5">
+          <p-button
+            class="w-max"
+            [outlined]="true"
+            styleClass="w-max"
+            icon="pi pi-trash"
+            label="Eliminar trabajo"
+            severity="danger"
+            [disabled]="disableRemove"
+            pTooltip="Minimo debe de existir 1 trabajo"
+            [tooltipDisabled]="!disableRemove"
+            (onClick)="onRemove.emit()"
+          />
+        </div>
       </p-fieldset>
     </form>
   `,
@@ -288,6 +308,7 @@ export class WorkItem implements OnInit, OnDestroy {
       Validators.required,
       Validators.min(0),
     ]),
+    cost: new FormControl(0, [Validators.required, Validators.min(0)]),
     limitDate: new FormControl(new Date(), [Validators.required]),
     notes: new FormControl('', []),
     status: new FormControl(this.budgetStatements.at(0)!.value, [
@@ -322,11 +343,12 @@ export class WorkItem implements OnInit, OnDestroy {
   }
 
   private setDataToForm() {
-    const { name, estimatedHours, limitDate, notes, status, materials } =
+    const { name, estimatedHours, cost, limitDate, notes, status, materials } =
       this.formGroup.controls;
 
     name.setValue(this.data.name);
     estimatedHours.setValue(this.data.estimatedHours);
+    cost.setValue(this.data.cost);
     limitDate.setValue(this.data.limitDate);
     notes.setValue(this.data.notes);
     status.setValue(this.data.status);
@@ -357,11 +379,13 @@ export class WorkItem implements OnInit, OnDestroy {
   }
 
   public getData(): IWorkFormData {
-    const { name, estimatedHours, limitDate, notes, status, materials } =
+    const { name, estimatedHours, cost, limitDate, notes, status, materials } =
       this.formGroup.controls;
 
     return {
+      ...this.data,
       name: name.value!,
+      cost: cost.value!,
       estimatedHours: estimatedHours.value!,
       limitDate: limitDate.value!,
       notes: notes.value!,
@@ -378,12 +402,13 @@ export class WorkItem implements OnInit, OnDestroy {
   }
 
   protected get infoError() {
-    const { name, estimatedHours, limitDate, notes, status } =
+    const { name, estimatedHours, cost, limitDate, notes, status } =
       this.formGroup.controls;
 
     return (
       name.invalid ||
       estimatedHours.invalid ||
+      cost.invalid ||
       limitDate.invalid ||
       notes.invalid ||
       status.invalid
@@ -396,5 +421,9 @@ export class WorkItem implements OnInit, OnDestroy {
 
   protected get materialControls() {
     return this.formGroup.controls.materials.controls;
+  }
+
+  public get invalidForm() {
+    return this.formGroup.invalid;
   }
 }

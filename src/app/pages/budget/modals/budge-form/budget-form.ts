@@ -16,6 +16,9 @@ import { BudgetInformationStep } from './steps/budget-information';
 import { DialogOptionsDirective } from '@/common/directives/dialog-options';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 import { AddWorkStep } from './steps/add-works';
+import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
+import { BudgetSummaryStep } from './steps/budget-summary';
+import { IWorkFormData } from './interfaces/IWorkFormData';
 
 @Component({
   selector: 'app-budget-form',
@@ -28,6 +31,7 @@ import { AddWorkStep } from './steps/add-works';
     BudgetInformationStep,
     DialogOptionsDirective,
     AddWorkStep,
+    BudgetSummaryStep,
   ],
   providers: [MessageService],
   template: `
@@ -42,13 +46,17 @@ import { AddWorkStep } from './steps/add-works';
       [styleClass]="dialogStyleClass"
       contentStyleClass="size-full"
     >
-      <swiper [disabled]="true">
+      <swiper [disabled]="true" (indexChange)="onLastStep($event)">
         <swiper-slide name="information">
           <app-bugde-information dialogOptions />
         </swiper-slide>
 
         <swiper-slide name="add-works">
           <app-add-works dialogOptions />
+        </swiper-slide>
+
+        <swiper-slide name="summary">
+          <app-budget-summary dialogOptions [data]="data" />
         </swiper-slide>
       </swiper>
 
@@ -90,10 +98,21 @@ export class BudgetForm {
   @ViewChildren(DialogOptionsDirective)
   private dialogOptions?: QueryList<DialogOptionsDirective>;
 
+  @ViewChild(BudgetInformationStep)
+  private budgetInformationStep?: BudgetInformationStep;
+
+  @ViewChild(AddWorkStep)
+  private addWorkStep?: AddWorkStep;
+
   @Output()
   public reloadTable = new EventEmitter<void>();
 
   protected visible = false;
+
+  protected data?: {
+    info: BudgetRequest;
+    works: IWorkFormData[];
+  };
 
   protected saveData() {
     // TODO: Implement this
@@ -110,6 +129,15 @@ export class BudgetForm {
 
   protected nextStep() {
     this.swiper?.nextPage();
+  }
+
+  protected onLastStep(index: number) {
+    if (this.swiper?.pages?.at(index)?.name === 'summary') {
+      this.data = {
+        info: this.budgetInformationStep?.getData()!,
+        works: this.addWorkStep?.getData()!,
+      };
+    }
   }
 
   protected get dialogEnablePrev() {

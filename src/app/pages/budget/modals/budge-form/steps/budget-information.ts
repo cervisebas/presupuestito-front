@@ -1,5 +1,4 @@
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
-import { Budget } from '@/common/api/services/budget';
 import { Client } from '@/common/api/services/client';
 import { BudgetStatements } from '@/pages/budget/constants/BudgetStatements';
 import { Component, OnInit } from '@angular/core';
@@ -55,6 +54,7 @@ import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
         formControlName="startDate"
         iconDisplay="input"
         [showIcon]="true"
+        dateFormat="dd/mm/yy"
         appendTo="body"
       />
 
@@ -63,6 +63,7 @@ import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
         formControlName="endDate"
         iconDisplay="input"
         [showIcon]="true"
+        dateFormat="dd/mm/yy"
         appendTo="body"
       />
 
@@ -109,7 +110,6 @@ export class BudgetInformationStep
 
   constructor(
     private clientService: Client,
-    private budgetService: Budget,
     private messageService: MessageService,
   ) {}
 

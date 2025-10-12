@@ -29,6 +29,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "chart.js": "4.4.2",
     "fuse.js": "^7.1.0",
+    "moment": "^2.30.1",
     "primeclt": "^0.1.5",
     "primeicons": "^7.0.0",
     "primeng": "^20",
