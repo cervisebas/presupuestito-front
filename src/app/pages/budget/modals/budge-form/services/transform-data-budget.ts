@@ -25,8 +25,8 @@ export class TransformDataBudget {
             materialName: item.oMaterial.materialName,
             materialId: item.oMaterial.materialId,
             quantity: item.quantity,
-            pricePeerUnit: item.price / item.quantity,
-            priceTotal: item.price,
+            pricePeerUnit: item.price,
+            priceTotal: item.price * item.quantity,
             quantityUnit: item.oMaterial.materialUnitMeasure,
             quantityTotal:
               Number(item.oMaterial.materialMeasure) * item.quantity,
