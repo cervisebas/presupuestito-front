@@ -17,7 +17,7 @@ export class MenuRouter {
           routerLink: ['/'],
         },
         {
-          label: 'Presupuestar',
+          label: 'Presupuestos',
           icon: 'pi pi-file-edit',
           routerLink: ['/budgets'],
         },
