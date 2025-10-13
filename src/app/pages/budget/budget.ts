@@ -99,8 +99,9 @@ import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse
               {{ product.clientId.personId.lastName }}
             </td>
             <td>{{ product.dateCreated | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ product.deadLine | date: 'dd/MM/yyyy' }}</td>
             <td>{{ product.budgetStatus }}</td>
-            <td>{{ product.cost | currency }}</td>
+            <td>{{ getBudgetPrice(product) | currency }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
@@ -156,7 +157,11 @@ export class BudgetPage implements OnInit {
     },
     {
       key: 'dateCreated',
-      label: 'Fecha',
+      label: 'Fecha inicio',
+    },
+    {
+      key: 'deadLine',
+      label: 'Fecha final',
     },
     {
       key: 'budgetStatus',
@@ -164,7 +169,7 @@ export class BudgetPage implements OnInit {
     },
     {
       key: 'cost',
-      label: 'Precio',
+      label: 'Precio total',
     },
     {
       key: null,
@@ -274,9 +279,17 @@ export class BudgetPage implements OnInit {
     });
   }
 
-  /* protected onFilter(_filter: MaterialFilterSettings) {
-    this.filterValue = _filter;
-    this.applySearch();
-    //this.applyFilters();
-  } */
+  protected getBudgetPrice(budget: BudgetResponse) {
+    let price = 0;
+
+    for (const work of budget.works) {
+      for (const item of work.itemsId) {
+        price += item.price * item.quantity;
+      }
+
+      price += work.costPrice;
+    }
+
+    return price;
+  }
 }
