@@ -318,6 +318,9 @@ export class WorkItem implements OnInit, OnDestroy {
     // Items
     materials: new FormArray([
       new FormGroup({
+        alreadyExist: new FormControl<boolean | null>(null, []),
+        itemId: new FormControl<number | null>(null, []),
+
         materialId: new FormControl<number | null>(null, [Validators.required]),
         quantity: new FormControl(1, [Validators.required, Validators.min(1)]),
       }),
@@ -363,6 +366,12 @@ export class WorkItem implements OnInit, OnDestroy {
   protected addMaterial(edit?: IWorkFormData['materials'][0]) {
     this.formGroup.controls.materials.push(
       new FormGroup({
+        alreadyExist: new FormControl<boolean | null>(
+          edit?.alreadyExist ?? null,
+          [],
+        ),
+        itemId: new FormControl<number | null>(edit?.itemId ?? null, []),
+
         materialId: new FormControl<number | null>(edit?.materialId || null, [
           Validators.required,
         ]),
@@ -384,6 +393,8 @@ export class WorkItem implements OnInit, OnDestroy {
 
     return {
       ...this.data,
+      id: this.data.id,
+      alreadyExist: this.data.alreadyExist,
       name: name.value!,
       cost: cost.value!,
       estimatedHours: estimatedHours.value!,
@@ -391,6 +402,8 @@ export class WorkItem implements OnInit, OnDestroy {
       notes: notes.value!,
       status: status.value!,
       materials: materials.value.map((val) => ({
+        alreadyExist: val.alreadyExist ?? undefined,
+        itemId: val.itemId ?? undefined,
         materialId: val.materialId!,
         quantity: val.quantity!,
       })),

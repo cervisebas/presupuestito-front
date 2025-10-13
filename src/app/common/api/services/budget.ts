@@ -14,17 +14,17 @@ export class Budget {
     return this.http.get<BudgetResponse[]>(Endpoints.BUDGET);
   }
 
-  public getBudgetById(id_budget: string) {
+  public getBudgetById(id_budget: number) {
     return this.http.get<BudgetResponse>(`${Endpoints.BUDGET}/${id_budget}`);
   }
 
-  public getBudgetByClientId(id_client: string) {
+  public getBudgetByClientId(id_client: number) {
     return this.http.get<BudgetResponse[]>(
       `${Endpoints.BUDGETS_BY_CLIENT}/${id_client}`,
     );
   }
 
-  public getBudgetCost(id_budget: string) {
+  public getBudgetCost(id_budget: number) {
     return this.http.get<number>(`${Endpoints.BUDGET_PRICE}/${id_budget}`);
   }
 
@@ -32,15 +32,15 @@ export class Budget {
     return this.http.post<BudgetResponse>(Endpoints.BUDGET, data);
   }
 
-  public updateBudget(data: BudgetRequest) {
-    return this.http.put<void>(Endpoints.BUDGET, data);
+  public updateBudget(id_budget: number, data: BudgetRequest) {
+    return this.http.put<void>(`${Endpoints.BUDGET}/${id_budget}`, data);
   }
 
   public deleteBudget(id_budget: number) {
     return this.http.delete<void>(`${Endpoints.BUDGET}/${id_budget}`);
   }
 
-  public calculateBudgetPrice(id_budget: string) {
+  public calculateBudgetPrice(id_budget: number) {
     return this.http.get<number>(`${Endpoints.BUDGET_PRICE}/${id_budget}`);
   }
 }

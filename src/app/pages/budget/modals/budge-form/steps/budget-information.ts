@@ -20,6 +20,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ISteapForm } from '../interfaces/ISteapForm';
 import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
 import { IClearForm } from '@/common/interfaces/IClearForm';
+import moment from 'moment';
 
 @Component({
   selector: 'app-bugde-information',
@@ -88,7 +89,7 @@ import { IClearForm } from '@/common/interfaces/IClearForm';
       />
     </form>
 
-    <p-toast />
+    <p-toast position="bottom-right" />
   `,
   styles: '',
 })
@@ -98,7 +99,7 @@ export class BudgetInformationStep
   protected readonly budgetStatements = BudgetStatements;
 
   protected formGroup = new FormGroup({
-    client: new FormControl<string | null>(null, [Validators.required]),
+    client: new FormControl<number | null>(null, [Validators.required]),
     startDate: new FormControl(new Date(), [Validators.required]),
     endDate: new FormControl(new Date(), [Validators.required]),
     description: new FormControl('', []),
@@ -164,6 +165,17 @@ export class BudgetInformationStep
       dateCreated: startDate.value!,
       deadLine: endDate.value!,
     };
+  }
+
+  public setData(data: BudgetRequest) {
+    const { client, startDate, endDate, description, status } =
+      this.formGroup.controls;
+
+    client.setValue(data.clientId);
+    startDate.setValue(moment(data.dateCreated).toDate());
+    endDate.setValue(moment(data.deadLine).toDate());
+    description.setValue(data.descriptionBudget);
+    status.setValue(data.budgetStatus);
   }
 
   get dialogEnableNext() {

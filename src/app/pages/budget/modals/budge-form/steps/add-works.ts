@@ -149,6 +149,10 @@ export class AddWorkStep
     }));
   }
 
+  public setData(data: IWorkFormData[]) {
+    this.works = data;
+  }
+
   public get dialogEnableNext() {
     const statusForms =
       this.workItems?.map((workItem) => workItem.invalidForm) || [];

@@ -220,7 +220,7 @@ import moment from 'moment';
       </div>
     </app-loading-container>
 
-    <p-toast />
+    <p-toast position="bottom-right" />
   `,
   styles: '',
 })

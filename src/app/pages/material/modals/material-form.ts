@@ -173,7 +173,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
       </ng-template>
     </p-dialog>
 
-    <p-toast />
+    <p-toast position="bottom-right" />
   `,
 })
 export class MaterialForm {

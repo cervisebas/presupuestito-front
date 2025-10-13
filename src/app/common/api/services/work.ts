@@ -21,8 +21,8 @@ export class Work {
     return this.http.post<WorkResponse>(Endpoints.WORKS, data);
   }
 
-  public updateWork(data: WorkRequest) {
-    return this.http.put<void>(Endpoints.WORKS, data);
+  public updateWork(id_work: number, data: WorkRequest) {
+    return this.http.put<void>(`${Endpoints.WORKS}/${id_work}`, data);
   }
 
   public deleteWork(id_work: number) {

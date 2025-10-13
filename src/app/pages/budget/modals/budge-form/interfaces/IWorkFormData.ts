@@ -1,5 +1,8 @@
 export interface IWorkFormData {
   id?: number;
+  alreadyExist?: boolean;
+
+  remove?: boolean;
 
   name: string;
   estimatedHours: number;
@@ -11,6 +14,7 @@ export interface IWorkFormData {
   materials: {
     itemId?: number;
     alreadyExist?: boolean;
+    remove?: boolean;
     materialName?: string;
     materialId: number | null;
     quantity: number;

@@ -20,6 +20,7 @@ import { BudgetSummaryStep } from './steps/budget-summary';
 import { IBudgetData } from './interfaces/IBudgetData';
 import { LoadingService } from '@/common/services/loading';
 import { SendBudgetService } from './services/send-budget';
+import { TransformDataBudget } from './services/transform-data-budget';
 
 @Component({
   selector: 'app-budget-form',
@@ -73,7 +74,7 @@ import { SendBudgetService } from './services/send-budget';
 
             @if (finalStep) {
               <p-button
-                label="Guardar"
+                [label]="isEditing ? 'Actualizar' : 'Guardar'"
                 [disabled]="!dialogEnableNext"
                 (onClick)="saveData()"
               />
@@ -88,6 +89,8 @@ import { SendBudgetService } from './services/send-budget';
         </div>
       </ng-template>
     </p-dialog>
+
+    <p-toast position="bottom-right" />
   `,
 })
 export class BudgetForm {
@@ -110,14 +113,15 @@ export class BudgetForm {
   public reloadTable = new EventEmitter<void>();
 
   protected visible = false;
-  protected isEditing = false;
 
   protected data?: IBudgetData;
+  protected editData?: IBudgetData;
 
   constructor(
     private loadingService: LoadingService,
     private messageService: MessageService,
     private sendBudget: SendBudgetService,
+    private transformDataBudget: TransformDataBudget,
   ) {}
 
   protected async saveData() {
@@ -128,7 +132,13 @@ export class BudgetForm {
     try {
       this.loadingService.setLoading(true);
 
-      await this.sendBudget.create(this.data);
+      if (this.editData) {
+        await this.sendBudget.edit(
+          this.transformDataBudget.editMergeData(this.editData, this.data),
+        );
+      } else {
+        await this.sendBudget.create(this.data);
+      }
 
       this.visible = false;
       this.messageService.add({
@@ -156,6 +166,12 @@ export class BudgetForm {
     this.budgetInformationStep?.clearForm();
     this.addWorkStep?.clearForm();
     this.budgetSummaryStep?.clearForm();
+
+    if (budget) {
+      this.editData = this.transformDataBudget.transform(budget);
+      this.budgetInformationStep?.setData(structuredClone(this.editData.info));
+      this.addWorkStep?.setData(structuredClone(this.editData.works));
+    }
 
     this.visible = true;
   }
@@ -193,7 +209,7 @@ export class BudgetForm {
   }
 
   protected get dialogTitleHeader() {
-    let titleBase = 'Nuevo presupuesto';
+    let titleBase = this.isEditing ? 'Editar presupuesto' : 'Nuevo presupuesto';
     const optionTitle = this.dialogOptions
       ?.get(this.swiper?.index || 0)
       ?.getDialogTitle();
@@ -221,5 +237,9 @@ export class BudgetForm {
 
   protected get finalStep() {
     return !this.swiper?.availableToNext();
+  }
+
+  protected get isEditing() {
+    return Boolean(this.editData);
   }
 }
