@@ -126,8 +126,8 @@ import moment from 'moment';
                   </div>
 
                   <div class="w-full flex flex-col justify-center py-1">
-                    <h1 class="!text-base !m-0">Estado</h1>
-                    <p class="text-sm">{{ work.status }}</p>
+                    <h1 class="!text-gray-600 !text-base !m-0">Estado</h1>
+                    <p class="!text-gray-600 text-sm">{{ work.status }}</p>
                   </div>
                 </div>
               </td>
