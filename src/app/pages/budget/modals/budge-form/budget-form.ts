@@ -171,6 +171,8 @@ export class BudgetForm {
       this.editData = this.transformDataBudget.transform(budget);
       this.budgetInformationStep?.setData(structuredClone(this.editData.info));
       this.addWorkStep?.setData(structuredClone(this.editData.works));
+    } else {
+      this.editData = undefined;
     }
 
     this.visible = true;
