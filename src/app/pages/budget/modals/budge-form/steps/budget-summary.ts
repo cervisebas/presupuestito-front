@@ -11,6 +11,7 @@ import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { IClearForm } from '@/common/interfaces/IClearForm';
 import { IBudgetData } from '../interfaces/IBudgetData';
 import moment from 'moment';
+import { CalculateBudget } from '@/pages/budget/services/calculate-budget';
 
 @Component({
   selector: 'app-budget-summary',
@@ -30,7 +31,11 @@ import moment from 'moment';
   ],
   template: `
     <app-loading-container [loading]="!data || clientLoading">
-      <div class="size-full overflow-x-auto overflow-y-scroll">
+      <div
+        [ngClass]="{
+          'size-full overflow-x-auto overflow-y-scroll': enableScroll,
+        }"
+      >
         <p-table [value]="data?.works!">
           <ng-template #header>
             <tr>
@@ -230,12 +235,16 @@ export class BudgetSummaryStep
   @Input()
   public data?: IBudgetData;
 
+  @Input()
+  public enableScroll = true;
+
   protected clientLoading = true;
   private $clientList?: ClientResponse[];
 
   constructor(
     private clientService: Client,
     private messageService: MessageService,
+    private calculateBudget: CalculateBudget,
   ) {}
 
   ngOnInit(): void {
@@ -288,15 +297,7 @@ export class BudgetSummaryStep
       return 0;
     }
 
-    let price = 0;
-
-    for (const { materials } of this.data.works) {
-      for (const { priceTotal } of materials) {
-        price += priceTotal ?? 0;
-      }
-    }
-
-    return price;
+    return this.calculateBudget.getTotalPriceMaterial(this.data);
   }
 
   protected get totalPriceEarnings() {
@@ -304,17 +305,15 @@ export class BudgetSummaryStep
       return 0;
     }
 
-    let price = 0;
-
-    for (const { cost } of this.data.works) {
-      price += cost;
-    }
-
-    return price;
+    return this.calculateBudget.getTotalPriceEarnings(this.data);
   }
 
   protected get totalPrice() {
-    return this.totalPriceEarnings + this.totalPriceMaterial;
+    if (!this.data) {
+      return 0;
+    }
+
+    return this.calculateBudget.getTotalPrice(this.data);
   }
 
   public get dialogEnableNext() {

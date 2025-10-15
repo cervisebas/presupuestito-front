@@ -15,7 +15,7 @@ import { DatePipe, NgStyle } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { LoadingService } from '@/common/services/loading';
 import { DevService } from '@/common/services/dev-service';
-import { BudgetInfo } from './modals/budget-info';
+import { BudgetInfo } from './modals/budget-info/budget-info';
 import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 
