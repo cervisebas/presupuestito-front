@@ -1,16 +1,12 @@
 import {
   Component,
+  ElementRef,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { IBudgetData } from '../../budge-form/interfaces/IBudgetData';
-import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
-import { Client } from '@/common/api/services/client';
-import { MessageService } from 'primeng/api';
-import { lastValueFrom } from 'rxjs';
-import { Toast } from 'primeng/toast';
 import { Divider } from 'primeng/divider';
 import { GenerateBudgetSections } from '../services/generate-budget-sections';
 import { ISectionBudgetItem } from '../interfaces/ISectionBudgetItem';
@@ -19,9 +15,9 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 
 @Component({
   selector: 'app-budget-client-info',
-  imports: [Toast, DatePipe, CurrencyPipe, Divider],
+  imports: [DatePipe, CurrencyPipe, Divider],
   template: `
-    <div class="w-full flex flex-col gap-4">
+    <div #element class="w-full flex flex-col gap-4">
       @for (section of sections; track $index) {
 
         @if ($index !== 0) {
@@ -147,8 +143,6 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
         </table>
       }
     </div>
-
-    <p-toast position="bottom-right" />
   `,
   styles: `
     th:not(tfoot th),
@@ -157,7 +151,10 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
     }
   `,
 })
-export class BudgetClientInfo implements OnInit, OnChanges {
+export class BudgetClientInfo implements OnChanges {
+  @ViewChild('element')
+  private element?: ElementRef<HTMLDivElement>;
+
   @Input()
   public data!: IBudgetData;
 
@@ -167,17 +164,8 @@ export class BudgetClientInfo implements OnInit, OnChanges {
   protected sections: ISectionBudgetItem[] = [];
 
   protected clientLoading = true;
-  private $clientList?: ClientResponse[];
 
-  constructor(
-    private clientService: Client,
-    private messageService: MessageService,
-    private generateBudgetSections: GenerateBudgetSections,
-  ) {}
-
-  ngOnInit(): void {
-    this.loadClients();
-  }
+  constructor(private generateBudgetSections: GenerateBudgetSections) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -199,23 +187,7 @@ export class BudgetClientInfo implements OnInit, OnChanges {
     }
   }
 
-  private async loadClients() {
-    try {
-      this.clientLoading = true;
-      const clients = await lastValueFrom(this.clientService.getClients());
-
-      this.$clientList = clients;
-    } catch (error) {
-      // En caso de error de se muestra en consola lo que sucedio y se notifica al usuario.
-      console.error(error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error al cargar los clientes',
-        detail:
-          'Ocurrio un error inesperado al cargar los clientes, por favor pruebe de nuevo más tarde.',
-      });
-    } finally {
-      this.clientLoading = false;
-    }
+  public getElement() {
+    return this.element?.nativeElement;
   }
 }

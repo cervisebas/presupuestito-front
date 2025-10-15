@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { BudgetSummaryStep } from '../budge-form/steps/budget-summary';
@@ -10,6 +10,8 @@ import { TabsModule } from 'primeng/tabs';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
+import { GeneratePdfService } from '@/common/services/generate-pdf';
+import { PrintDocumentService } from '@/common/services/print-document';
 
 @Component({
   selector: 'app-budget-info',
@@ -69,9 +71,13 @@ import { FormsModule } from '@angular/forms';
             </div>
           }
           <div class="flex flex-1 justify-end gap-2">
-            <p-button label="Imprimir" severity="secondary" />
+            <p-button
+              label="Imprimir"
+              severity="secondary"
+              (onClick)="printDocument()"
+            />
 
-            <p-button label="Descargar" />
+            <p-button label="Descargar" (onClick)="saveDocument()" />
           </div>
         </div>
       </ng-template>
@@ -80,6 +86,12 @@ import { FormsModule } from '@angular/forms';
   styles: '',
 })
 export class BudgetInfo {
+  @ViewChild(BudgetClientInfo)
+  private budgetClientInfo?: BudgetClientInfo;
+
+  @ViewChild(BudgetSummaryStep)
+  private budgetSummaryStep?: BudgetSummaryStep;
+
   protected visible = false;
   protected data?: IBudgetData;
 
@@ -89,10 +101,64 @@ export class BudgetInfo {
   protected tabValue = this.SummaryTabName;
   protected separateByWork = false;
 
-  constructor(private transformDataBudget: TransformDataBudget) {}
+  constructor(
+    private transformDataBudget: TransformDataBudget,
+    private generatePdfService: GeneratePdfService,
+    private printDocumentService: PrintDocumentService,
+  ) {}
 
   public open(budget: BudgetResponse) {
     this.data = this.transformDataBudget.transform(budget);
     this.visible = true;
+  }
+
+  private getPdfCurrentTab() {
+    switch (this.tabValue) {
+      case this.SummaryTabName:
+        const summaryElement = this.budgetSummaryStep?.getElement();
+
+        if (!summaryElement) {
+          return;
+        }
+
+        return this.generatePdfService.fromHTMLElement(
+          summaryElement,
+          this.budgetFileName,
+        );
+
+      case this.BudgetTabName:
+        const budgetElement = this.budgetClientInfo?.getElement();
+
+        if (!budgetElement) {
+          return;
+        }
+
+        return this.generatePdfService.fromHTMLElement(
+          budgetElement,
+          this.budgetFileName,
+        );
+    }
+
+    return null;
+  }
+
+  protected printDocument() {
+    const pdf = this.getPdfCurrentTab();
+
+    if (pdf) {
+      this.printDocumentService.fromPDFObject(pdf);
+    }
+  }
+
+  protected saveDocument() {
+    const pdf = this.getPdfCurrentTab();
+
+    if (pdf) {
+      pdf.save();
+    }
+  }
+
+  private get budgetFileName(): `${string}.pdf` {
+    return `${this.data?.info.budgetId}-budget.pdf`;
   }
 }

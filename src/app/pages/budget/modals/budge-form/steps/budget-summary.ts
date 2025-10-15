@@ -1,5 +1,5 @@
 import { DialogOptionsBase } from '@/common/classes/DialogOptions';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { LoadingContainer } from '@/common/components/loading-container';
 import { TableModule } from 'primeng/table';
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
@@ -32,6 +32,7 @@ import { CalculateBudget } from '@/pages/budget/services/calculate-budget';
   template: `
     <app-loading-container [loading]="!data || clientLoading">
       <div
+        #element
         [ngClass]="{
           'size-full overflow-x-auto overflow-y-scroll': enableScroll,
         }"
@@ -232,6 +233,9 @@ import { CalculateBudget } from '@/pages/budget/services/calculate-budget';
 export class BudgetSummaryStep
   implements OnInit, DialogOptionsBase, IClearForm
 {
+  @ViewChild('element')
+  private element?: ElementRef<HTMLDivElement>;
+
   @Input()
   public data?: IBudgetData;
 
@@ -273,6 +277,10 @@ export class BudgetSummaryStep
 
   public clearForm(): void {
     this.loadClients();
+  }
+
+  public getElement() {
+    return this.element?.nativeElement;
   }
 
   protected get diffDays() {
