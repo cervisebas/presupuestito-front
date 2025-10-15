@@ -25,9 +25,9 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
       @for (section of sections; track $index) {
 
         @if ($index !== 0) {
-          <p-divider class="break-after-all print:hidden my-6" />
+          <p-divider class="break-after-all print:hidden" />
         }
-        
+
         <table class="border-collapse w-full">
           <thead>
             <tr>
