@@ -39,15 +39,15 @@ export class ClientInfo {
   public open(client: ClientResponse) {
     this.data = [];
 
-    this.addValue('Nombre', client.personId.name);
-    this.addValue('Apellido', client.personId.lastName);
-    this.addValue('Calle', client.personId.street);
-    this.addValue('Altura', client.personId.streetNumber);
-    this.addValue('Localidad', client.personId.locality);
-    this.addValue('Telefono', client.personId.phoneNumber);
-    this.addValue('Email', client.personId.email);
-    this.addValue('DNI', client.personId.dni);
-    this.addValue('CUIT', client.personId.cuit);
+    this.addValue('Nombre', client.personId.name || '-');
+    this.addValue('Apellido', client.personId.lastName || '-');
+    this.addValue('Calle', client.personId.street || '-');
+    this.addValue('Altura', client.personId.streetNumber || '-');
+    this.addValue('Localidad', client.personId.locality || '-');
+    this.addValue('Telefono', client.personId.phoneNumber || '-');
+    this.addValue('Email', client.personId.email || '-');
+    this.addValue('DNI', client.personId.dni || '-');
+    this.addValue('CUIT', client.personId.cuit || '-');
 
     this.visible = true;
   }

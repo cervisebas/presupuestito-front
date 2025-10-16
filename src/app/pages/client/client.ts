@@ -16,6 +16,7 @@ import { DevService } from '@/common/services/dev-service';
 import { ClientInfo } from './modals/client-info';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
+import { ClientTestService } from './services/client-test-service';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,11 +52,22 @@ import { Toast } from 'primeng/toast';
           />
         </p-iconfield>
 
-        <p-button
-          label="Añadir"
-          icon="pi pi-plus"
-          (onClick)="clientForm?.open()"
-        />
+        <div class="flex flex-row gap-4">
+          @if (devService.isDevMode()) {
+            <p-button
+              label="Añadir 20 elementos"
+              icon="pi pi-plus"
+              severity="help"
+              (onClick)="createManyElements()"
+            />
+          }
+
+          <p-button
+            label="Añadir"
+            icon="pi pi-plus"
+            (onClick)="clientForm?.open()"
+          />
+        </div>
       </div>
 
       <p-table
@@ -167,6 +179,7 @@ export class ClientPage implements OnInit {
     private messageService: MessageService,
     private loadingService: LoadingService,
     protected devService: DevService,
+    private clientTestService: ClientTestService,
   ) {}
 
   public ngOnInit() {
@@ -196,9 +209,9 @@ export class ClientPage implements OnInit {
     this.loading = true;
 
     this.client.getClients().subscribe({
-      next: (client: ClientResponse[]) => {
-        this.$clientData = [...client];
-        this.clientData = client;
+      next: (clients: ClientResponse[]) => {
+        this.$clientData = [...clients];
+        this.clientData = clients;
       },
       error: (err) => {
         this.error = err;
@@ -251,5 +264,18 @@ export class ClientPage implements OnInit {
         });
       },
     });
+  }
+
+  protected async createManyElements() {
+    this.loadingService.setLoading(true);
+
+    try {
+      await this.clientTestService.createManyMaterials(20);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+      this.loadData();
+    }
   }
 }

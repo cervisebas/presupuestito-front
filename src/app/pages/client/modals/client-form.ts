@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
+import { InputMaskModule } from 'primeng/inputmask';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -18,7 +19,7 @@ import { LoadingService } from '@/common/services/loading';
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
 import { ClientRequest } from '@/common/api/interfaces/requests/ClientRequest';
 import { Client } from '@/common/api/services/client';
-import { InputNumberModule } from 'primeng/inputnumber';
+
 @Component({
   selector: 'app-client-form',
   imports: [
@@ -30,6 +31,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     ReactiveFormsModule,
     ToastModule,
     ButtonModule,
+    InputMaskModule,
   ],
   providers: [MessageService],
   template: `
@@ -41,7 +43,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
       [(visible)]="visible"
       [header]="isEditing ? 'Editar cliente' : 'Añadir nuevo cliente'"
       [blockScroll]="false"
-      styleClass="w-[30rem] h-[95vh] max-w-[95vw]"
+      styleClass="w-[30rem] h-max max-w-[95vw]"
       contentStyleClass="size-full"
     >
       <form [formGroup]="formGroup" class="flex flex-col gap-4 pt-3">
@@ -67,81 +69,86 @@ import { InputNumberModule } from 'primeng/inputnumber';
           <label for="name-input">Apellido</label>
         </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="brand-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="street"
-          />
-          <label for="brand-input">Calle</label>
-        </p-floatlabel>
+        <div class="flex w-full flex-row gap-4">
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="street-input"
+              class="w-full"
+              autocomplete="off"
+              formControlName="street"
+            />
+            <label for="street-input">Calle</label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="number-input"
+              class="w-full"
+              autocomplete="off"
+              formControlName="streetNumber"
+            />
+            <label for="number-input">Numero</label>
+          </p-floatlabel>
+        </div>
 
         <p-floatlabel variant="on" class="w-full">
           <input
             pInputText
-            id="color-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="streetNumber"
-          />
-          <label for="color-input">Numero</label>
-        </p-floatlabel>
-
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="size-input"
+            id="locality-input"
             class="w-full"
             autocomplete="off"
             formControlName="locality"
           />
-          <label for="size-input">Localidad</label>
+          <label for="locality-input">Localidad</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="unit-size-input"
+          <p-inputmask
+            id="phone-input"
             class="w-full"
+            styleClass="w-full"
+            mask="(999) 999-9999"
             autocomplete="off"
             formControlName="phoneNumber"
           />
-          <label for="unit-size-input">Telefono *</label>
+          <label for="phone-input">Teléfono</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
           <input
             pInputText
-            id="unit-size-input"
+            id="email-input"
             class="w-full"
             autocomplete="off"
             formControlName="email"
           />
-          <label for="unit-size-input">Email</label>
+          <label for="email-input">E-Mail</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
+          <p-inputmask
             id="unit-size-input"
             class="w-full"
+            styleClass="w-full"
+            mask="99.999.999"
             autocomplete="off"
             formControlName="dni"
           />
-          <label for="unit-size-input">Dni</label>
+          <label for="unit-size-input">DNI</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
+          <p-inputmask
             id="unit-size-input"
             class="w-full"
+            styleClass="w-full"
+            mask="99-99999999-9"
             autocomplete="off"
             formControlName="cuit"
           />
-          <label for="unit-size-input">Cuit</label>
+          <label for="unit-size-input">CUIT</label>
         </p-floatlabel>
       </form>
 
@@ -166,7 +173,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
       </ng-template>
     </p-dialog>
 
-    <p-toast />
+    <p-toast position="bottom-right" />
   `,
 })
 export class ClientForm {

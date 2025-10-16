@@ -154,7 +154,7 @@ import { Supplier } from '@/common/api/services/supplier';
       </ng-template>
     </p-dialog>
 
-    <p-toast />
+    <p-toast position="bottom-right" />
   `,
 })
 export class SupplierForm {
