@@ -1,5 +1,5 @@
-import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
-import { Client } from '@/common/api/services/client';
+import { SupplierResponse } from '@/common/api/interfaces/responses/SupplierResponse';
+import { Supplier } from '@/common/api/services/supplier';
 import { LoadingContainer } from '@/common/components/loading-container';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableModule } from 'primeng/table';
@@ -9,14 +9,13 @@ import { IconField } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { DebounceInput } from '@/common/directives/debounce-input';
 import { ArraySearch } from '@/common/services/array-search';
-import { ClientForm } from './modals/client-form';
+import { SupplierForm } from './modals/supplier-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { LoadingService } from '@/common/services/loading';
 import { DevService } from '@/common/services/dev-service';
-import { ClientInfo } from './modals/client-info';
+import { SupplierInfo } from './modals/supplier-info';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
-
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -27,8 +26,8 @@ import { Toast } from 'primeng/toast';
     DebounceInput,
     InputTextModule,
     LoadingContainer,
-    ClientForm,
-    ClientInfo,
+    SupplierForm,
+    SupplierInfo,
     ConfirmDialog,
     Toast,
   ],
@@ -54,12 +53,12 @@ import { Toast } from 'primeng/toast';
         <p-button
           label="Añadir"
           icon="pi pi-plus"
-          (onClick)="clientForm?.open()"
+          (onClick)="supplierForm?.open()"
         />
       </div>
 
       <p-table
-        [value]="clientData"
+        [value]="supplierData"
         [paginator]="true"
         [rows]="20"
         size="large"
@@ -69,14 +68,14 @@ import { Toast } from 'primeng/toast';
           <tr>
             <th pSortableColumn="personId.name" style="width: 20%">
               <div class="flex items-center gap-2">
-                Nombre
+                Empresa
                 <p-sortIcon field="personId.name" />
               </div>
             </th>
-            <th pSortableColumn="personId.lastName" style="width: 20%">
+            <th pSortableColumn="personId.cuit" style="width: 20%">
               <div class="flex items-center gap-2">
-                Apellido
-                <p-sortIcon field="personId.lastName" />
+                Cuit
+                <p-sortIcon field="personId.cuit" />
               </div>
             </th>
             <th pSortableColumn="personId.phoneNumber" style="width: 20%">
@@ -90,30 +89,30 @@ import { Toast } from 'primeng/toast';
             </th>
           </tr>
         </ng-template>
-        <ng-template #body let-client>
+        <ng-template #body let-supplier>
           <tr>
-            <td>{{ client.personId?.name || '-' }}</td>
-            <td>{{ client.personId?.lastName || '-' }}</td>
-            <td>{{ client.personId?.phoneNumber || '-' }}</td>
+            <td>{{ supplier.personId?.name || '-' }}</td>
+            <td>{{ supplier.personId?.cuit || '-' }}</td>
+            <td>{{ supplier.personId?.phoneNumber || '-' }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
                   icon="pi pi-info-circle"
                   severity="info"
                   aria-label="Información"
-                  (onClick)="clientInfo?.open(client)"
+                  (onClick)="SupplierInfo?.open(supplier)"
                 />
                 <p-button
                   icon="pi pi-pencil"
                   severity="warn"
                   aria-label="Editar"
-                  (onClick)="clientForm?.open(client)"
+                  (onClick)="supplierForm?.open(supplier)"
                 />
                 <p-button
                   icon="pi pi-trash"
                   severity="danger"
                   aria-label="Eliminar"
-                  (onClick)="deleteClient($event, client)"
+                  (onClick)="deleteSupplier($event, supplier)"
                 />
               </div>
             </td>
@@ -125,30 +124,30 @@ import { Toast } from 'primeng/toast';
     <p-confirmdialog styleClass="max-w-9/10" />
     <p-toast position="bottom-right" />
 
-    <app-client-info />
-    <app-client-form (reloadTable)="loadData()" />
+    <app-supplier-info />
+    <app-supplier-form (reloadTable)="loadData()" />
   `,
 })
-export class ClientPage implements OnInit {
+export class SupplierPage implements OnInit {
   protected error = null;
   protected loading = true;
-  protected $clientData: ClientResponse[] = [];
-  protected clientData: ClientResponse[] = [];
+  protected $supplierData: SupplierResponse[] = [];
+  protected supplierData: SupplierResponse[] = [];
 
-  @ViewChild(ClientForm)
-  protected clientForm?: ClientForm;
+  @ViewChild(SupplierForm)
+  protected supplierForm?: SupplierForm;
 
-  @ViewChild(ClientInfo)
-  protected clientInfo?: ClientInfo;
+  @ViewChild(SupplierInfo)
+  protected SupplierInfo?: SupplierInfo;
 
   protected tableHeaderItems = [
     {
       key: 'personId.name',
-      label: 'Nombre',
+      label: 'Empresa',
     },
     {
-      key: 'personId.lastName',
-      label: 'Apellido',
+      key: 'personId.cuit',
+      label: 'Cuit',
     },
     {
       key: 'personId.phoneNumber',
@@ -159,9 +158,8 @@ export class ClientPage implements OnInit {
       label: 'Acciónes',
     },
   ];
-
   constructor(
-    private client: Client,
+    private supplier: Supplier,
     private arraySearch: ArraySearch,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -174,11 +172,11 @@ export class ClientPage implements OnInit {
   }
 
   protected onSearch(event: string) {
-    this.clientData = this.arraySearch.search(
-      this.$clientData,
+    this.supplierData = this.arraySearch.search(
+      this.$supplierData,
       [
         'personId.name',
-        'personId.lastName',
+        'personId.lastname',
         'personId.street',
         'personId.streetNumber',
         'personId.locality',
@@ -195,10 +193,10 @@ export class ClientPage implements OnInit {
     this.error = null;
     this.loading = true;
 
-    this.client.getClients().subscribe({
-      next: (client: ClientResponse[]) => {
-        this.$clientData = [...client];
-        this.clientData = client;
+    this.supplier.getSuppliers().subscribe({
+      next: (supplier: SupplierResponse[]) => {
+        this.$supplierData = [...supplier];
+        this.supplierData = supplier;
       },
       error: (err) => {
         this.error = err;
@@ -210,10 +208,10 @@ export class ClientPage implements OnInit {
     });
   }
 
-  protected deleteClient(event: Event, client: ClientResponse) {
+  protected deleteSupplier(event: Event, supplier: SupplierResponse) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: `¿Esta seguro/a que desea eliminar el cliente "${client.personId.name}"? Esta acción no se prodra deshacer.`,
+      message: `¿Esta seguro/a que desea eliminar el proveedor "${supplier.personId.name}"? Esta acción no se prodra deshacer.`,
       header: 'Confirme eliminación',
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancelar',
@@ -228,13 +226,13 @@ export class ClientPage implements OnInit {
       },
       accept: () => {
         this.loadingService.setLoading(true);
-        this.client.deleteClient(client.clientId).subscribe({
+        this.supplier.deleteSupplier(supplier.supplierId).subscribe({
           next: () => {
             this.loadingService.setLoading(false);
             this.messageService.add({
               severity: 'info',
-              summary: 'Cliente eliminado',
-              detail: `Se elimino correctamente el cliente "${client.personId.name}".`,
+              summary: 'Proveedor eliminado',
+              detail: `Se elimino correctamente el proveedor "${supplier.personId.name}".`,
             });
             this.loadData();
           },
@@ -243,9 +241,9 @@ export class ClientPage implements OnInit {
             this.loadingService.setLoading(false);
             this.messageService.add({
               severity: 'error',
-              summary: 'Error al eliminar cliente',
+              summary: 'Error al eliminar proveedor',
               detail:
-                'Ocurrio un error inesperado al eliminar el cliente, por favor pruebe de nuevo más tarde.',
+                'Ocurrio un error inesperado al eliminar el proveedor, por favor pruebe de nuevo más tarde.',
             });
           },
         });

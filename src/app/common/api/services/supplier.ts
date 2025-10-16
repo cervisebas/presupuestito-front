@@ -24,7 +24,10 @@ export class Supplier {
   }
 
   public updateSupplier(data: SupplierRequest) {
-    return this.http.put<void>(Endpoints.SUPPLIERS, data);
+    return this.http.put<void>(
+      `${Endpoints.SUPPLIERS}/${data.supplierId}`,
+      data,
+    );
   }
 
   public deleteSupplier(id_supplier: number) {
