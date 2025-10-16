@@ -12,6 +12,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { GeneratePdfService } from '@/common/services/generate-pdf';
 import { PrintDocumentService } from '@/common/services/print-document';
+import { LoadingService } from '@/common/services/loading';
 
 @Component({
   selector: 'app-budget-info',
@@ -110,6 +111,7 @@ export class BudgetInfo {
     private transformDataBudget: TransformDataBudget,
     private generatePdfService: GeneratePdfService,
     private printDocumentService: PrintDocumentService,
+    private loadingService: LoadingService,
   ) {}
 
   public open(budget: BudgetResponse) {
@@ -148,19 +150,29 @@ export class BudgetInfo {
   }
 
   protected printDocument() {
+    this.loadingService.setLoading(true);
     const pdf = this.getPdfCurrentTab();
 
     if (pdf) {
       this.printDocumentService.fromPDFObject(pdf);
     }
+
+    setTimeout(() => {
+      this.loadingService.setLoading(false);
+    }, 1000);
   }
 
   protected saveDocument() {
+    this.loadingService.setLoading(true);
     const pdf = this.getPdfCurrentTab();
 
     if (pdf) {
       pdf.save();
     }
+
+    setTimeout(() => {
+      this.loadingService.setLoading(false);
+    }, 1000);
   }
 
   private get budgetFileName(): `${string}.pdf` {
