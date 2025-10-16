@@ -39,7 +39,7 @@ export class MenuRouter {
         {
           label: 'Proveedores',
           icon: 'pi pi-building',
-          routerLink: ['/uikit/formlayout'],
+          routerLink: ['/suppliers'],
         },
       ],
     },

@@ -23,7 +23,7 @@ export class Client {
   }
 
   public updateClient(data: ClientRequest) {
-    return this.http.put<void>(Endpoints.CLIENTS, data);
+    return this.http.put<void>(`${Endpoints.CLIENTS}/${data.clientId}`, data);
   }
 
   public deleteClient(id_client: number) {
