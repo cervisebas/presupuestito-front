@@ -74,10 +74,15 @@ import { PrintDocumentService } from '@/common/services/print-document';
             <p-button
               label="Imprimir"
               severity="secondary"
+              [disabled]="tabValue !== BudgetTabName"
               (onClick)="printDocument()"
             />
 
-            <p-button label="Descargar" (onClick)="saveDocument()" />
+            <p-button
+              label="Descargar"
+              [disabled]="tabValue !== BudgetTabName"
+              (onClick)="saveDocument()"
+            />
           </div>
         </div>
       </ng-template>

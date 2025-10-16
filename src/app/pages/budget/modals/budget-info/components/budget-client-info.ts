@@ -21,13 +21,13 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
       @for (section of sections; track $index) {
 
         @if ($index !== 0) {
-          <p-divider class="break-after-all print:hidden" />
+          <p-divider class="break-after-all html2pdf__page-break" />
         }
 
-        <table class="border-collapse w-full">
+        <table class="!border-collapse !border-spacing-0 w-full" [cellSpacing]="0" [cellPadding]="0">
           <thead>
             <tr>
-              <th colspan="100%">
+              <th colspan="100%" class="!border-b-2">
                 <div class="flex w-full py-8 justify-center">
                   <h1 class="!text-2xl !text-black !m-0">{{ section.title }}</h1>
                 </div>
@@ -61,7 +61,7 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
             </tr>
     
             <tr>
-              <th colspan="100%">
+              <th colspan="100%" class="!border-b-2">
                 <div class="grid grid-cols-2 w-full py-4 px-6">
                   <div class="flex flex-row gap-2">
                     <b>Fecha del presupuesto:</b> 
@@ -107,16 +107,16 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
             }
 
             <tr>
-              <td class="text-left ps-6 py-3">
+              <td class="text-left ps-6 py-3 !border-b-2">
                 <span class="font-normal">Ganancias</span>  
               </td>
-              <td class="text-center py-3">
+              <td class="text-center py-3 !border-b-2">
                 <span class="font-normal">-</span>  
               </td>
-              <td class="text-center py-3">
+              <td class="text-center py-3 !border-b-2">
                 <span class="font-normal">-</span>  
               </td>
-              <td class="text-center py-3">
+              <td class="text-center py-3 !border-b-2">
                 <span class="font-normal">{{ section.total - section.subtotal | currency }}</span>  
               </td>
             </tr>
@@ -145,9 +145,35 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
     </div>
   `,
   styles: `
+    table {
+      @apply border-collapse;
+    }
+
     th:not(tfoot th),
     td {
       @apply border-2;
+    }
+
+    tr {
+      td:not(tr > td:nth-child(0)):not(tr > td:last-child),
+      th:not(tr > th:nth-child(0)):not(tr > th:last-child) {
+        border-right: 0 !important;
+      }
+    }
+
+    table {
+      thead,
+      tbody,
+      tfoot {
+        tr:not(thead > tr:last-child),
+        tr:not(tbody > tr:last-child),
+        tr:not(tfoot > tr:last-child) {
+          td,
+          th {
+            border-bottom: 0;
+          }
+        }
+      }
     }
   `,
 })

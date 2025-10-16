@@ -11,12 +11,19 @@ export class GeneratePdfService {
     const options: Parameters<typeof _html2pdf.set>[0] = {
       margin: 10,
       filename: filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      /* pagebreak: {
-        after: ['css'],
-      }, */
+      image: {
+        type: 'jpeg',
+        quality: 1,
+      },
+      html2canvas: {
+        scale: 3,
+        letterRendering: true,
+      },
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+      },
     };
 
     return _html2pdf.set(options).from(element).toPdf();
