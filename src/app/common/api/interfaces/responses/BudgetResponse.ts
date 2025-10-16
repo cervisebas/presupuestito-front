@@ -1,3 +1,4 @@
+import { ClientResponse } from './ClientResponse';
 import { PaymentResponse } from './PaymentResponse';
 import { WorkResponse } from './WorkResponse';
 
@@ -10,4 +11,5 @@ export interface BudgetResponse {
   cost: number;
   budgetStatus: string;
   payments?: PaymentResponse[];
+  clientId: ClientResponse;
 }

@@ -38,6 +38,8 @@ export class MaterialTestService {
 
       return 1;
     } catch (error) {
+      console.error(error);
+
       const categoryId = await this.getOrCreateCategory();
 
       const subcategory = await lastValueFrom(

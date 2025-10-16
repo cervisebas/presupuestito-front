@@ -19,6 +19,7 @@ import { CardWidget } from './components/cardwidget';
           icon="pi-file-edit"
           colorIcon="text-blue-500"
           colorBoxIcon="bg-blue-100"
+          goToLink="/budgets"
         />
 
         <app-card-widget
