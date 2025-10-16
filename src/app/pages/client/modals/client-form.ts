@@ -136,7 +136,7 @@ import { Client } from '@/common/api/services/client';
             autocomplete="off"
             formControlName="dni"
           />
-          <label for="unit-size-input">DNI</label>
+          <label for="unit-size-input">D.N.I</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">

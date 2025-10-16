@@ -17,6 +17,7 @@ import { ClientInfo } from './modals/client-info';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
 import { ClientTestService } from './services/client-test-service';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,6 +33,7 @@ import { ClientTestService } from './services/client-test-service';
     ClientInfo,
     ConfirmDialog,
     Toast,
+    NgStyle,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -79,33 +81,28 @@ import { ClientTestService } from './services/client-test-service';
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="personId.name" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Nombre
-                <p-sortIcon field="personId.name" />
-              </div>
-            </th>
-            <th pSortableColumn="personId.lastName" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Apellido
-                <p-sortIcon field="personId.lastName" />
-              </div>
-            </th>
-            <th pSortableColumn="personId.phoneNumber" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Telefono
-                <p-sortIcon field="personId.phoneNumber" />
-              </div>
-            </th>
-            <th style="width: 20%">
-              <div class="flex items-center gap-2">Acciónes</div>
-            </th>
+            @for (item of tableHeaderItems; track $index) {
+              <th
+                [pSortableColumn]="item.key || undefined"
+                [ngStyle]="{
+                  width: 100 / tableHeaderItems.length + '%',
+                }"
+              >
+                <div class="flex items-center gap-2">
+                  {{ item.label }}
+                  @if (item.key) {
+                    <p-sortIcon [field]="item.key" />
+                  }
+                </div>
+              </th>
+            }
           </tr>
         </ng-template>
         <ng-template #body let-client>
           <tr>
             <td>{{ client.personId?.name || '-' }}</td>
             <td>{{ client.personId?.lastName || '-' }}</td>
+            <td>{{ client.personId?.dni || '-' }}</td>
             <td>{{ client.personId?.phoneNumber || '-' }}</td>
             <td>
               <div class="flex flex-row gap-4">
@@ -161,6 +158,10 @@ export class ClientPage implements OnInit {
     {
       key: 'personId.lastName',
       label: 'Apellido',
+    },
+    {
+      key: 'personId.dni',
+      label: 'D.N.I',
     },
     {
       key: 'personId.phoneNumber',
