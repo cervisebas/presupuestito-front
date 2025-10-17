@@ -133,7 +133,7 @@ import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation
             @for (item of section.items; track $index) {
               <tr>
                 <td class="text-left ps-6 py-3">
-                  <span class="font-normal">{{ item.materialName }} <b>x {{ (item.priceTotal ?? 0) / (item.pricePeerUnit ?? 0) }} {{ item.quantityUnit }}</b></span>  
+                  <span class="font-normal">{{ item.materialName }} <b>x  {{ getMaterialQuantity(item.priceTotal, item.pricePeerUnit) }} {{ item.quantityUnit }}</b></span>  
                 </td>
                 <td class="text-center py-3">
                   <span class="font-normal">{{ item.quantityTotal }} {{ item.quantityUnit }}</span>  
@@ -258,6 +258,13 @@ export class BudgetClientInfo implements AfterViewInit, OnChanges {
     ) {
       this.generateSections();
     }
+  }
+
+  protected getMaterialQuantity(
+    priceTotal: number | undefined,
+    pricePeerUnit: number | undefined,
+  ) {
+    return Math.fround((priceTotal ?? 0) / (pricePeerUnit ?? 0));
   }
 
   private generateSections() {
