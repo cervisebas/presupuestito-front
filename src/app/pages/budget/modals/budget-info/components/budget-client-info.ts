@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   Input,
@@ -12,10 +13,13 @@ import { GenerateBudgetSections } from '../services/generate-budget-sections';
 import { ISectionBudgetItem } from '../interfaces/ISectionBudgetItem';
 import { DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
+import { DebounceInput } from '@/common/directives/debounce-input';
+import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation';
+import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
 
 @Component({
   selector: 'app-budget-client-info',
-  imports: [DatePipe, CurrencyPipe, Divider],
+  imports: [DatePipe, CurrencyPipe, Divider, DebounceInput],
   template: `
     <div #element class="w-full flex flex-col gap-4">
       @for (section of sections; track $index) {
@@ -43,17 +47,41 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
                 <div class="w-full py-4 px-6">
                   <div class="flex flex-row">
                     <div class="flex flex-col gap-2 items-start">
-                      <b>Empresa:</b> 
-                      <b>Teléfono:</b>
-                      <b>E-Mail:</b>
-                      <b>Dirección:</b>
+                      <b (click)="enterpriceName.focus()">Empresa:</b> 
+                      <b (click)="enterpricePhone.focus()">Teléfono:</b>
+                      <b (click)="enterpriceEmail.focus()">E-Mail:</b>
+                      <b (click)="enterpriceAddress.focus()">Dirección:</b>
                     </div>
     
                     <div class="flex flex-col gap-2 items-start ps-4">
-                      <span>Nombre extendido de la empresa</span>
-                      <span>2291-450000</span>
-                      <span>test@correo.com</span>
-                      <span>Avenida 9 95000</span>
+                      <span
+                        #enterpriceName
+                        contenteditable
+                        (blur)="saveEnterpriceData()"
+                      >
+                        Nombre extendido de la empresa
+                      </span>
+                      <span
+                        #enterpricePhone
+                        contenteditable
+                        (blur)="saveEnterpriceData()"
+                      >
+                        2291-450000
+                      </span>
+                      <span
+                        #enterpriceEmail
+                        contenteditable
+                        (blur)="saveEnterpriceData()"
+                      >
+                        test@correo.com
+                      </span>
+                      <span
+                        #enterpriceAddress
+                        contenteditable
+                        (blur)="saveEnterpriceData()"
+                      >
+                        Avenida 9 95000
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -177,7 +205,19 @@ import { CurrencyPipe } from '@/common/pipes/currency-pipe';
     }
   `,
 })
-export class BudgetClientInfo implements OnChanges {
+export class BudgetClientInfo implements AfterViewInit, OnChanges {
+  @ViewChild('enterpriceName')
+  private enterpriceName?: ElementRef<HTMLSpanElement>;
+
+  @ViewChild('enterpricePhone')
+  private enterpricePhone?: ElementRef<HTMLSpanElement>;
+
+  @ViewChild('enterpriceEmail')
+  private enterpriceEmail?: ElementRef<HTMLSpanElement>;
+
+  @ViewChild('enterpriceAddress')
+  private enterpriceAddress?: ElementRef<HTMLSpanElement>;
+
   @ViewChild('element')
   private element?: ElementRef<HTMLDivElement>;
 
@@ -191,7 +231,14 @@ export class BudgetClientInfo implements OnChanges {
 
   protected clientLoading = true;
 
-  constructor(private generateBudgetSections: GenerateBudgetSections) {}
+  constructor(
+    private generateBudgetSections: GenerateBudgetSections,
+    private budgetStorageInfo: BudgetStorageInfo,
+  ) {}
+
+  ngAfterViewInit(): void {
+    this.loadEnterpriceData();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -211,6 +258,30 @@ export class BudgetClientInfo implements OnChanges {
     } else {
       this.sections = this.generateBudgetSections.getUnificated(this.data);
     }
+  }
+
+  private loadEnterpriceData() {
+    const storageData = this.budgetStorageInfo.getBudgetInformation();
+
+    this.enterpriceName!.nativeElement.innerText =
+      storageData?.name || 'Nombre de la empresa';
+    this.enterpricePhone!.nativeElement.innerText =
+      storageData?.phone || '2291 00-0000';
+    this.enterpriceEmail!.nativeElement.innerText =
+      storageData?.email || 'email-de-empresa@ejemplo.com';
+    this.enterpriceAddress!.nativeElement.innerText =
+      storageData?.address || 'Dirección de la empresa';
+  }
+
+  protected saveEnterpriceData() {
+    const data: IBudgetInformation = {
+      name: this.enterpriceName!.nativeElement.innerText,
+      phone: this.enterpricePhone!.nativeElement.innerText,
+      email: this.enterpriceEmail!.nativeElement.innerText,
+      address: this.enterpriceAddress!.nativeElement.innerText,
+    };
+
+    this.budgetStorageInfo.setBudgetInformation(data);
   }
 
   public getElement() {
