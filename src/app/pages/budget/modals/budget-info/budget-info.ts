@@ -115,6 +115,7 @@ export class BudgetInfo {
   ) {}
 
   public open(budget: BudgetResponse) {
+    this.tabValue = this.SummaryTabName;
     this.data = this.transformDataBudget.transform(budget);
     this.visible = true;
   }
