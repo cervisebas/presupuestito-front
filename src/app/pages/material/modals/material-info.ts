@@ -12,6 +12,9 @@ import { TableModule } from 'primeng/table';
     <p-dialog
       header="Información del material"
       [modal]="true"
+      [draggable]="false"
+      [closable]="true"
+      [closeOnEscape]="false"
       [(visible)]="visible"
       styleClass="max-w-9/10 w-3/10 min-w-[400px]"
     >
