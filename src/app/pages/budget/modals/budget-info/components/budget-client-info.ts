@@ -14,12 +14,21 @@ import { ISectionBudgetItem } from '../interfaces/ISectionBudgetItem';
 import { DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { DebounceInput } from '@/common/directives/debounce-input';
-import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation';
 import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
+import { ContenteditableValueAccessorDirective } from '@/common/directives/contenteditable-value-accessor';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation';
 
 @Component({
   selector: 'app-budget-client-info',
-  imports: [DatePipe, CurrencyPipe, Divider, DebounceInput],
+  imports: [
+    DatePipe,
+    CurrencyPipe,
+    Divider,
+    DebounceInput,
+    ContenteditableValueAccessorDirective,
+    ReactiveFormsModule,
+  ],
   template: `
     <div #element class="w-full flex flex-col gap-4">
       @for (section of sections; track $index) {
@@ -53,9 +62,10 @@ import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
                       <b (click)="enterpriceAddress.focus()">Dirección:</b>
                     </div>
     
-                    <div class="flex flex-col gap-2 items-start ps-4">
+                    <form [formGroup]="formGroup" class="flex flex-col gap-2 items-start ps-4">
                       <span
                         #enterpriceName
+                        formControlName="enterpriceName"
                         contenteditable
                         (blur)="saveEnterpriceData()"
                       >
@@ -63,6 +73,7 @@ import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
                       </span>
                       <span
                         #enterpricePhone
+                        formControlName="enterpricePhone"
                         contenteditable
                         (blur)="saveEnterpriceData()"
                       >
@@ -70,6 +81,7 @@ import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
                       </span>
                       <span
                         #enterpriceEmail
+                        formControlName="enterpriceEmail"
                         contenteditable
                         (blur)="saveEnterpriceData()"
                       >
@@ -77,12 +89,13 @@ import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
                       </span>
                       <span
                         #enterpriceAddress
+                        formControlName="enterpriceAddress"
                         contenteditable
                         (blur)="saveEnterpriceData()"
                       >
                         Avenida 9 95000
                       </span>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </th>
@@ -206,17 +219,12 @@ import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
   `,
 })
 export class BudgetClientInfo implements AfterViewInit, OnChanges {
-  @ViewChild('enterpriceName')
-  private enterpriceName?: ElementRef<HTMLSpanElement>;
-
-  @ViewChild('enterpricePhone')
-  private enterpricePhone?: ElementRef<HTMLSpanElement>;
-
-  @ViewChild('enterpriceEmail')
-  private enterpriceEmail?: ElementRef<HTMLSpanElement>;
-
-  @ViewChild('enterpriceAddress')
-  private enterpriceAddress?: ElementRef<HTMLSpanElement>;
+  protected formGroup = new FormGroup({
+    enterpriceName: new FormControl('', { updateOn: 'change' }),
+    enterpricePhone: new FormControl('', { updateOn: 'change' }),
+    enterpriceEmail: new FormControl('', { updateOn: 'change' }),
+    enterpriceAddress: new FormControl('', { updateOn: 'change' }),
+  });
 
   @ViewChild('element')
   private element?: ElementRef<HTMLDivElement>;
@@ -262,26 +270,45 @@ export class BudgetClientInfo implements AfterViewInit, OnChanges {
 
   private loadEnterpriceData() {
     const storageData = this.budgetStorageInfo.getBudgetInformation();
+    const {
+      enterpriceName,
+      enterpricePhone,
+      enterpriceEmail,
+      enterpriceAddress,
+    } = this.formGroup.controls;
 
-    this.enterpriceName!.nativeElement.innerText =
-      storageData?.name || 'Nombre de la empresa';
-    this.enterpricePhone!.nativeElement.innerText =
-      storageData?.phone || '2291 00-0000';
-    this.enterpriceEmail!.nativeElement.innerText =
-      storageData?.email || 'email-de-empresa@ejemplo.com';
-    this.enterpriceAddress!.nativeElement.innerText =
-      storageData?.address || 'Dirección de la empresa';
+    enterpriceName.setValue(storageData?.name || 'Nombre de la empresa');
+    enterpricePhone.setValue(storageData?.phone || '2291 00-0000');
+    enterpriceEmail.setValue(
+      storageData?.email || 'email-de-empresa@ejemplo.com',
+    );
+    enterpriceAddress.setValue(
+      storageData?.address || 'Dirección de la empresa',
+    );
   }
 
   protected saveEnterpriceData() {
+    const {
+      enterpriceName,
+      enterpricePhone,
+      enterpriceEmail,
+      enterpriceAddress,
+    } = this.formGroup.controls;
+
     const data: IBudgetInformation = {
-      name: this.enterpriceName!.nativeElement.innerText,
-      phone: this.enterpricePhone!.nativeElement.innerText,
-      email: this.enterpriceEmail!.nativeElement.innerText,
-      address: this.enterpriceAddress!.nativeElement.innerText,
+      name: enterpriceName.value!,
+      phone: enterpricePhone.value!,
+      email: enterpriceEmail.value!,
+      address: enterpriceAddress.value!,
     };
 
     this.budgetStorageInfo.setBudgetInformation(data);
+    this.formGroup.setValue({
+      enterpriceName: data.name.trim(),
+      enterpricePhone: data.phone.trim(),
+      enterpriceEmail: data.email.trim(),
+      enterpriceAddress: data.address.trim(),
+    });
   }
 
   public getElement() {
