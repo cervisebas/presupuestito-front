@@ -1,5 +1,6 @@
 export interface PersonResponse {
   personId: number;
+  nameCompany?: string;
   name: string;
   lastName: string;
   street: string;

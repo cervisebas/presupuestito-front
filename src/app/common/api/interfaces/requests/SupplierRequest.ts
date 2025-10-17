@@ -1,6 +1,7 @@
 export interface SupplierRequest {
   supplierId?: number;
   note?: string;
+  nameCompany?: string;
   name: string;
   lastname: string;
   street: string;

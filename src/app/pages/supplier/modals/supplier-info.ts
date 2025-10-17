@@ -39,23 +39,23 @@ export class SupplierInfo {
   public open(supplier: SupplierResponse) {
     this.data = [];
 
-    this.addValue('Nombre', supplier.personId.name);
-    this.addValue('Apellido', supplier.personId.lastName);
+    this.addValue('Nombre Empresa', supplier.personId.nameCompany);
     this.addValue('Calle', supplier.personId.street);
-    this.addValue('Altura', supplier.personId.streetNumber);
+    this.addValue('Número', supplier.personId.streetNumber);
     this.addValue('Localidad', supplier.personId.locality);
-    this.addValue('Telefono', supplier.personId.phoneNumber);
-    this.addValue('Email', supplier.personId.email);
-    this.addValue('DNI', supplier.personId.dni);
+    this.addValue('Teléfono ', supplier.personId.phoneNumber);
+    this.addValue('E-mail', supplier.personId.email);
     this.addValue('CUIT', supplier.personId.cuit);
 
     this.visible = true;
   }
 
-  private addValue(label: string, value: string) {
+  private addValue(label: string, value: unknown) {
+    const text = value == null ? '' : String(value);
+
     this.data.push({
       label,
-      value,
+      value: text,
     });
   }
 }

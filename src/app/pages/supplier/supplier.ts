@@ -69,7 +69,7 @@ import { Toast } from 'primeng/toast';
             <th pSortableColumn="personId.name" style="width: 20%">
               <div class="flex items-center gap-2">
                 Empresa
-                <p-sortIcon field="personId.name" />
+                <p-sortIcon field="personId.nameCompany" />
               </div>
             </th>
             <th pSortableColumn="personId.cuit" style="width: 20%">
@@ -91,7 +91,7 @@ import { Toast } from 'primeng/toast';
         </ng-template>
         <ng-template #body let-supplier>
           <tr>
-            <td>{{ supplier.personId?.name || '-' }}</td>
+            <td>{{ supplier.personId?.nameCompany || '-' }}</td>
             <td>{{ supplier.personId?.cuit || '-' }}</td>
             <td>{{ supplier.personId?.phoneNumber || '-' }}</td>
             <td>
@@ -142,7 +142,7 @@ export class SupplierPage implements OnInit {
 
   protected tableHeaderItems = [
     {
-      key: 'personId.name',
+      key: 'personId.nameCompany',
       label: 'Empresa',
     },
     {
@@ -175,6 +175,7 @@ export class SupplierPage implements OnInit {
     this.supplierData = this.arraySearch.search(
       this.$supplierData,
       [
+        'personId.nameCompany',
         'personId.name',
         'personId.lastname',
         'personId.street',
