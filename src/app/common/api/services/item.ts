@@ -14,7 +14,7 @@ export class Item {
     return this.http.get<ItemResponse[]>(Endpoints.ITEMS);
   }
 
-  public getItemById(id_item: string) {
+  public getItemById(id_item: number) {
     return this.http.get<ItemResponse>(`${Endpoints.ITEMS}/${id_item}`);
   }
 
@@ -22,8 +22,8 @@ export class Item {
     return this.http.post<void>(Endpoints.ITEMS, data);
   }
 
-  public updateItem(data: ItemRequest) {
-    return this.http.put<void>(Endpoints.ITEMS, data);
+  public updateItem(id_item: number, data: ItemRequest) {
+    return this.http.put<void>(`${Endpoints.ITEMS}/${id_item}`, data);
   }
 
   public deleteItem(id_item: number) {

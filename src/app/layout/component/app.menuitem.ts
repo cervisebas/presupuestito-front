@@ -88,21 +88,19 @@ import { LayoutService } from '../service/layout.service';
         ></i>
       </a>
 
-      <ul
-        *ngIf="item.items && item.visible !== false"
-        class="flex flex-col gap-2"
-        [@children]="submenuAnimation"
-      >
-        <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
-          <li
-            app-menuitem
-            [item]="child"
-            [index]="i"
-            [parentKey]="key"
-            [class]="child['badgeClass']"
-          ></li>
-        </ng-template>
-      </ul>
+      @if (item.items && item.visible !== false) {
+        <ul class="flex flex-col gap-2" [@children]="submenuAnimation">
+          <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
+            <li
+              app-menuitem
+              [item]="child"
+              [index]="i"
+              [parentKey]="key"
+              [class]="child['badgeClass']"
+            ></li>
+          </ng-template>
+        </ul>
+      }
     </ng-container>
   `,
   animations: [
@@ -176,7 +174,7 @@ export class AppMenuitem {
 
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((params) => {
+      .subscribe(() => {
         if (this.item.routerLink) {
           this.updateActiveStateFromRoute();
         }

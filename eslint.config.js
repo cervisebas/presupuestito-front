@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint';
 import angular from '@angular-eslint/eslint-plugin';
 import angularTemplate from '@angular-eslint/eslint-plugin-template';
 import prettier from 'eslint-plugin-prettier';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   {
@@ -20,6 +21,7 @@ export default [
     plugins: {
       '@typescript-eslint': tseslint.plugin,
       '@angular-eslint': angular,
+      'unused-imports': unusedImports,
       prettier,
     },
     rules: {
@@ -65,6 +67,18 @@ export default [
             'public-instance-method',
             'public-static-field',
           ],
+        },
+      ],
+
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
         },
       ],
 

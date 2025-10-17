@@ -173,7 +173,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
       </ng-template>
     </p-dialog>
 
-    <p-toast />
+    <p-toast position="bottom-right" />
   `,
 })
 export class MaterialForm {
@@ -429,16 +429,15 @@ export class MaterialForm {
       this.reloadTable.emit();
       this.messageService.add({
         severity: 'success',
-        summary: '¡Material creado!',
+        summary: `¡Material ${this.isEditing ? 'editado' : 'creado'}!`,
         detail: `Se ${this.isEditing ? 'edito' : 'creo'} el material "${data.MaterialName}" correctamente.`,
       });
     } catch (error) {
       console.error(error);
       this.messageService.add({
         severity: 'error',
-        summary: 'Error al crear material',
-        detail:
-          'Ocurrio un error inesperado al crear el material, por favor pruebe de nuevo más tarde.',
+        summary: `Error al ${this.isEditing ? 'editar' : 'crear'} material`,
+        detail: `Ocurrio un error inesperado al ${this.isEditing ? 'editar' : 'crear'} el material, por favor pruebe de nuevo más tarde.`,
       });
     } finally {
       this.loadingService.setLoading(false);
