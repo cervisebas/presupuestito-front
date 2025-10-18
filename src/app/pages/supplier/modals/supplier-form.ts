@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
+import { InputMaskModule } from 'primeng/inputmask';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -29,6 +30,7 @@ import { Supplier } from '@/common/api/services/supplier';
     ReactiveFormsModule,
     ToastModule,
     ButtonModule,
+    InputMaskModule,
   ],
   providers: [MessageService],
   template: `
@@ -40,7 +42,7 @@ import { Supplier } from '@/common/api/services/supplier';
       [(visible)]="visible"
       [header]="isEditing ? 'Editar proveedor' : 'Añadir nuevo proveedor'"
       [blockScroll]="false"
-      styleClass="w-[30rem] h-[95vh] max-w-[95vw]"
+      styleClass="w-[30rem] h-max max-w-[95vw]"
       contentStyleClass="size-full"
     >
       <form [formGroup]="formGroup" class="flex flex-col gap-4 pt-3">
@@ -50,86 +52,79 @@ import { Supplier } from '@/common/api/services/supplier';
             id="name-input"
             class="w-full"
             autocomplete="off"
-            formControlName="name"
+            formControlName="nameCompany"
           />
-          <label for="name-input">Nombre</label>
+          <label for="name-input">Nombre Empresa *</label>
         </p-floatlabel>
+
+        <div class="flex w-full flex-row gap-4">
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="street-input"
+              class="w-full"
+              autocomplete="off"
+              formControlName="street"
+            />
+            <label for="street-input">Calle</label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="number-input"
+              class="w-full"
+              autocomplete="off"
+              formControlName="streetNumber"
+            />
+            <label for="number-input">Número</label>
+          </p-floatlabel>
+        </div>
 
         <p-floatlabel variant="on" class="w-full">
           <input
             pInputText
-            id="name-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="lastname"
-          />
-          <label for="name-input">Apellido</label>
-        </p-floatlabel>
-
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="brand-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="street"
-          />
-          <label for="brand-input">Calle</label>
-        </p-floatlabel>
-
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="color-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="streetNumber"
-          />
-          <label for="color-input">Numero</label>
-        </p-floatlabel>
-
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="size-input"
+            id="locality-input"
             class="w-full"
             autocomplete="off"
             formControlName="locality"
           />
-          <label for="size-input">Localidad</label>
+          <label for="locality-input">Localidad</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="unit-size-input"
+          <p-inputMask
+            id="phone-input"
             class="w-full"
+            styleClass="w-full"
+            mask="(999) 999-9999"
             autocomplete="off"
             formControlName="phoneNumber"
           />
-          <label for="unit-size-input">Telefono *</label>
+          <label for="phone-input">Teléfono *</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
           <input
             pInputText
-            id="unit-size-input"
+            id="email-input"
             class="w-full"
             autocomplete="off"
             formControlName="email"
           />
-          <label for="unit-size-input">Email</label>
+          <label for="email-input">E-mail</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="unit-size-input"
+          <p-inputMask
+            id="cuit-input"
             class="w-full"
+            styleClass="w-full"
+            mask="99-99999999-9"
             autocomplete="off"
             formControlName="cuit"
           />
-          <label for="unit-size-input">Cuit</label>
+          <label for="cuit-input">CUIT</label>
         </p-floatlabel>
       </form>
 
@@ -163,7 +158,8 @@ export class SupplierForm {
 
   protected visible = false;
   protected formGroup = new FormGroup({
-    name: new FormControl('', [Validators.required]),
+    nameCompany: new FormControl('', [Validators.required]),
+    name: new FormControl('', []),
     lastname: new FormControl('', []),
     street: new FormControl('', []),
     streetNumber: new FormControl('', []),
@@ -202,6 +198,7 @@ export class SupplierForm {
       const data = this.$editData;
 
       this.formGroup.setValue({
+        nameCompany: data.personId.nameCompany ?? '',
         name: data.personId.name,
         lastname: data.personId.lastName ?? '',
         street: data.personId.street ?? '',
@@ -225,6 +222,7 @@ export class SupplierForm {
       // Se arma el objeto que se enviara a la consulta.
       const data: SupplierRequest = {
         supplierId: this.$editData?.supplierId,
+        nameCompany: formValue.nameCompany!,
         name: formValue.name!,
         lastname: formValue.lastname!,
         street: formValue.street!,
@@ -247,7 +245,7 @@ export class SupplierForm {
       this.messageService.add({
         severity: 'success',
         summary: `¡Proveedor ${this.isEditing ? 'editado' : 'creado'}!`,
-        detail: `Se ${this.isEditing ? 'editó' : 'creó'} el proveedor "${data.name}" correctamente.`,
+        detail: `Se ${this.isEditing ? 'editó' : 'creó'} el proveedor "${data.nameCompany}" correctamente.`,
       });
     } catch (error) {
       console.error(error);
