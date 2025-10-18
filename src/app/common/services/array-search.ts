@@ -14,7 +14,7 @@ export class ArraySearch {
       includeScore: true,
       findAllMatches: true,
       ignoreLocation: true,
-      threshold: 0.4,
+      threshold: 1,
       keys: keys,
     });
     const list = fuse.search(searchValue);

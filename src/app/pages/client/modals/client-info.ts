@@ -12,6 +12,9 @@ import { TableModule } from 'primeng/table';
     <p-dialog
       header="Información del cliente"
       [modal]="true"
+      [draggable]="false"
+      [closable]="true"
+      [closeOnEscape]="false"
       [(visible)]="visible"
       styleClass="max-w-9/10 w-3/10 min-w-[400px]"
     >
@@ -39,15 +42,15 @@ export class ClientInfo {
   public open(client: ClientResponse) {
     this.data = [];
 
-    this.addValue('Nombre', client.personId.name);
-    this.addValue('Apellido', client.personId.lastName);
-    this.addValue('Calle', client.personId.street);
-    this.addValue('Altura', client.personId.streetNumber);
-    this.addValue('Localidad', client.personId.locality);
-    this.addValue('Telefono', client.personId.phoneNumber);
-    this.addValue('Email', client.personId.email);
-    this.addValue('DNI', client.personId.dni);
-    this.addValue('CUIT', client.personId.cuit);
+    this.addValue('Nombre', client.personId.name || '-');
+    this.addValue('Apellido', client.personId.lastName || '-');
+    this.addValue('Calle', client.personId.street || '-');
+    this.addValue('Altura', client.personId.streetNumber || '-');
+    this.addValue('Localidad', client.personId.locality || '-');
+    this.addValue('Telefono', client.personId.phoneNumber || '-');
+    this.addValue('Email', client.personId.email || '-');
+    this.addValue('DNI', client.personId.dni || '-');
+    this.addValue('CUIT', client.personId.cuit || '-');
 
     this.visible = true;
   }

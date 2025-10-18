@@ -47,7 +47,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
       [(visible)]="visible"
       [header]="isEditing ? 'Editar material' : 'Añadir nuevo material'"
       [blockScroll]="false"
-      styleClass="w-[30rem] h-[95vh] max-w-[95vw]"
+      styleClass="w-[30rem] h-max max-w-[95vw]"
       contentStyleClass="size-full"
     >
       <form [formGroup]="formGroup" class="flex flex-col gap-4 pt-3 h-full">
@@ -141,6 +141,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
           placeholder="Seleccióne un rubro"
           [editable]="true"
           (onBlur)="loadSubCategories()"
+          appendTo="body"
         />
 
         <p-select
@@ -149,6 +150,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
           formControlName="subCategory"
           placeholder="Seleccióne un subrubro"
           [editable]="true"
+          appendTo="body"
         />
       </form>
 

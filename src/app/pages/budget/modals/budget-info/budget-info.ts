@@ -31,6 +31,9 @@ import { LoadingService } from '@/common/services/loading';
     <p-dialog
       header="Información del presupuesto"
       [modal]="true"
+      [draggable]="false"
+      [closable]="true"
+      [closeOnEscape]="false"
       [(visible)]="visible"
       styleClass="max-w-[95dvw] max-h-[95dvh] w-[60rem] h-[98dvh] overflow-hidden"
       contentStyleClass="size-full !p-0"
@@ -115,6 +118,7 @@ export class BudgetInfo {
   ) {}
 
   public open(budget: BudgetResponse) {
+    this.tabValue = this.SummaryTabName;
     this.data = this.transformDataBudget.transform(budget);
     this.visible = true;
   }
