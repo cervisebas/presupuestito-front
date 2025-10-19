@@ -18,6 +18,8 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
 import { ClientTestService } from './services/client-test-service';
 import { NgStyle } from '@angular/common';
+import { DDniPipe } from '@/common/pipes/d-dni-pipe';
+import { PhonePipe } from '@/common/pipes/phone-pipe';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,6 +36,8 @@ import { NgStyle } from '@angular/common';
     ConfirmDialog,
     Toast,
     NgStyle,
+    DDniPipe,
+    PhonePipe,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -102,8 +106,8 @@ import { NgStyle } from '@angular/common';
           <tr>
             <td>{{ client.personId?.name || '-' }}</td>
             <td>{{ client.personId?.lastName || '-' }}</td>
-            <td>{{ client.personId?.dni || '-' }}</td>
-            <td>{{ client.personId?.phoneNumber || '-' }}</td>
+            <td>{{ client.personId?.dni || '-' | dDni }}</td>
+            <td>{{ client.personId?.phoneNumber || '-' | phone }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
@@ -271,7 +275,7 @@ export class ClientPage implements OnInit {
     this.loadingService.setLoading(true);
 
     try {
-      await this.clientTestService.createManyMaterials(20);
+      await this.clientTestService.createManyClients(20);
     } catch (error) {
       console.error(error);
     } finally {

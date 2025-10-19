@@ -1,5 +1,4 @@
 import { SupplierResponse } from '@/common/api/interfaces/responses/SupplierResponse';
-import { CurrencyPipe } from '@/common/pipes/currency-pipe';
 import { Component } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
@@ -7,7 +6,6 @@ import { TableModule } from 'primeng/table';
 @Component({
   selector: 'app-supplier-info',
   imports: [Dialog, TableModule],
-  providers: [CurrencyPipe],
   template: `
     <p-dialog
       header="Información del proveedor"
@@ -34,14 +32,16 @@ export class SupplierInfo {
     value: string;
   }[] = [];
 
-  constructor(private currencyPipe: CurrencyPipe) {}
+  constructor() {}
 
   public open(supplier: SupplierResponse) {
     this.data = [];
 
     this.addValue('Nombre Empresa', supplier.personId.nameCompany);
-    this.addValue('Calle', supplier.personId.street);
-    this.addValue('Número', supplier.personId.streetNumber);
+    this.addValue(
+      'Dirección',
+      `${supplier.personId.street} ${supplier.personId.streetNumber}`,
+    );
     this.addValue('Localidad', supplier.personId.locality);
     this.addValue('Teléfono ', supplier.personId.phoneNumber);
     this.addValue('E-mail', supplier.personId.email);

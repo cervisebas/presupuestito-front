@@ -16,6 +16,11 @@ import { DevService } from '@/common/services/dev-service';
 import { SupplierInfo } from './modals/supplier-info';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
+import { SupplierTestService } from './services/supplier-test-service';
+import { DCuilPipe } from '@/common/pipes/d-cuil-pipe';
+import { PhonePipe } from '@/common/pipes/phone-pipe';
+import { NgStyle } from '@angular/common';
+
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -30,6 +35,9 @@ import { Toast } from 'primeng/toast';
     SupplierInfo,
     ConfirmDialog,
     Toast,
+    NgStyle,
+    DCuilPipe,
+    PhonePipe,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -50,11 +58,31 @@ import { Toast } from 'primeng/toast';
           />
         </p-iconfield>
 
-        <p-button
-          label="Añadir"
-          icon="pi pi-plus"
-          (onClick)="supplierForm?.open()"
-        />
+        <div class="flex flex-row gap-4">
+          @if (devService.isDevMode()) {
+            <p-button
+              label="Eliminar todo"
+              icon="pi pi-trash"
+              severity="danger"
+              (onClick)="deleteAllSuppliers()"
+            />
+          }
+
+          @if (devService.isDevMode()) {
+            <p-button
+              label="Añadir 50 elementos"
+              icon="pi pi-plus"
+              severity="help"
+              (onClick)="createManyElements()"
+            />
+          }
+
+          <p-button
+            label="Añadir"
+            icon="pi pi-plus"
+            (onClick)="supplierForm?.open()"
+          />
+        </div>
       </div>
 
       <p-table
@@ -66,34 +94,28 @@ import { Toast } from 'primeng/toast';
       >
         <ng-template #header>
           <tr>
-            <th pSortableColumn="personId.name" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Empresa
-                <p-sortIcon field="personId.nameCompany" />
-              </div>
-            </th>
-            <th pSortableColumn="personId.cuit" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Cuit
-                <p-sortIcon field="personId.cuit" />
-              </div>
-            </th>
-            <th pSortableColumn="personId.phoneNumber" style="width: 20%">
-              <div class="flex items-center gap-2">
-                Telefono
-                <p-sortIcon field="personId.phoneNumber" />
-              </div>
-            </th>
-            <th style="width: 20%">
-              <div class="flex items-center gap-2">Acciónes</div>
-            </th>
+            @for (item of tableHeaderItems; track $index) {
+              <th
+                [pSortableColumn]="item.key || undefined"
+                [ngStyle]="{
+                  width: 100 / tableHeaderItems.length + '%',
+                }"
+              >
+                <div class="flex items-center gap-2">
+                  {{ item.label }}
+                  @if (item.key) {
+                    <p-sortIcon [field]="item.key" />
+                  }
+                </div>
+              </th>
+            }
           </tr>
         </ng-template>
         <ng-template #body let-supplier>
           <tr>
             <td>{{ supplier.personId?.nameCompany || '-' }}</td>
-            <td>{{ supplier.personId?.cuit || '-' }}</td>
-            <td>{{ supplier.personId?.phoneNumber || '-' }}</td>
+            <td>{{ supplier.personId?.cuit || '-' | dCuil }}</td>
+            <td>{{ supplier.personId?.phoneNumber || '-' | phone }}</td>
             <td>
               <div class="flex flex-row gap-4">
                 <p-button
@@ -165,6 +187,7 @@ export class SupplierPage implements OnInit {
     private messageService: MessageService,
     private loadingService: LoadingService,
     protected devService: DevService,
+    private supplierTestService: SupplierTestService,
   ) {}
 
   public ngOnInit() {
@@ -250,5 +273,31 @@ export class SupplierPage implements OnInit {
         });
       },
     });
+  }
+
+  protected async createManyElements() {
+    this.loadingService.setLoading(true);
+
+    try {
+      await this.supplierTestService.createManySuppliers(50);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+      this.loadData();
+    }
+  }
+
+  protected async deleteAllSuppliers() {
+    this.loadingService.setLoading(true);
+
+    try {
+      await this.supplierTestService.deleteAllSuppliers();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+      this.loadData();
+    }
   }
 }
