@@ -59,7 +59,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="name"
           />
-          <label for="name-input">Nombre</label>
+          <label for="name-input">
+            Nombre
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -84,7 +87,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="brand"
           />
-          <label for="brand-input">Marca</label>
+          <label for="brand-input">
+            Marca
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -97,7 +103,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
             styleClass="w-full"
           />
 
-          <label for="price-input">Precio</label>
+          <label for="price-input">
+            Precio
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -108,7 +117,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="color"
           />
-          <label for="color-input">Color</label>
+          <label for="color-input">
+            Color
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -120,7 +132,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="size"
           />
-          <label for="size-input">Medida</label>
+          <label for="size-input">
+            Medida
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -131,31 +146,51 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="unitSize"
           />
-          <label for="unit-size-input">Unidad de medida</label>
+          <label for="unit-size-input">
+            Unidad de medida
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
-        <p-select
-          [options]="categoryList"
-          [loading]="categoryLoading"
-          formControlName="category"
-          placeholder="Seleccióne un rubro"
-          [editable]="true"
-          (onBlur)="loadSubCategories()"
-          appendTo="body"
-        />
+        <p-floatlabel class="w-full" variant="on">
+          <p-select
+            class="w-full"
+            [options]="categoryList"
+            [loading]="categoryLoading"
+            formControlName="category"
+            [editable]="true"
+            (onBlur)="loadSubCategories()"
+            appendTo="body"
+          />
+          <label for="material-category">
+            Seleccióne un rubro
+            <b class="text-red-400">*</b>
+          </label>
+        </p-floatlabel>
 
-        <p-select
-          [options]="subCategoryList"
-          [loading]="subCategoryLoading"
-          formControlName="subCategory"
-          placeholder="Seleccióne un subrubro"
-          [editable]="true"
-          appendTo="body"
-        />
+        <p-floatlabel class="w-full" variant="on">
+          <p-select
+            class="w-full"
+            [options]="subCategoryList"
+            [loading]="subCategoryLoading"
+            formControlName="subCategory"
+            [editable]="true"
+            appendTo="body"
+          />
+          <label for="material-category">
+            Seleccióne un subrubro
+            <b class="text-red-400">*</b>
+          </label>
+        </p-floatlabel>
       </form>
 
       <ng-template #footer>
         <div class="w-full flex flex-row">
+          <div class="h-full flex flex-row items-center gap-2">
+            <b class="text-red-400">*</b>
+            Obligatorio
+          </div>
+
           <div class="flex flex-1 justify-end gap-2">
             @if (!isEditing) {
               <p-button
@@ -185,7 +220,7 @@ export class MaterialForm {
   protected visible = false;
   protected formGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    description: new FormControl('', [Validators.required]),
+    description: new FormControl('', []),
     brand: new FormControl('', [Validators.required]),
     price: new FormControl(1, [Validators.required, Validators.min(1)]),
     color: new FormControl('', [Validators.required]),
@@ -243,7 +278,7 @@ export class MaterialForm {
 
       this.formGroup.setValue({
         name: data.materialName,
-        description: data.materialDescription,
+        description: data.materialDescription || '',
         brand: data.materialBrand,
         price: data.price,
         color: data.materialColor,
@@ -413,7 +448,7 @@ export class MaterialForm {
         MaterialId: this.$editData?.materialId,
         price: Number(formValue.price),
         MaterialName: formValue.name!,
-        MaterialDescription: formValue.description!,
+        MaterialDescription: formValue.description || '',
         MaterialColor: formValue.color!,
         MaterialBrand: formValue.brand!,
         MaterialMeasure: String(formValue.size!),
