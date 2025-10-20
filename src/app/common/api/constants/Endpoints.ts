@@ -27,5 +27,6 @@ export const Endpoints = {
   FIXED_COST: API_BASE_URL + '/FixedCost',
   PAYMENTS: API_BASE_URL + '/Payments',
   PERSONS: API_BASE_URL + '/Person',
+  PERSONS_LOCALITIES: API_BASE_URL + '/Person/Localities',
   STATS: API_BASE_URL + '/Stats',
 };

@@ -75,68 +75,90 @@ import { TooltipModule } from 'primeng/tooltip';
                 <p-floatlabel variant="on">
                   <input
                     pInputText
-                    id="work-name"
+                    id="work-{{ index }}-name"
                     class="w-full"
                     maxlength="50"
                     autocomplete="off"
                     formControlName="name"
                   />
-                  <label for="work-name">Nombre del trabajo</label>
+                  <label for="work-{{ index }}-name">
+                    Nombre del trabajo
+                    <b class="text-red-400">*</b>
+                  </label>
                 </p-floatlabel>
 
                 <div class="flex w-full flex-row gap-4">
                   <p-floatlabel variant="on" class="w-full">
                     <p-inputnumber
-                      inputId="work-estimated-hours"
+                      inputId="work-{{ index }}-estimated-hours"
                       class="w-full"
                       formControlName="estimatedHours"
                     />
-                    <label for="work-estimated-hours">Horas estimadas</label>
+                    <label for="work-{{ index }}-estimated-hours">
+                      Horas estimadas
+                      <b class="text-red-400">*</b>
+                    </label>
                   </p-floatlabel>
 
-                  <p-datepicker
-                    class="w-full"
-                    placeholder="Fecha limite"
-                    formControlName="limitDate"
-                    iconDisplay="input"
-                    [showIcon]="true"
-                    dateFormat="dd/mm/yy"
-                    appendTo="body"
-                  />
+                  <p-floatlabel class="w-full" variant="on">
+                    <p-datepicker
+                      class="w-full"
+                      inputId="work-{{ index }}-limit-date"
+                      formControlName="limitDate"
+                      iconDisplay="input"
+                      [showIcon]="true"
+                      dateFormat="dd/mm/yy"
+                      appendTo="body"
+                    />
+                    <label for="work-{{ index }}-limit-date">
+                      Fecha limite
+                      <b class="text-red-400">*</b>
+                    </label>
+                  </p-floatlabel>
                 </div>
 
                 <p-floatlabel variant="on" class="w-full">
                   <p-inputnumber
-                    inputId="work-cost"
+                    inputId="work-{{ index }}-cost"
                     class="w-full"
                     formControlName="cost"
                     mode="currency"
                     currency="ARS"
                     locale="es-AR"
                   />
-                  <label for="work-cost">Ganancias</label>
+                  <label for="work-{{ index }}-cost">
+                    Ganancias
+                    <b class="text-red-400">*</b>
+                  </label>
                 </p-floatlabel>
 
                 <p-floatlabel variant="on" class="w-full">
                   <textarea
                     pTextarea
-                    id="work-notes"
+                    id="work-{{ index }}-notes"
                     rows="5"
                     cols="30"
                     class="w-full h-full resize-none"
                     formControlName="notes"
                   ></textarea>
-                  <label for="work-notes">Notas</label>
+                  <label for="work-{{ index }}-notes">Notas</label>
                 </p-floatlabel>
 
-                <p-select
-                  [options]="budgetStatements"
-                  optionLabel="label"
-                  optionValue="value"
-                  formControlName="status"
-                  placeholder="Estado"
-                  appendTo="body"
-                />
+                <p-floatlabel class="w-full" variant="on">
+                  <p-select
+                    class="w-full"
+                    inputId="work-{{ index }}-status"
+                    [options]="budgetStatements"
+                    optionLabel="label"
+                    optionValue="value"
+                    formControlName="status"
+                    appendTo="body"
+                  />
+                  <label for="work-{{ index }}-status">
+                    Estado
+                    <b class="text-red-400">*</b>
+                  </label>
+                </p-floatlabel>
               </div>
             </p-accordion-content>
           </p-accordion-panel>
@@ -165,9 +187,11 @@ import { TooltipModule } from 'primeng/tooltip';
                       </th>
                       <th class="!bg-gray-100 !border-0 !text-gray-500 w-7/10">
                         Material
+                        <b class="text-red-400">*</b>
                       </th>
                       <th class="!bg-gray-100 !border-0 !text-gray-500 w-2/10">
                         Cantidad
+                        <b class="text-red-400">*</b>
                       </th>
                       <th
                         class="!bg-gray-100 rounded-br-lg !border-0 !text-gray-500 w-2/10"
@@ -285,6 +309,9 @@ export class WorkItem implements OnInit, OnDestroy {
 
   @Input({ required: true })
   public data!: IWorkFormData;
+
+  @Input({ required: true })
+  public index!: number;
 
   @Input()
   public disableRemove?: boolean;

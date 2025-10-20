@@ -20,6 +20,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ISteapForm } from '../interfaces/ISteapForm';
 import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
 import { IClearForm } from '@/common/interfaces/IClearForm';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import moment from 'moment';
 
 @Component({
@@ -31,6 +32,7 @@ import moment from 'moment';
     FluidModule,
     TextareaModule,
     ReactiveFormsModule,
+    FloatLabelModule,
   ],
   providers: [
     {
@@ -40,53 +42,84 @@ import moment from 'moment';
   ],
   template: `
     <form [formGroup]="formGroup" class="flex flex-col gap-4 pt-3 h-full">
-      <p-select
-        [options]="clientList"
-        [loading]="clientLoading"
-        optionLabel="label"
-        optionValue="value"
-        formControlName="client"
-        placeholder="Seleccióne un cliente"
-        [filter]="true"
-        appendTo="body"
-      />
+      <p-floatlabel class="w-full" variant="on">
+        <p-select
+          class="w-full"
+          [options]="clientList"
+          [loading]="clientLoading"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="client"
+          [filter]="true"
+          appendTo="body"
+          inputId="budget-client"
+        />
+        <label for="budget-client">
+          Seleccióne un cliente
+          <b class="text-red-400">*</b>
+        </label>
+      </p-floatlabel>
 
-      <p-datepicker
-        placeholder="Fecha inicio"
-        formControlName="startDate"
-        iconDisplay="input"
-        [showIcon]="true"
-        dateFormat="dd/mm/yy"
-        appendTo="body"
-      />
+      <p-floatlabel class="w-full" variant="on">
+        <p-datepicker
+          class="w-full"
+          inputId="budget-start-data"
+          formControlName="startDate"
+          iconDisplay="input"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          appendTo="body"
+        />
+        <label for="budget-start-data">
+          Fecha inicio
+          <b class="text-red-400">*</b>
+        </label>
+      </p-floatlabel>
 
-      <p-datepicker
-        placeholder="Fecha limite"
-        formControlName="endDate"
-        iconDisplay="input"
-        [showIcon]="true"
-        dateFormat="dd/mm/yy"
-        appendTo="body"
-      />
+      <p-floatlabel class="w-full" variant="on">
+        <p-datepicker
+          class="w-full"
+          inputId="budget-end-data"
+          formControlName="endDate"
+          iconDisplay="input"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          appendTo="body"
+        />
+        <label for="budget-end-data">
+          Fecha limite
+          <b class="text-red-400">*</b>
+        </label>
+      </p-floatlabel>
 
-      <textarea
-        rows="5"
-        cols="30"
-        pTextarea
-        placeholder="Descripción"
-        autoResize="false"
-        class="resize-none"
-        formControlName="description"
-      ></textarea>
+      <p-floatlabel class="w-full" variant="on">
+        <textarea
+          id="budget-description"
+          rows="5"
+          cols="30"
+          pTextarea
+          autoResize="false"
+          class="w-full resize-none"
+          formControlName="description"
+        ></textarea>
+        <label for="budget-description">Descripción</label>
+      </p-floatlabel>
 
-      <p-select
-        [options]="budgetStatements"
-        optionLabel="label"
-        optionValue="value"
-        formControlName="status"
-        placeholder="Estado"
-        appendTo="body"
-      />
+      <p-floatlabel class="w-full" variant="on">
+        <p-select
+          class="w-full"
+          inputId="budget-status"
+          [options]="budgetStatements"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="status"
+          appendTo="body"
+        />
+        <label for="budget-status">
+          Estado
+          <b class="text-red-400">*</b>
+        </label>
+      </p-floatlabel>
     </form>
 
     <p-toast position="bottom-right" />
@@ -159,7 +192,7 @@ export class BudgetInformationStep
     const { startDate, endDate, description, status } = this.formGroup.controls;
 
     return {
-      descriptionBudget: description.value!,
+      descriptionBudget: description.value ?? '',
       clientId: client.clientId,
       budgetStatus: status.value!,
       dateCreated: startDate.value!,
@@ -187,6 +220,6 @@ export class BudgetInformationStep
   }
 
   get dialogStyle() {
-    return 'h-[30rem]';
+    return 'h-[32rem]';
   }
 }

@@ -27,6 +27,7 @@ import { IClearForm } from '@/common/interfaces/IClearForm';
       >
         @for (work of works; track work?.id) {
           <app-work-item
+            [index]="$index"
             [materials]="materialList"
             [(data)]="works[$index]"
             [disableRemove]="works.length === 1"

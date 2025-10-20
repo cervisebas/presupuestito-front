@@ -19,6 +19,7 @@ import { LoadingService } from '@/common/services/loading';
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
 import { ClientRequest } from '@/common/api/interfaces/requests/ClientRequest';
 import { Client } from '@/common/api/services/client';
+import { Person } from '@/common/api/services/person';
 
 @Component({
   selector: 'app-client-form',
@@ -55,7 +56,10 @@ import { Client } from '@/common/api/services/client';
             autocomplete="off"
             formControlName="name"
           />
-          <label for="name-input">Nombre *</label>
+          <label for="name-input">
+            Nombre
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -93,16 +97,14 @@ import { Client } from '@/common/api/services/client';
           </p-floatlabel>
         </div>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="locality-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="locality"
-          />
-          <label for="locality-input">Localidad</label>
-        </p-floatlabel>
+        <p-select
+          [options]="localitiesList"
+          [loading]="localitiesLoading"
+          formControlName="locality"
+          placeholder="Localidad"
+          [editable]="true"
+          appendTo="body"
+        />
 
         <p-floatlabel variant="on" class="w-full">
           <p-inputmask
@@ -113,7 +115,10 @@ import { Client } from '@/common/api/services/client';
             autocomplete="off"
             formControlName="phoneNumber"
           />
-          <label for="phone-input">Teléfono</label>
+          <label for="phone-input">
+            Teléfono
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -154,6 +159,11 @@ import { Client } from '@/common/api/services/client';
 
       <ng-template #footer>
         <div class="w-full flex flex-row">
+          <div class="h-full flex flex-row items-center gap-2">
+            <b class="text-red-400">*</b>
+            Obligatorio
+          </div>
+
           <div class="flex flex-1 justify-end gap-2">
             @if (!isEditing) {
               <p-button
@@ -195,8 +205,12 @@ export class ClientForm {
 
   private $editData?: ClientResponse;
 
+  protected localitiesLoading = false;
+  protected localitiesList: string[] = [];
+
   constructor(
     private clienteService: Client,
+    private personService: Person,
     private messageService: MessageService,
     private loadingService: LoadingService,
   ) {}
@@ -205,6 +219,8 @@ export class ClientForm {
     this.formGroup.reset();
     this.visible = true;
     this.$editData = editData;
+
+    this.loadLocalities();
 
     try {
       this.loadingService.setLoading(true);
@@ -230,6 +246,32 @@ export class ClientForm {
         email: data.personId.email ?? '',
         dni: data.personId.dni ?? '',
         cuit: data.personId.cuit ?? '',
+      });
+    }
+  }
+
+  private async loadLocalities() {
+    try {
+      const { locality } = this.formGroup.controls;
+
+      locality.disable();
+      this.localitiesLoading = true;
+
+      const localities = await lastValueFrom(
+        this.personService.getLocalities(),
+      );
+
+      locality.enable();
+
+      this.localitiesList = localities;
+      this.localitiesLoading = false;
+    } catch (error) {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al cargar las localidades',
+        detail:
+          'Ocurrio un error inesperado al cargar las localidades, por favor pruebe de nuevo más tarde.',
       });
     }
   }

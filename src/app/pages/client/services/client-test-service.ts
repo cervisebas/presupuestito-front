@@ -8,7 +8,7 @@ import { lastValueFrom } from 'rxjs';
 export class ClientTestService {
   constructor(private clientService: Client) {}
 
-  public async createManyMaterials(count: number) {
+  public async createManyClients(count: number) {
     for (let i = 0; i < count; i++) {
       try {
         await lastValueFrom(
