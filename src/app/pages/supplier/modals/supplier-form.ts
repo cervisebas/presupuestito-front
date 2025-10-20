@@ -19,6 +19,7 @@ import { LoadingService } from '@/common/services/loading';
 import { SupplierResponse } from '@/common/api/interfaces/responses/SupplierResponse';
 import { SupplierRequest } from '@/common/api/interfaces/requests/SupplierRequest';
 import { Supplier } from '@/common/api/services/supplier';
+import { Person } from '@/common/api/services/person';
 
 @Component({
   selector: 'app-supplier-form',
@@ -55,7 +56,10 @@ import { Supplier } from '@/common/api/services/supplier';
             autocomplete="off"
             formControlName="nameCompany"
           />
-          <label for="name-input">Nombre Empresa *</label>
+          <label for="name-input">
+            Nombre Empresa
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <div class="flex w-full flex-row gap-4">
@@ -82,16 +86,14 @@ import { Supplier } from '@/common/api/services/supplier';
           </p-floatlabel>
         </div>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="locality-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="locality"
-          />
-          <label for="locality-input">Localidad</label>
-        </p-floatlabel>
+        <p-select
+          [options]="localitiesList"
+          [loading]="localitiesLoading"
+          formControlName="locality"
+          placeholder="Localidad"
+          [editable]="true"
+          appendTo="body"
+        />
 
         <p-floatlabel variant="on" class="w-full">
           <p-inputMask
@@ -102,7 +104,10 @@ import { Supplier } from '@/common/api/services/supplier';
             autocomplete="off"
             formControlName="phoneNumber"
           />
-          <label for="phone-input">Teléfono *</label>
+          <label for="phone-input">
+            Teléfono
+            <b class="text-red-400">*</b>
+          </label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -131,6 +136,11 @@ import { Supplier } from '@/common/api/services/supplier';
 
       <ng-template #footer>
         <div class="w-full flex flex-row">
+          <div class="h-full flex flex-row items-center gap-2">
+            <b class="text-red-400">*</b>
+            Obligatorio
+          </div>
+
           <div class="flex flex-1 justify-end gap-2">
             @if (!isEditing) {
               <p-button
@@ -173,8 +183,12 @@ export class SupplierForm {
 
   private $editData?: SupplierResponse;
 
+  protected localitiesLoading = false;
+  protected localitiesList: string[] = [];
+
   constructor(
     private supplierService: Supplier,
+    private personService: Person,
     private messageService: MessageService,
     private loadingService: LoadingService,
   ) {}
@@ -183,6 +197,8 @@ export class SupplierForm {
     this.formGroup.reset();
     this.visible = true;
     this.$editData = editData;
+
+    this.loadLocalities();
 
     try {
       this.loadingService.setLoading(true);
@@ -209,6 +225,32 @@ export class SupplierForm {
         email: data.personId.email ?? '',
         dni: data.personId.dni ?? '',
         cuit: data.personId.cuit ?? '',
+      });
+    }
+  }
+
+  private async loadLocalities() {
+    try {
+      const { locality } = this.formGroup.controls;
+
+      locality.disable();
+      this.localitiesLoading = true;
+
+      const localities = await lastValueFrom(
+        this.personService.getLocalities(),
+      );
+
+      locality.enable();
+
+      this.localitiesList = localities;
+      this.localitiesLoading = false;
+    } catch (error) {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al cargar las localidades',
+        detail:
+          'Ocurrio un error inesperado al cargar las localidades, por favor pruebe de nuevo más tarde.',
       });
     }
   }

@@ -28,4 +28,8 @@ export class Person {
   public deletePerson(id_person: number) {
     return this.http.delete<void>(`${Endpoints.PERSONS}/${id_person}`);
   }
+
+  public getLocalities() {
+    return this.http.get<string[]>(Endpoints.PERSONS_LOCALITIES);
+  }
 }
