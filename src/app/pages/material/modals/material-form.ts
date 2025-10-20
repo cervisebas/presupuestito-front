@@ -161,6 +161,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
             [editable]="true"
             (onBlur)="loadSubCategories()"
             appendTo="body"
+            inputId="material-category"
           />
           <label for="material-category">
             Seleccióne un rubro
@@ -176,8 +177,9 @@ import { InputNumberModule } from 'primeng/inputnumber';
             formControlName="subCategory"
             [editable]="true"
             appendTo="body"
+            inputId="material-subcategory"
           />
-          <label for="material-category">
+          <label for="material-subcategory">
             Seleccióne un subrubro
             <b class="text-red-400">*</b>
           </label>

@@ -64,6 +64,13 @@ import { TransformDataBudget } from './services/transform-data-budget';
 
       <ng-template #footer>
         <div class="w-full flex flex-row">
+          @if (!finalStep) {
+            <div class="h-full flex flex-row items-center gap-2">
+              <b class="text-red-400">*</b>
+              Obligatorio
+            </div>
+          }
+
           <div class="flex flex-1 justify-end gap-2">
             <p-button
               label="Volver"
