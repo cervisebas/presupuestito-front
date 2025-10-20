@@ -288,7 +288,7 @@ export class MaterialForm {
       console.error(error);
       this.messageService.add({
         severity: 'error',
-        summary: 'Error al crear material',
+        summary: 'Error al cargar los rubros',
         detail:
           'Ocurrio un error inesperado al cargar los rubros, por favor pruebe de nuevo más tarde.',
       });
@@ -344,7 +344,7 @@ export class MaterialForm {
       console.error(error);
       this.messageService.add({
         severity: 'error',
-        summary: 'Error al crear material',
+        summary: 'Error al cargar los sub-rubros',
         detail:
           'Ocurrio un error inesperado al cargar los sub-rubros, por favor pruebe de nuevo más tarde.',
       });
