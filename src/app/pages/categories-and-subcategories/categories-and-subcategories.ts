@@ -113,8 +113,8 @@ import { cloneDeep } from 'lodash';
                     pInputText
                     type="text"
                     [(ngModel)]="category.categoryName"
-                    (blur)="editCategory(index, category)"
-                    (keydown.enter)="editCategory(index, category)"
+                    (blur)="editCategory(category)"
+                    (keydown.enter)="editCategory(category)"
                   />
                 </ng-template>
                 <ng-template #output>
@@ -178,21 +178,9 @@ import { cloneDeep } from 'lodash';
                               pInputText
                               type="text"
                               [(ngModel)]="subcategory.subCategoryName"
-                              (blur)="
-                                editSubCategory(
-                                  categoryData.indexOf(category),
-                                  eIndex,
-                                  category,
-                                  subcategory
-                                )
-                              "
+                              (blur)="editSubCategory(category, subcategory)"
                               (keydown.enter)="
-                                editSubCategory(
-                                  categoryData.indexOf(category),
-                                  eIndex,
-                                  category,
-                                  subcategory
-                                )
+                                editSubCategory(category, subcategory)
                               "
                             />
                           </ng-template>
@@ -324,8 +312,16 @@ export class CategoriesAndSubcategoriesPage implements OnInit {
     });
   }
 
-  protected editCategory(index: number, category: CategoryResponse) {
-    if (category.categoryName === this.$categoryData[index].categoryName) {
+  protected editCategory(category: CategoryResponse) {
+    const _category = this.$categoryData.find(
+      (c) => c.categoryId === category.categoryId,
+    );
+
+    if (!_category) {
+      return;
+    }
+
+    if (category.categoryName === _category.categoryName) {
       return;
     }
 
@@ -359,16 +355,26 @@ export class CategoriesAndSubcategoriesPage implements OnInit {
   }
 
   protected editSubCategory(
-    indexCategory: number,
-    indexSubCategory: number,
     category: CategoryResponse,
     subCategory: SubCategoryMaterialResponse,
   ) {
-    if (
-      subCategory.subCategoryName ===
-      this.$categoryData[indexCategory].subCategories[indexSubCategory]
-        .subCategoryName
-    ) {
+    const _category = this.$categoryData.find(
+      (c) => c.categoryId === category.categoryId,
+    );
+
+    if (!_category) {
+      return;
+    }
+
+    const _subcategory = _category.subCategories.find(
+      (s) => s.subCategoryMaterialId === subCategory.subCategoryMaterialId,
+    );
+
+    if (!_subcategory) {
+      return;
+    }
+
+    if (subCategory.subCategoryName === _subcategory.subCategoryName) {
       return;
     }
 
