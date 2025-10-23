@@ -17,6 +17,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SubCategoryMaterialResponse } from '@/common/api/interfaces/responses/SubCategoryMaterialResponse';
 import { CategoryResponse } from '@/common/api/interfaces/responses/CategoryResponse';
 import { Subcategory } from '@/common/api/services/subcategory';
+import { FormsModule } from '@angular/forms';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-categories-and-subcategories',
@@ -30,6 +32,7 @@ import { Subcategory } from '@/common/api/services/subcategory';
     TableModule,
     ConfirmDialog,
     Toast,
+    FormsModule,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -67,7 +70,7 @@ import { Subcategory } from '@/common/api/services/subcategory';
         <ng-template #header>
           <tr>
             <th class="w-1/10"></th>
-            <th pSortableColumn="subCategoryName" class="w-6/10">
+            <th pSortableColumn="categoryName" class="w-6/10">
               <div class="flex items-center gap-2">
                 Nombre
                 <p-sortIcon field="subCategoryName" />
@@ -81,7 +84,12 @@ import { Subcategory } from '@/common/api/services/subcategory';
             </th>
           </tr>
         </ng-template>
-        <ng-template #body let-category let-expanded="expanded">
+        <ng-template
+          #body
+          let-category
+          let-expanded="expanded"
+          let-index="rowIndex"
+        >
           <tr>
             <td>
               <p-button
@@ -94,8 +102,25 @@ import { Subcategory } from '@/common/api/services/subcategory';
                 [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
               />
             </td>
-            <td>
-              {{ category.categoryName }}
+            <td
+              [pEditableColumn]="category.categoryName"
+              pEditableColumnField="categoryName"
+            >
+              <p-cellEditor>
+                <ng-template #input>
+                  <input
+                    fluid
+                    pInputText
+                    type="text"
+                    [(ngModel)]="category.categoryName"
+                    (blur)="editCategory(index, category)"
+                    (keydown.enter)="editCategory(index, category)"
+                  />
+                </ng-template>
+                <ng-template #output>
+                  {{ category.categoryName }}
+                </ng-template>
+              </p-cellEditor>
             </td>
             <td>
               {{ category.subCategories.length }}
@@ -139,10 +164,42 @@ import { Subcategory } from '@/common/api/services/subcategory';
                       </th>
                     </tr>
                   </ng-template>
-                  <ng-template #body let-subcategory>
+                  <ng-template #body let-subcategory let-eIndex="rowIndex">
                     <tr>
-                      <td class="!bg-gray-100">
-                        {{ subcategory.subCategoryName }}
+                      <td
+                        class="!bg-gray-100"
+                        [pEditableColumn]="subcategory.subCategoryName"
+                        pEditableColumnField="subCategoryName"
+                      >
+                        <p-cellEditor>
+                          <ng-template #input>
+                            <input
+                              fluid
+                              pInputText
+                              type="text"
+                              [(ngModel)]="subcategory.subCategoryName"
+                              (blur)="
+                                editSubCategory(
+                                  categoryData.indexOf(category),
+                                  eIndex,
+                                  category,
+                                  subcategory
+                                )
+                              "
+                              (keydown.enter)="
+                                editSubCategory(
+                                  categoryData.indexOf(category),
+                                  eIndex,
+                                  category,
+                                  subcategory
+                                )
+                              "
+                            />
+                          </ng-template>
+                          <ng-template #output>
+                            {{ subcategory.subCategoryName }}
+                          </ng-template>
+                        </p-cellEditor>
                       </td>
                       <td class="!bg-gray-100">
                         <div class="flex flex-row gap-4 justify-center">
@@ -203,7 +260,7 @@ export class CategoriesAndSubcategoriesPage implements OnInit {
 
     this.category.getCategoriesWithSuncategories().subscribe({
       next: (categories) => {
-        this.$categoryData = [...categories];
+        this.$categoryData = cloneDeep(categories);
         this.categoryData = categories;
       },
       error: (err) => {
@@ -265,6 +322,84 @@ export class CategoriesAndSubcategoriesPage implements OnInit {
         });
       },
     });
+  }
+
+  protected editCategory(index: number, category: CategoryResponse) {
+    if (category.categoryName === this.$categoryData[index].categoryName) {
+      return;
+    }
+
+    this.loadingService.setLoading(true);
+    this.category
+      .updateCategory(category.categoryId, {
+        CategoryName: category.categoryName,
+      })
+      .subscribe({
+        next: () => {
+          this.loadingService.setLoading(false);
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Rubro editado',
+            detail: `Se edito correctamente el Rubro "${category.categoryName}"?.`,
+          });
+          this.loadData();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingService.setLoading(false);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error al editar el Rubro',
+            detail:
+              'Ocurrio un error inesperado al editar el Rubro, por favor pruebe de nuevo más tarde.',
+          });
+          this.loadData();
+        },
+      });
+  }
+
+  protected editSubCategory(
+    indexCategory: number,
+    indexSubCategory: number,
+    category: CategoryResponse,
+    subCategory: SubCategoryMaterialResponse,
+  ) {
+    if (
+      subCategory.subCategoryName ===
+      this.$categoryData[indexCategory].subCategories[indexSubCategory]
+        .subCategoryName
+    ) {
+      return;
+    }
+
+    this.loadingService.setLoading(true);
+    this.subCategory
+      .updateSubcategory(subCategory.subCategoryMaterialId, {
+        subCategoryName: subCategory.subCategoryName,
+        categoryId: category.categoryId,
+      })
+      .subscribe({
+        next: () => {
+          this.loadingService.setLoading(false);
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Sub-Rubro editado',
+            detail: `Se edito correctamente el Sub-Rubro "${subCategory.subCategoryName}"?.`,
+          });
+          this.loadData();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingService.setLoading(false);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error al editar el Sub-Rubro',
+            detail:
+              'Ocurrio un error inesperado al editar el Sub-Rubro, por favor pruebe de nuevo más tarde.',
+          });
+          this.loadData();
+        },
+      });
   }
 
   protected deleteSubCategory(

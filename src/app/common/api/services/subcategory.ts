@@ -28,8 +28,14 @@ export class Subcategory {
     );
   }
 
-  public updateSubcategory(data: SubCategoryMaterialRequest) {
-    return this.http.put<void>(Endpoints.SUB_CATEGORIES, data);
+  public updateSubcategory(
+    id_subcategory: number,
+    data: SubCategoryMaterialRequest,
+  ) {
+    return this.http.put<void>(
+      `${Endpoints.SUB_CATEGORIES}/${id_subcategory}`,
+      data,
+    );
   }
 
   public deleteSubcategory(id_subcategory: number) {

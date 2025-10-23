@@ -31,8 +31,8 @@ export class Category {
     return this.http.post<CategoryResponse>(Endpoints.CATEGORIES, data);
   }
 
-  public updateCategory(data: CategoryRequest) {
-    return this.http.put<void>(Endpoints.CATEGORIES, data);
+  public updateCategory(id_category: number, data: CategoryRequest) {
+    return this.http.put<void>(`${Endpoints.CATEGORIES}/${id_category}`, data);
   }
 
   public deleteCategory(id_category: number) {
