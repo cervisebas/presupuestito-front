@@ -24,7 +24,7 @@ export class MenuRouter {
         {
           label: 'Trabajos',
           icon: 'pi pi-hammer',
-          routerLink: ['/uikit/formlayout'],
+          routerLink: ['/works'],
         },
         {
           label: 'Clientes',
