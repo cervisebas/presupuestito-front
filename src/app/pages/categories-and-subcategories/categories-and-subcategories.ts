@@ -19,6 +19,8 @@ import { CategoryResponse } from '@/common/api/interfaces/responses/CategoryResp
 import { Subcategory } from '@/common/api/services/subcategory';
 import { FormsModule } from '@angular/forms';
 import { cloneDeep } from 'lodash';
+import { CategoryForm } from './modals/category-form';
+import { SubcategoryForm } from './modals/subcategory-form';
 
 @Component({
   selector: 'app-categories-and-subcategories',
@@ -33,6 +35,8 @@ import { cloneDeep } from 'lodash';
     ConfirmDialog,
     Toast,
     FormsModule,
+    CategoryForm,
+    SubcategoryForm,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -54,7 +58,11 @@ import { cloneDeep } from 'lodash';
         </p-iconfield>
 
         <div class="flex flex-row gap-4">
-          <p-button label="Añadir" icon="pi pi-plus" />
+          <p-button
+            label="Añadir"
+            icon="pi pi-plus"
+            (onClick)="categoryForm.open()"
+          />
         </div>
       </div>
 
@@ -144,7 +152,15 @@ import { cloneDeep } from 'lodash';
           <tr>
             <td colspan="7" class="bg-gray-100">
               <div class="p-4">
-                <h5>Sub-Rubros</h5>
+                <div class="w-full flex flex-row justify-between px-4">
+                  <h5>Sub-Rubros</h5>
+
+                  <p-button
+                    label="Añadir"
+                    icon="pi pi-plus"
+                    (onClick)="subCategoryForm.open(category)"
+                  />
+                </div>
                 <p-table [value]="category.subCategories" dataKey="categoryId">
                   <ng-template #header>
                     <tr>
@@ -211,6 +227,9 @@ import { cloneDeep } from 'lodash';
 
     <p-confirmdialog styleClass="max-w-9/10" />
     <p-toast position="bottom-right" />
+
+    <app-category-form #categoryForm (reloadTable)="loadData()" />
+    <app-subcategory-form #subCategoryForm (reloadTable)="loadData()" />
   `,
 })
 export class CategoriesAndSubcategoriesPage implements OnInit {
