@@ -6,6 +6,7 @@ import { ClientPage } from './app/pages/client/client';
 import { MaterialPage } from '@/pages/material/material';
 import { BudgetPage } from '@/pages/budget/budget';
 import { SupplierPage } from '@/pages/supplier/supplier';
+import { WorkPage } from '@/pages/work/work';
 
 export const appRoutes: Routes = [
   {
@@ -17,6 +18,7 @@ export const appRoutes: Routes = [
       { path: 'materials', component: MaterialPage },
       { path: 'budgets', component: BudgetPage },
       { path: 'suppliers', component: SupplierPage },
+      { path: 'works', component: WorkPage },
     ],
   },
   { path: 'notfound', component: Notfound },
