@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Endpoints } from '../constants/Endpoints';
 import { CategoryRequest } from '../interfaces/requests/CategoryRequest';
 import { CategoryResponse } from '../interfaces/responses/CategoryResponse';
+import { CategoryWithSubcategoriesResponse } from '../interfaces/responses/CategoryWithSubcategoriesResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,12 @@ export class Category {
 
   public getCategories() {
     return this.http.get<CategoryResponse[]>(Endpoints.CATEGORIES);
+  }
+
+  public getCategoriesWithSuncategories() {
+    return this.http.get<CategoryWithSubcategoriesResponse[]>(
+      Endpoints.CATEGORIES_WITH_SUBCATEGORIES,
+    );
   }
 
   public getCategoryById(id_category: number) {
