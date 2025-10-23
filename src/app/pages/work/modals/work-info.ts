@@ -59,11 +59,21 @@ export class WorkInfo {
 
     this.addValue('Nombre', work.workName);
     this.addValue('Estado', work.workStatus);
+    this.addValue('Nro Presupuesto', work.budgetId.toString());
     this.addValue('Horas estimadas', work.estimatedHoursWorked.toString());
     this.addValue('Fecha Límite', new Date(work.deadLine).toLocaleDateString());
+    this.addValue(
+      'Materiales',
+      work.itemsId
+        .map(
+          (item) =>
+            `${item.oMaterial.materialName} - Cantidad: ${item.quantity}`,
+        )
+        .join(', ') || '-',
+    );
     this.addValue('Costo', work.costPrice.toString());
-    this.addValue('Nro Presupuesto', work.budgetId.toString());
     this.addValue('Notas', work.notes);
+
     this.visible = true;
   }
 
