@@ -20,6 +20,7 @@ import { ClientTestService } from './services/client-test-service';
 import { NgStyle } from '@angular/common';
 import { DDniPipe } from '@/common/pipes/d-dni-pipe';
 import { PhonePipe } from '@/common/pipes/phone-pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -177,6 +178,8 @@ export class ClientPage implements OnInit {
     },
   ];
 
+  private openClientId?: number;
+
   constructor(
     private client: Client,
     private arraySearch: ArraySearch,
@@ -185,7 +188,12 @@ export class ClientPage implements OnInit {
     private loadingService: LoadingService,
     protected devService: DevService,
     private clientTestService: ClientTestService,
-  ) {}
+    router: Router,
+  ) {
+    this.checkIfShouldOpenClient(
+      router.currentNavigation()?.extras?.state ?? {},
+    );
+  }
 
   public ngOnInit() {
     this.loadData();
@@ -221,11 +229,35 @@ export class ClientPage implements OnInit {
       error: (err) => {
         this.error = err;
         this.loading = false;
+        this.openReveivedClient();
       },
       complete: () => {
         this.loading = false;
+        this.openReveivedClient();
       },
     });
+  }
+
+  private openReveivedClient() {
+    if (!this.openClientId) return;
+
+    const clientData = this.$clientData.find(
+      (budget) => budget.clientId === this.openClientId,
+    );
+
+    if (clientData) {
+      this.clientInfo?.open(clientData);
+    }
+
+    this.loadingService.setLoading(false);
+  }
+
+  private checkIfShouldOpenClient(states: Record<string, any>) {
+    this.openClientId = states?.['clientId'];
+
+    if (this.openClientId) {
+      this.loadingService.setLoading(true);
+    }
   }
 
   protected deleteClient(event: Event, client: ClientResponse) {

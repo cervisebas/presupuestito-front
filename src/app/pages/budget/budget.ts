@@ -189,7 +189,7 @@ export class BudgetPage implements OnInit {
     private messageService: MessageService,
     private loadingService: LoadingService,
     protected devService: DevService,
-    private router: Router,
+    router: Router,
   ) {
     this.checkIfShouldOpenBudget(
       router.currentNavigation()?.extras?.state ?? {},

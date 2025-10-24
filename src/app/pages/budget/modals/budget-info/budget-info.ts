@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { GeneratePdfService } from '@/common/services/generate-pdf';
 import { PrintDocumentService } from '@/common/services/print-document';
 import { LoadingService } from '@/common/services/loading';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-budget-info',
@@ -75,18 +76,20 @@ import { LoadingService } from '@/common/services/loading';
             </div>
           }
           <div class="flex flex-1 justify-end gap-2">
-            <p-button
-              label="Imprimir"
-              severity="secondary"
-              [disabled]="tabValue !== BudgetTabName"
-              (onClick)="printDocument()"
-            />
+            @if (tabValue !== BudgetTabName) {
+              <p-button
+                label="Ver perfil de cliente"
+                (onClick)="showClient()"
+              />
+            } @else {
+              <p-button
+                label="Imprimir"
+                severity="secondary"
+                (onClick)="printDocument()"
+              />
 
-            <p-button
-              label="Descargar"
-              [disabled]="tabValue !== BudgetTabName"
-              (onClick)="saveDocument()"
-            />
+              <p-button label="Descargar" (onClick)="saveDocument()" />
+            }
           </div>
         </div>
       </ng-template>
@@ -115,12 +118,21 @@ export class BudgetInfo {
     private generatePdfService: GeneratePdfService,
     private printDocumentService: PrintDocumentService,
     private loadingService: LoadingService,
+    private router: Router,
   ) {}
 
   public open(budget: BudgetResponse) {
     this.tabValue = this.SummaryTabName;
     this.data = this.transformDataBudget.transform(budget);
     this.visible = true;
+  }
+
+  protected showClient() {
+    this.router.navigate(['/clients'], {
+      state: {
+        clientId: this.data?.info.clientId,
+      },
+    });
   }
 
   private getPdfCurrentTab() {
