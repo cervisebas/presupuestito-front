@@ -122,7 +122,7 @@ import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse
                   icon="pi pi-trash"
                   severity="danger"
                   aria-label="Eliminar"
-                  (onClick)="deleteMaterial($event, product)"
+                  (onClick)="deleteBudget($event, product)"
                 />
               </div>
             </td>
@@ -233,7 +233,7 @@ export class BudgetPage implements OnInit {
     );
   }
 
-  protected deleteMaterial(event: Event, budget: BudgetResponse) {
+  protected deleteBudget(event: Event, budget: BudgetResponse) {
     const clientName =
       budget.clientId.personId.name + ' ' + budget.clientId.personId.lastName;
 

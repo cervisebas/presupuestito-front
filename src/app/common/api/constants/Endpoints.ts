@@ -16,6 +16,7 @@ export const Endpoints = {
   MATERIALS: API_BASE_URL + '/Material',
   SUB_CATEGORIES: API_BASE_URL + '/SubCategoryMaterial',
   CATEGORIES: API_BASE_URL + '/Category',
+  CATEGORIES_WITH_SUBCATEGORIES: API_BASE_URL + '/Category/WithSubcategory',
   SUPPLIERS: API_BASE_URL + '/Supplier',
   SUPPLIER_HISTORIES: API_BASE_URL + '/SupplierHistory',
   INVOICES: API_BASE_URL + '/Invoice',

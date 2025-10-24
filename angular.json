@@ -44,7 +44,8 @@
               "moment",
               "rgbcolor",
               "raf",
-              "core-js"
+              "core-js",
+              "lodash"
             ]
           },
           "configurations": {
