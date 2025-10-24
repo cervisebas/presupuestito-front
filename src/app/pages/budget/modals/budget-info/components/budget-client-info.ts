@@ -13,7 +13,7 @@ import { GenerateBudgetSections } from '../services/generate-budget-sections';
 import { ISectionBudgetItem } from '../interfaces/ISectionBudgetItem';
 import { DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@/common/pipes/currency-pipe';
-import { DebounceInput } from '@/common/directives/debounce-input';
+
 import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
 import { ContenteditableValueAccessorDirective } from '@/common/directives/contenteditable-value-accessor';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -25,7 +25,6 @@ import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation
     DatePipe,
     CurrencyPipe,
     Divider,
-    DebounceInput,
     ContenteditableValueAccessorDirective,
     ReactiveFormsModule,
   ],

@@ -37,6 +37,11 @@ export class MenuRouter {
           routerLink: ['/materials'],
         },
         {
+          label: 'Rubros y Sub-Rubros',
+          icon: 'pi pi-tags',
+          routerLink: ['/categories-and-subcategories'],
+        },
+        {
           label: 'Proveedores',
           icon: 'pi pi-building',
           routerLink: ['/suppliers'],

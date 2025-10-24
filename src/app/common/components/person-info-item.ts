@@ -1,10 +1,10 @@
-import { NgClass, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { StringUtils } from '../services/string-utils';
 
 @Component({
   selector: 'app-person-info-item',
-  imports: [NgClass, NgStyle],
+  imports: [NgStyle],
   template: `
     <div class="flex flex-row py-2">
       <div
