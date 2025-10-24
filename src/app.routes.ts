@@ -1,23 +1,31 @@
 import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
-import { Dashboard } from './app/pages/dashboard/dashboard';
-import { Documentation } from './app/pages/documentation/documentation';
-import { Landing } from './app/pages/landing/landing';
+import { DashboardPage } from './app/pages/dashboard/dashboard';
 import { Notfound } from './app/pages/notfound/notfound';
+import { ClientPage } from './app/pages/client/client';
+import { MaterialPage } from '@/pages/material/material';
+import { BudgetPage } from '@/pages/budget/budget';
+import { SupplierPage } from '@/pages/supplier/supplier';
+import { WorkPage } from '@/pages/work/work';
+import { CategoriesAndSubcategoriesPage } from '@/pages/categories-and-subcategories/categories-and-subcategories';
 
 export const appRoutes: Routes = [
-    {
-        path: '',
-        component: AppLayout,
-        children: [
-            { path: '', component: Dashboard },
-            { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
-            { path: 'documentation', component: Documentation },
-            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
-        ]
-    },
-    { path: 'landing', component: Landing },
-    { path: 'notfound', component: Notfound },
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
-    { path: '**', redirectTo: '/notfound' }
+  {
+    path: '',
+    component: AppLayout,
+    children: [
+      { path: '', component: DashboardPage },
+      { path: 'clients', component: ClientPage },
+      { path: 'materials', component: MaterialPage },
+      { path: 'budgets', component: BudgetPage },
+      { path: 'suppliers', component: SupplierPage },
+      { path: 'works', component: WorkPage },
+      {
+        path: 'categories-and-subcategories',
+        component: CategoriesAndSubcategoriesPage,
+      },
+    ],
+  },
+  { path: 'notfound', component: Notfound },
+  { path: '**', redirectTo: '/notfound' },
 ];

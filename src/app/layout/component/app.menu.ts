@@ -1,55 +1,33 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { MenuRouter } from '@/common/services/menu-router';
 
 @Component({
-    selector: 'app-menu',
-    standalone: true,
-    imports: [CommonModule, AppMenuitem, RouterModule],
-    template: `<ul class="layout-menu">
-        <ng-container *ngFor="let item of model; let i = index">
-            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
-            <li *ngIf="item.separator" class="menu-separator"></li>
-        </ng-container>
-    </ul> `
+  selector: 'app-menu',
+  standalone: true,
+  imports: [AppMenuitem, RouterModule],
+  template: `
+    <ul class="layout-menu">
+      @for (item of model; track $index) {
+        @if (!item.separator) {
+          <li app-menuitem [item]="item" [index]="$index" [root]="true"></li>
+        }
+
+        @if (item.separator) {
+          <li class="menu-separator"></li>
+        }
+      }
+    </ul>
+  `,
 })
 export class AppMenu {
-    model: MenuItem[] = [];
+  protected model: MenuItem[] = [];
 
-    ngOnInit() {
-        this.model = [
-            {
-                label: 'Menu',
-                items: [
-                    {
-                        label: 'Presupuestar',
-                        icon: 'pi pi-file-edit',
-                        routerLink: ['/uikit/formlayout']
-                    },
-                    {
-                        label: 'Trabajos',
-                        icon: 'pi pi-hammer',
-                        routerLink: ['/uikit/formlayout']
-                    },
-                    {
-                        label: 'Clientes',
-                        icon: 'pi pi-users',
-                        routerLink: ['/uikit/formlayout']
-                    },
-                    {
-                        label: 'Materiales',
-                        icon: 'pi pi-box',
-                        routerLink: ['/uikit/formlayout']
-                    },
-                    {
-                        label: 'Proveedores',
-                        icon: 'pi pi-building',
-                        routerLink: ['/uikit/formlayout']
-                    },
-                ],
-            },
-        ];
-    }
+  constructor(private menuRouter: MenuRouter) {}
+
+  ngOnInit() {
+    this.model = this.menuRouter.getMenuItems();
+  }
 }
