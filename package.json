@@ -12,7 +12,8 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "format": "prettier --write \"src/**/*.{ts,html,scss,sass}\"",
-    "check-format": "prettier --check \"src/**/*.{ts,html,scss,sass}\""
+    "check-format": "prettier --check \"src/**/*.{ts,html,scss,sass}\"",
+    "cleanup-unused-imports": "ng generate @angular/core:cleanup-unused-imports"
   },
   "private": true,
   "dependencies": {

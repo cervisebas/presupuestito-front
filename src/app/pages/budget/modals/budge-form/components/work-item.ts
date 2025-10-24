@@ -22,7 +22,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { TextareaModule } from 'primeng/textarea';
 import { BudgetStatements } from '@/pages/budget/constants/BudgetStatements';
 import { SelectModule } from 'primeng/select';
-import { StyleClass } from 'primeng/styleclass';
+
 import { TableModule } from 'primeng/table';
 import { ISelectItem } from '@/common/interfaces/ISelectItem';
 import { NgClass } from '@angular/common';
@@ -43,7 +43,6 @@ import { TooltipModule } from 'primeng/tooltip';
     InputNumber,
     DatePickerModule,
     TextareaModule,
-    StyleClass,
     TableModule,
     SelectModule,
     NgClass,
