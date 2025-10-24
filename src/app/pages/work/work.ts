@@ -1,5 +1,5 @@
 import { LoadingContainer } from '@/common/components/loading-container';
-import { Component, OnInit, viewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { InputIcon } from 'primeng/inputicon';
@@ -18,7 +18,7 @@ import { Work } from '@/common/api/services/work';
 import { WorkInfo } from './modals/work-info';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-work',
   imports: [
     Button,
     InputIcon,
@@ -66,7 +66,7 @@ import { WorkInfo } from './modals/work-info';
               <th
                 [pSortableColumn]="item.key || undefined"
                 [ngStyle]="{
-                  width: 100 / tableHeaderItems.length + '%',
+                  width: 90 / tableHeaderItems.length + '%',
                 }"
               >
                 <div class="flex items-center gap-2">
@@ -77,6 +77,9 @@ import { WorkInfo } from './modals/work-info';
                 </div>
               </th>
             }
+            <th class="w-5">
+              <div class="flex items-center gap-2">Acciónes</div>
+            </th>
           </tr>
         </ng-template>
         <ng-template #body let-work>
@@ -85,23 +88,12 @@ import { WorkInfo } from './modals/work-info';
             <td>{{ work.workStatus }}</td>
             <td>{{ work.deadLine | date: 'dd/MM/yyyy' }}</td>
             <td>
-              <div class="flex flex-row gap-4">
+              <div class="flex flex-row gap-4 jsutify-center">
                 <p-button
                   icon="pi pi-info-circle"
                   severity="info"
                   aria-label="Información"
-                  (onClick)="workInfo()?.open(work)"
-                />
-                <p-button
-                  icon="pi pi-pencil"
-                  severity="warn"
-                  aria-label="Editar"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  aria-label="Eliminar"
-                  (onClick)="deleteWork($event, work)"
+                  (onClick)="workInfo.open(work)"
                 />
               </div>
             </td>
@@ -113,7 +105,7 @@ import { WorkInfo } from './modals/work-info';
     <p-confirmdialog styleClass="max-w-9/10" />
     <p-toast position="bottom-right" />
 
-    <app-work-info />
+    <app-work-info #workInfo />
   `,
 })
 export class WorkPage implements OnInit {
@@ -121,8 +113,6 @@ export class WorkPage implements OnInit {
   protected loading = true;
   protected $workData: WorkResponse[] = [];
   protected workData: WorkResponse[] = [];
-
-  protected readonly workInfo = viewChild(WorkInfo);
 
   protected tableHeaderItems = [
     {
@@ -136,10 +126,6 @@ export class WorkPage implements OnInit {
     {
       key: 'deadLine',
       label: 'Fecha Limite',
-    },
-    {
-      key: null,
-      label: 'Acciónes',
     },
   ];
 
@@ -159,14 +145,7 @@ export class WorkPage implements OnInit {
   protected onSearch(event: string) {
     this.workData = this.arraySearch.search(
       this.$workData,
-      [
-        'workName',
-        'workStatus',
-        'deadLine',
-        'estimatedHoursWorked',
-        'costPrice',
-        'notes',
-      ],
+      ['workName', 'workStatus', 'notes'],
       event,
     );
   }
@@ -193,13 +172,7 @@ export class WorkPage implements OnInit {
   protected deleteWork(event: Event, work: WorkResponse) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: `
-      ¿Está seguro/a que desea eliminar el trabajo "${work.workName}"?
-      <br><br>
-      ⚠️ <strong>Advertencia:</strong> Esta acción afectará los presupuestos que ya lo incluyen.
-      <br>
-      No se podrá deshacer.
-    `,
+      message: `¿Está seguro/a que desea eliminar el trabajo "${work.workName}"?`,
       header: 'Confirme eliminación',
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancelar',

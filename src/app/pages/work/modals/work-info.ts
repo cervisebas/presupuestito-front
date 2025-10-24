@@ -3,11 +3,23 @@ import { Component } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { WorkResponse } from '@/common/api/interfaces/responses/WorkResponse';
+import { PersonInfo } from '@/common/components/person-info';
+import { PersonInfoItem } from '@/common/components/person-info-item';
+import { DatePipe } from '@angular/common';
+import { Button } from 'primeng/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-work-info',
-  imports: [Dialog, TableModule],
-  providers: [CurrencyPipe],
+  imports: [
+    Dialog,
+    TableModule,
+    PersonInfo,
+    PersonInfoItem,
+    DatePipe,
+    CurrencyPipe,
+    Button,
+  ],
   template: `
     <p-dialog
       header="Información del trabajo"
@@ -18,69 +30,68 @@ import { WorkResponse } from '@/common/api/interfaces/responses/WorkResponse';
       [(visible)]="visible"
       styleClass="max-w-9/10 w-3/10 min-w-[400px]"
     >
-      <ng-template pTemplate="header">
-        <div class="flex items-center gap-2">
-          <span class="font-semibold text-lg">Información del trabajo</span>
+      @if (data) {
+        <app-person-info icon="pi-hammer" [userTitle]="data.workName">
+          <app-person-info-item
+            label="Estado"
+            [minWidthLabel]="minWidthLabelItem"
+            [value]="data.workStatus"
+          />
+          <app-person-info-item
+            label="Horas estimadas"
+            [minWidthLabel]="minWidthLabelItem"
+            [value]="data.estimatedHoursWorked + ' hs'"
+          />
+          <app-person-info-item
+            label="Fecha limite"
+            [minWidthLabel]="minWidthLabelItem"
+            [value]="(data.deadLine | date: 'dd/MM/yyyy') || ''"
+          />
+          <app-person-info-item
+            label="Cantidad de materiales"
+            [minWidthLabel]="minWidthLabelItem"
+            [value]="data.itemsId.length"
+          />
+          <app-person-info-item
+            label="Costo"
+            [minWidthLabel]="minWidthLabelItem"
+            [value]="data.costPrice | currency"
+          />
+          <app-person-info-item
+            label="Notas"
+            [minWidthLabel]="minWidthLabelItem"
+            [value]="data.notes"
+          />
+        </app-person-info>
+      }
+
+      <ng-template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <p-button label="Ver presupuesto" (onClick)="showBudget()" />
         </div>
       </ng-template>
-
-      <div class="w-full">
-        <div class="w-full flex flex-row justify-center">
-          <div
-            class="size-[5rem] rounded-full bg-emerald-300 flex justify-center items-center"
-          >
-            <i class="pi pi-hammer !text-white !text-2xl"></i>
-          </div>
-        </div>
-      </div>
-      <p-table [value]="data" class="w-full">
-        <ng-template pTemplate="body" let-work>
-          <tr>
-            <td class="font-semibold underline">{{ work.label }}</td>
-            <td>{{ work.value }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
     </p-dialog>
   `,
   styles: '',
 })
 export class WorkInfo {
   protected visible = false;
-  protected data: {
-    label: string;
-    value: string;
-  }[] = [];
+  protected data?: WorkResponse;
 
-  constructor(private currencyPipe: CurrencyPipe) {}
+  protected readonly minWidthLabelItem = '40%';
+
+  constructor(private router: Router) {}
 
   public open(work: WorkResponse) {
-    this.data = [];
-
-    this.addValue('Nombre', work.workName);
-    this.addValue('Estado', work.workStatus);
-    this.addValue('Nro Presupuesto', work.budgetId.toString());
-    this.addValue('Horas estimadas', work.estimatedHoursWorked.toString());
-    this.addValue('Fecha Límite', new Date(work.deadLine).toLocaleDateString());
-    this.addValue(
-      'Materiales',
-      work.itemsId
-        .map(
-          (item) =>
-            `${item.oMaterial.materialName} - Cantidad: ${item.quantity}`,
-        )
-        .join(', ') || '-',
-    );
-    this.addValue('Costo', work.costPrice.toString());
-    this.addValue('Notas', work.notes);
-
+    this.data = work;
     this.visible = true;
   }
 
-  private addValue(label: string, value: string) {
-    this.data.push({
-      label,
-      value,
+  protected showBudget() {
+    this.router.navigate(['/budgets'], {
+      state: {
+        budgetId: this.data?.budgetId,
+      },
     });
   }
 }

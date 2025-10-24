@@ -18,6 +18,7 @@ import { DevService } from '@/common/services/dev-service';
 import { BudgetInfo } from './modals/budget-info/budget-info';
 import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-budget',
@@ -179,6 +180,7 @@ export class BudgetPage implements OnInit {
 
   //private filterValue?: MaterialFilterSettings;
   private searchValue = '';
+  private openBudgetId?: number;
 
   constructor(
     private budget: Budget,
@@ -187,7 +189,12 @@ export class BudgetPage implements OnInit {
     private messageService: MessageService,
     private loadingService: LoadingService,
     protected devService: DevService,
-  ) {}
+    private router: Router,
+  ) {
+    this.checkIfShouldOpenBudget(
+      router.currentNavigation()?.extras?.state ?? {},
+    );
+  }
 
   public ngOnInit() {
     this.loadData();
@@ -212,9 +219,11 @@ export class BudgetPage implements OnInit {
       error: (err) => {
         this.error = err;
         this.loading = false;
+        this.openReveivedBudget();
       },
       complete: () => {
         this.loading = false;
+        this.openReveivedBudget();
       },
     });
   }
@@ -231,6 +240,28 @@ export class BudgetPage implements OnInit {
       ],
       this.searchValue,
     );
+  }
+
+  private openReveivedBudget() {
+    if (!this.openBudgetId) return;
+
+    const budgetData = this.$budgetData.find(
+      (budget) => budget.budgetId === this.openBudgetId,
+    );
+
+    if (budgetData) {
+      this.budgetInfo?.open(budgetData);
+    }
+
+    this.loadingService.setLoading(false);
+  }
+
+  private checkIfShouldOpenBudget(states: Record<string, any>) {
+    this.openBudgetId = states?.['budgetId'];
+
+    if (this.openBudgetId) {
+      this.loadingService.setLoading(true);
+    }
   }
 
   protected deleteBudget(event: Event, budget: BudgetResponse) {

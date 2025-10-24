@@ -39,7 +39,7 @@ export class PersonInfoItem {
   public label!: string;
 
   @Input({ required: true })
-  public value!: string;
+  public value!: string | number;
 
   @Input()
   public useValueAction?: number | string;
