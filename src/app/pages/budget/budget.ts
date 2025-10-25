@@ -19,6 +19,7 @@ import { BudgetInfo } from './modals/budget-info/budget-info';
 import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 import { Router } from '@angular/router';
+import { waitTo } from '@/common/utils/waitTo';
 
 @Component({
   selector: 'app-budget',
@@ -242,7 +243,7 @@ export class BudgetPage implements OnInit {
     );
   }
 
-  private openReveivedBudget() {
+  private async openReveivedBudget() {
     if (!this.openBudgetId) return;
 
     const budgetData = this.$budgetData.find(
@@ -250,7 +251,10 @@ export class BudgetPage implements OnInit {
     );
 
     if (budgetData) {
-      this.budgetInfo?.open(budgetData);
+      do {
+        await waitTo(1000);
+        this.budgetInfo?.open(budgetData);
+      } while (!this.budgetInfo);
     }
 
     this.loadingService.setLoading(false);
