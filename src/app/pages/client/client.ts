@@ -21,6 +21,7 @@ import { NgStyle } from '@angular/common';
 import { DDniPipe } from '@/common/pipes/d-dni-pipe';
 import { PhonePipe } from '@/common/pipes/phone-pipe';
 import { Router } from '@angular/router';
+import { waitTo } from '@/common/utils/waitTo';
 
 @Component({
   selector: 'app-dashboard',
@@ -238,7 +239,7 @@ export class ClientPage implements OnInit {
     });
   }
 
-  private openReveivedClient() {
+  private async openReveivedClient() {
     if (!this.openClientId) return;
 
     const clientData = this.$clientData.find(
@@ -246,7 +247,11 @@ export class ClientPage implements OnInit {
     );
 
     if (clientData) {
-      this.clientInfo?.open(clientData);
+      do {
+        await waitTo(1000);
+
+        this.clientInfo?.open(clientData);
+      } while (!this.clientInfo);
     }
 
     this.loadingService.setLoading(false);

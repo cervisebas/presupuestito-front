@@ -16,7 +16,7 @@ import { TableModule } from 'primeng/table';
       [closable]="true"
       [closeOnEscape]="false"
       [(visible)]="visible"
-      styleClass="max-w-9/10 w-3/10 min-w-[400px]"
+      styleClass="max-w-9/10 w-[30rem]"
     >
       <p-table [value]="data" class="w-full">
         <ng-template #body let-product>

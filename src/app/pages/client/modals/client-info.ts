@@ -29,7 +29,7 @@ import { PhonePipe } from '@/common/pipes/phone-pipe';
       [closable]="true"
       [closeOnEscape]="false"
       [(visible)]="visible"
-      styleClass="max-w-9/10 w-3/10 min-w-[400px]"
+      styleClass="max-w-9/10 w-[30rem]"
     >
       @if ($data) {
         <app-person-info icon="pi-user" [userTitle]="title">

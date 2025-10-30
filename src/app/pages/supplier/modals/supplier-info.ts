@@ -22,7 +22,7 @@ import { DCuilPipe } from '@/common/pipes/d-cuil-pipe';
       header="Información del proveedor"
       [modal]="true"
       [(visible)]="visible"
-      styleClass="max-w-9/10 w-3/10 min-w-[400px]"
+      styleClass="max-w-9/10 w-[30rem]"
     >
       @if ($data) {
         <app-person-info
