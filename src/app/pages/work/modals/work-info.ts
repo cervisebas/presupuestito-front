@@ -28,7 +28,7 @@ import { Router } from '@angular/router';
       [closable]="true"
       [closeOnEscape]="false"
       [(visible)]="visible"
-      styleClass="max-w-9/10 w-3/10 min-w-[400px]"
+      styleClass="max-w-9/10 w-[30rem]"
     >
       @if (data) {
         <app-person-info icon="pi-hammer" [userTitle]="data.workName">
