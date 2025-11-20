@@ -4,7 +4,7 @@ export interface ISectionBudgetItem {
   title: string;
   total: number;
   subtotal: number;
-  endDate: Date;
-  startDate: Date;
+  endDate: Date | null;
+  startDate: Date | null;
   items: IWorkFormData['materials'];
 }

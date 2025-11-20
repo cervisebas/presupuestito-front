@@ -78,7 +78,7 @@ import { WorkInfo } from './modals/work-info';
               </th>
             }
             <th class="w-5">
-              <div class="flex items-center gap-2">Acciónes</div>
+              <div class="flex items-center gap-2">Acciones</div>
             </th>
           </tr>
         </ng-template>

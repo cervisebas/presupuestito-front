@@ -88,7 +88,7 @@ import { SubcategoryForm } from './modals/subcategory-form';
               <div class="flex items-center gap-2">C. Sub-Rubros</div>
             </th>
             <th class="w-1/10">
-              <div class="flex items-center gap-2 justify-center">Acciónes</div>
+              <div class="flex items-center gap-2 justify-center">Acciones</div>
             </th>
           </tr>
         </ng-template>

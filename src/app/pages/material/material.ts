@@ -186,7 +186,7 @@ export class MaterialPage implements OnInit {
     },
     {
       key: null,
-      label: 'Acciónes',
+      label: 'Acciones',
     },
   ];
 

@@ -86,10 +86,7 @@ import moment from 'moment';
           dateFormat="dd/mm/yy"
           appendTo="body"
         />
-        <label for="budget-end-data">
-          Fecha limite
-          <b class="text-red-400">*</b>
-        </label>
+        <label for="budget-end-data">Fecha limite</label>
       </p-floatlabel>
 
       <p-floatlabel class="w-full" variant="on">
@@ -103,22 +100,6 @@ import moment from 'moment';
           formControlName="description"
         ></textarea>
         <label for="budget-description">Descripción</label>
-      </p-floatlabel>
-
-      <p-floatlabel class="w-full" variant="on">
-        <p-select
-          class="w-full"
-          inputId="budget-status"
-          [options]="budgetStatements"
-          optionLabel="label"
-          optionValue="value"
-          formControlName="status"
-          appendTo="body"
-        />
-        <label for="budget-status">
-          Estado
-          <b class="text-red-400">*</b>
-        </label>
       </p-floatlabel>
     </form>
 
@@ -134,9 +115,8 @@ export class BudgetInformationStep
   protected formGroup = new FormGroup({
     client: new FormControl<number | null>(null, [Validators.required]),
     startDate: new FormControl(new Date(), [Validators.required]),
-    endDate: new FormControl(new Date(), [Validators.required]),
+    endDate: new FormControl<Date | null>(null),
     description: new FormControl('', []),
-    status: new FormControl<string | null>(null, [Validators.required]),
   });
 
   protected clientList: ISelectItem<number>[] = [];
@@ -184,31 +164,33 @@ export class BudgetInformationStep
 
   public clearForm(): void {
     this.loadClients();
-    this.formGroup.reset();
+    this.formGroup.reset({
+      startDate: new Date(),
+      endDate: null,
+      description: '',
+    });
   }
 
   public getData(): BudgetRequest {
     const client = this.getSelectedClient();
-    const { startDate, endDate, description, status } = this.formGroup.controls;
+    const { startDate, endDate, description } = this.formGroup.controls;
 
     return {
       descriptionBudget: description.value ?? '',
       clientId: client.clientId,
-      budgetStatus: status.value!,
+      budgetStatus: 'Presupuestado',
       dateCreated: startDate.value!,
-      deadLine: endDate.value!,
+      deadLine: endDate.value! ?? null,
     };
   }
 
   public setData(data: BudgetRequest) {
-    const { client, startDate, endDate, description, status } =
-      this.formGroup.controls;
+    const { client, startDate, endDate, description } = this.formGroup.controls;
 
     client.setValue(data.clientId);
     startDate.setValue(moment(data.dateCreated).toDate());
     endDate.setValue(moment(data.deadLine).toDate());
     description.setValue(data.descriptionBudget);
-    status.setValue(data.budgetStatus);
   }
 
   get dialogEnableNext() {
