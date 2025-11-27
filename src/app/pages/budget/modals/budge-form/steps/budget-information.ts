@@ -101,6 +101,22 @@ import moment from 'moment';
         ></textarea>
         <label for="budget-description">Descripción</label>
       </p-floatlabel>
+
+      <p-floatlabel class="w-full" variant="on">
+        <p-select
+          class="w-full"
+          inputId="budget-status"
+          [options]="budgetStatements"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="status"
+          appendTo="body"
+        />
+        <label for="budget-status">
+          Estado
+          <b class="text-red-400">*</b>
+        </label>
+      </p-floatlabel>
     </form>
 
     <p-toast position="bottom-right" />
@@ -117,6 +133,7 @@ export class BudgetInformationStep
     startDate: new FormControl(new Date(), [Validators.required]),
     endDate: new FormControl<Date | null>(null),
     description: new FormControl('', []),
+    status: new FormControl<string | null>(null, [Validators.required]),
   });
 
   protected clientList: ISelectItem<number>[] = [];
@@ -143,7 +160,6 @@ export class BudgetInformationStep
       }));
       this.$clientList = clients;
     } catch (error) {
-      // En caso de error de se muestra en consola lo que sucedio y se notifica al usuario.
       console.error(error);
       this.messageService.add({
         severity: 'error',
@@ -164,33 +180,31 @@ export class BudgetInformationStep
 
   public clearForm(): void {
     this.loadClients();
-    this.formGroup.reset({
-      startDate: new Date(),
-      endDate: null,
-      description: '',
-    });
+    this.formGroup.reset();
   }
 
   public getData(): BudgetRequest {
     const client = this.getSelectedClient();
-    const { startDate, endDate, description } = this.formGroup.controls;
+    const { startDate, endDate, description, status } = this.formGroup.controls;
 
     return {
       descriptionBudget: description.value ?? '',
       clientId: client.clientId,
-      budgetStatus: 'Presupuestado',
+      budgetStatus: status.value!,
       dateCreated: startDate.value!,
-      deadLine: endDate.value! ?? null,
+      deadLine: endDate.value,
     };
   }
 
   public setData(data: BudgetRequest) {
-    const { client, startDate, endDate, description } = this.formGroup.controls;
+    const { client, startDate, endDate, description, status } =
+      this.formGroup.controls;
 
     client.setValue(data.clientId);
     startDate.setValue(moment(data.dateCreated).toDate());
     endDate.setValue(moment(data.deadLine).toDate());
     description.setValue(data.descriptionBudget);
+    status.setValue(data.budgetStatus);
   }
 
   get dialogEnableNext() {
