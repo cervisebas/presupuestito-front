@@ -205,7 +205,7 @@ export class BudgetInformationStep
       clientId: client.clientId,
       budgetStatus: status.value!,
       dateCreated: startDate.value!,
-      deadLine: endDate.value,
+      deadLine: endDate.value as Date,
     };
   }
 
