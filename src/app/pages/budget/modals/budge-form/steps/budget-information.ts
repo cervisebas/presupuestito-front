@@ -1,7 +1,7 @@
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
 import { Client } from '@/common/api/services/client';
 import { BudgetStatements } from '@/pages/budget/constants/BudgetStatements';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -22,10 +22,12 @@ import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
 import { IClearForm } from '@/common/interfaces/IClearForm';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import moment from 'moment';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-bugde-information',
   imports: [
+    NgClass,
     Select,
     Toast,
     DatePickerModule,
@@ -105,7 +107,11 @@ import moment from 'moment';
         <label for="budget-description">Descripción</label>
       </p-floatlabel>
 
-      <p-floatlabel class="w-full" variant="on">
+      <p-floatlabel
+        class="w-full"
+        variant="on"
+        [ngClass]="{ '!hidden !h-0': !isEditing }"
+      >
         <p-select
           class="w-full"
           inputId="budget-status"
@@ -131,12 +137,17 @@ export class BudgetInformationStep
 {
   protected readonly budgetStatements = BudgetStatements;
 
+  @Input()
+  public isEditing?: boolean;
+
   protected formGroup = new FormGroup({
     client: new FormControl<number | null>(null, [Validators.required]),
     startDate: new FormControl(new Date(), [Validators.required]),
     endDate: new FormControl(new Date(), [Validators.required]),
     description: new FormControl('', []),
-    status: new FormControl<string | null>(null, [Validators.required]),
+    status: new FormControl<string | null>(BudgetStatements[0].value, [
+      Validators.required,
+    ]),
   });
 
   protected clientList: ISelectItem<number>[] = [];
@@ -184,7 +195,9 @@ export class BudgetInformationStep
 
   public clearForm(): void {
     this.loadClients();
-    this.formGroup.reset();
+    this.formGroup.reset({
+      status: BudgetStatements[0].value,
+    });
   }
 
   public getData(): BudgetRequest {
@@ -220,6 +233,10 @@ export class BudgetInformationStep
   }
 
   get dialogStyle() {
+    if (!this.isEditing) {
+      return 'h-[28rem]';
+    }
+
     return 'h-[32rem]';
   }
 }
