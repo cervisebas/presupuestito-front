@@ -50,7 +50,7 @@ import { TransformDataBudget } from './services/transform-data-budget';
     >
       <swiper [disabled]="true" (indexChange)="onLastStep($event)">
         <swiper-slide name="information">
-          <app-bugde-information dialogOptions />
+          <app-bugde-information dialogOptions [isEditing]="isEditing" />
         </swiper-slide>
 
         <swiper-slide name="add-works">
