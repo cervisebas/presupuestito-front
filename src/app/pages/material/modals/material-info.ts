@@ -60,10 +60,10 @@ export class MaterialInfo {
     this.visible = true;
   }
 
-  private addValue(label: string, value: string) {
+  private addValue(label: string, value: string | null | undefined) {
     this.data.push({
       label,
-      value,
+      value: value ?? '-',
     });
   }
 }

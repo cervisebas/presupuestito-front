@@ -87,10 +87,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="brand"
           />
-          <label for="brand-input">
-            Marca
-            <b class="text-red-400">*</b>
-          </label>
+          <label for="brand-input">Marca</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -117,10 +114,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="color"
           />
-          <label for="color-input">
-            Color
-            <b class="text-red-400">*</b>
-          </label>
+          <label for="color-input">Color</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -132,10 +126,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="size"
           />
-          <label for="size-input">
-            Medida
-            <b class="text-red-400">*</b>
-          </label>
+          <label for="size-input">Medida</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -146,10 +137,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="unitSize"
           />
-          <label for="unit-size-input">
-            Unidad de medida
-            <b class="text-red-400">*</b>
-          </label>
+          <label for="unit-size-input">Unidad de medida</label>
         </p-floatlabel>
 
         <p-floatlabel class="w-full" variant="on">
@@ -223,14 +211,11 @@ export class MaterialForm {
   protected formGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
     description: new FormControl('', []),
-    brand: new FormControl('', [Validators.required]),
+    brand: new FormControl<string | null>(null),
     price: new FormControl(1, [Validators.required, Validators.min(1)]),
-    color: new FormControl('', [Validators.required]),
-    size: new FormControl<number | null>(1, [
-      Validators.required,
-      Validators.min(1),
-    ]),
-    unitSize: new FormControl('', [Validators.required]),
+    color: new FormControl<string | null>(null),
+    size: new FormControl<number | null>(null),
+    unitSize: new FormControl<string | null>(null),
 
     category: new FormControl('', [Validators.required]),
     subCategory: new FormControl('', [Validators.required]),
@@ -278,7 +263,7 @@ export class MaterialForm {
     if (this.$editData) {
       const data = this.$editData;
 
-      this.formGroup.setValue({
+      this.formGroup.patchValue({
         name: data.materialName,
         description: data.materialDescription || '',
         brand: data.materialBrand,

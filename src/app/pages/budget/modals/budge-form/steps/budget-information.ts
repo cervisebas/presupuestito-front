@@ -86,10 +86,7 @@ import moment from 'moment';
           dateFormat="dd/mm/yy"
           appendTo="body"
         />
-        <label for="budget-end-data">
-          Fecha limite
-          <b class="text-red-400">*</b>
-        </label>
+        <label for="budget-end-data">Fecha limite</label>
       </p-floatlabel>
 
       <p-floatlabel class="w-full" variant="on">
@@ -134,7 +131,7 @@ export class BudgetInformationStep
   protected formGroup = new FormGroup({
     client: new FormControl<number | null>(null, [Validators.required]),
     startDate: new FormControl(new Date(), [Validators.required]),
-    endDate: new FormControl(new Date(), [Validators.required]),
+    endDate: new FormControl<Date | null>(null),
     description: new FormControl('', []),
     status: new FormControl<string | null>(null, [Validators.required]),
   });
@@ -163,7 +160,6 @@ export class BudgetInformationStep
       }));
       this.$clientList = clients;
     } catch (error) {
-      // En caso de error de se muestra en consola lo que sucedio y se notifica al usuario.
       console.error(error);
       this.messageService.add({
         severity: 'error',
@@ -196,7 +192,7 @@ export class BudgetInformationStep
       clientId: client.clientId,
       budgetStatus: status.value!,
       dateCreated: startDate.value!,
-      deadLine: endDate.value!,
+      deadLine: endDate.value,
     };
   }
 

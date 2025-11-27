@@ -175,7 +175,7 @@ export class ClientPage implements OnInit {
     },
     {
       key: null,
-      label: 'Acciónes',
+      label: 'Acciones',
     },
   ];
 

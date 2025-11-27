@@ -195,7 +195,7 @@ import { TooltipModule } from 'primeng/tooltip';
                       <th
                         class="!bg-gray-100 rounded-br-lg !border-0 !text-gray-500 w-2/10"
                       >
-                        Acciónes
+                        Acciones
                       </th>
                     </tr>
                   </ng-template>

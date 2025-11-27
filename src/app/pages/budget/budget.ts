@@ -175,7 +175,7 @@ export class BudgetPage implements OnInit {
     },
     {
       key: null,
-      label: 'Acciónes',
+      label: 'Acciones',
     },
   ];
 

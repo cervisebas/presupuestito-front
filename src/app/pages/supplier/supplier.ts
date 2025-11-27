@@ -177,7 +177,7 @@ export class SupplierPage implements OnInit {
     },
     {
       key: null,
-      label: 'Acciónes',
+      label: 'Acciones',
     },
   ];
   constructor(
