@@ -103,7 +103,15 @@ import { BudgetPriceUpdate } from './modals/budge-update/components/budget-price
               {{ product.clientId.personId.lastName }}
             </td>
             <td>{{ product.dateCreated | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ product.deadLine | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              @if (product.deadLine) {
+                <ng-container>
+                  {{ product.deadLine | date: 'dd/MM/yyyy' }}
+                </ng-container>
+              } @else {
+                <ng-container>-</ng-container>
+              }
+            </td>
             <td>{{ product.budgetStatus }}</td>
             <td>{{ getBudgetPrice(product) | currency }}</td>
             <td>
