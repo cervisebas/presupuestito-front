@@ -57,9 +57,8 @@ export class BudgetPriceUpdate {
     if (!this.budget) return;
 
     this.budgetService.updateItemPrices(this.budget.budgetId).subscribe({
-      next: (response) => {
-        console.log(response.message);
-        this.updated.emit(); // Notifica a la tabla que debe recargar datos
+      next: () => {
+        this.updated.emit();
         this.visible = false;
       },
       error: (err) => {
