@@ -275,14 +275,14 @@ export class MaterialForm {
     if (this.$editData) {
       const data = this.$editData;
 
-      this.formGroup.patchValue({
+      this.formGroup.setValue({
         name: data.materialName,
         description: data.materialDescription || '',
-        brand: data.materialBrand,
+        brand: data.materialBrand || null,
         price: data.price,
-        color: data.materialColor,
+        color: data.materialColor || null,
         size: Number(data.materialMeasure),
-        unitSize: data.materialUnitMeasure,
+        unitSize: data.materialUnitMeasure || null,
         category: data.subCategoryMaterialId.categoryId.categoryName,
         subCategory: null,
       });
