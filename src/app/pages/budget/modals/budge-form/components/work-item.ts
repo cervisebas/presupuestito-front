@@ -243,6 +243,8 @@ import { MessageService } from 'primeng/api';
                       >
                         <p-inputnumber
                           class="w-full"
+                          [minFractionDigits]="1"
+                          [maxFractionDigits]="2"
                           formControlName="quantity"
                         />
                       </td>
