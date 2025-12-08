@@ -117,28 +117,44 @@ import { InputNumberModule } from 'primeng/inputnumber';
           <label for="color-input">Color</label>
         </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="size-input"
-            type="number"
-            class="w-full"
-            autocomplete="off"
-            formControlName="size"
-          />
-          <label for="size-input">Medida</label>
-        </p-floatlabel>
+        <div class="flex flex-row gap-3">
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="size-input"
+              type="number"
+              class="w-full"
+              autocomplete="off"
+              formControlName="size"
+            />
+            <label for="size-input">
+              Cantidad
+              <b class="text-red-400">*</b>
+            </label>
+          </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="unit-size-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="unitSize"
-          />
-          <label for="unit-size-input">Unidad de medida</label>
-        </p-floatlabel>
+          <!-- <p-select
+            [options]="cities"
+            [(ngModel)]="selectedCity"
+            placeholder="Select a City"
+            [editable]="true"
+            optionLabel="name"
+            class="w-full md:w-56"
+          /> -->
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="unit-size-input"
+              class="w-full"
+              autocomplete="off"
+              formControlName="unitSize"
+            />
+            <label for="unit-size-input">
+              Unidad de cantidad
+              <b class="text-red-400">*</b>
+            </label>
+          </p-floatlabel>
+        </div>
 
         <p-floatlabel class="w-full" variant="on">
           <p-select
