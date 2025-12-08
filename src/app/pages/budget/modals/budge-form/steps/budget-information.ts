@@ -192,6 +192,7 @@ export class BudgetInformationStep
   public clearForm(): void {
     this.loadClients();
     this.formGroup.reset({
+      startDate: new Date(),
       status: BudgetStatements[0].value,
     });
   }

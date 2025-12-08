@@ -28,8 +28,13 @@ import { ISelectItem } from '@/common/interfaces/ISelectItem';
 import { NgClass } from '@angular/common';
 import { Button } from 'primeng/button';
 import { IWorkFormData } from '../interfaces/IWorkFormData';
-import { Subscription } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { TooltipModule } from 'primeng/tooltip';
+import { LoadingService } from '@/common/services/loading';
+import { Settings } from '@/common/api/services/settings';
+import { SettingField } from '@/pages/settings/constants/SettingField';
+import { Toast } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-work-item',
@@ -48,6 +53,7 @@ import { TooltipModule } from 'primeng/tooltip';
     NgClass,
     Button,
     TooltipModule,
+    Toast,
   ],
   template: `
     <form [formGroup]="formGroup" class="flex w-full">
@@ -92,6 +98,7 @@ import { TooltipModule } from 'primeng/tooltip';
                       inputId="work-{{ index }}-estimated-hours"
                       class="w-full"
                       formControlName="estimatedHours"
+                      (onBlur)="setCostWithPriceByHours()"
                     />
                     <label for="work-{{ index }}-estimated-hours">
                       Horas estimadas
@@ -247,7 +254,6 @@ import { TooltipModule } from 'primeng/tooltip';
                         <p-button
                           icon="pi pi-trash"
                           severity="danger"
-                          [disabled]="materialControls.length === 1"
                           (onClick)="removeMaterial(index)"
                         />
                       </td>
@@ -256,7 +262,7 @@ import { TooltipModule } from 'primeng/tooltip';
                   <ng-template #footer>
                     <tr>
                       <th colspan="4">
-                        <div class="flex w-full flex-row justify-center">
+                        <div class="flex w-full flex-row justify-center pt-2">
                           <p-button
                             class="w-full"
                             styleClass="w-full"
@@ -291,6 +297,8 @@ import { TooltipModule } from 'primeng/tooltip';
         </div>
       </p-fieldset>
     </form>
+
+    <p-toast position="bottom-right" />
   `,
   styles: `
     :host {
@@ -330,6 +338,8 @@ export class WorkItem implements OnInit, OnDestroy {
 
   protected readonly budgetStatements = BudgetStatements;
 
+  private priceByHour?: number;
+
   protected formGroup = new FormGroup({
     // Information
     name: new FormControl('Nombre del trabajo', [
@@ -362,7 +372,11 @@ export class WorkItem implements OnInit, OnDestroy {
 
   private valueEvent?: Subscription;
 
-  constructor() {}
+  constructor(
+    private loadingService: LoadingService,
+    private settingService: Settings,
+    private messageService: MessageService,
+  ) {}
 
   public ngOnInit() {
     this.setDataToForm();
@@ -441,6 +455,51 @@ export class WorkItem implements OnInit, OnDestroy {
         quantity: val.quantity!,
       })),
     };
+  }
+
+  private async getPriceByHour() {
+    try {
+      this.loadingService.setLoading(true);
+
+      const { value } = await lastValueFrom(
+        this.settingService.getValue(SettingField.HOUR_COST),
+      );
+
+      this.priceByHour = Number(value);
+    } catch (error) {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al cargar los datos',
+        detail: 'Ocurrio un error al cargar el valor del costo de las horas.',
+      });
+    } finally {
+      this.loadingService.setLoading(false);
+    }
+  }
+
+  protected async setCostWithPriceByHours() {
+    if (this.priceByHour === undefined) {
+      try {
+        await this.getPriceByHour();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (this.priceByHour === undefined) {
+      return;
+    }
+
+    const { cost, estimatedHours } = this.formGroup.controls;
+
+    const hours = Number(estimatedHours.value);
+
+    if (!estimatedHours.value || Number.isNaN(hours)) {
+      return;
+    }
+
+    cost.setValue(this.priceByHour * hours);
   }
 
   protected get materialError() {

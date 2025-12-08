@@ -94,10 +94,10 @@ export class AddWorkStep
       notes: '',
       status: this.budgetStatements.at(0)!.value,
       materials: [
-        {
+        /* {
           materialId: null,
           quantity: 1,
-        },
+        }, */
       ],
     });
   }
