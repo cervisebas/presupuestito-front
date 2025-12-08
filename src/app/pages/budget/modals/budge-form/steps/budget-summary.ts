@@ -12,6 +12,7 @@ import { IClearForm } from '@/common/interfaces/IClearForm';
 import { IBudgetData } from '../interfaces/IBudgetData';
 import moment from 'moment';
 import { CalculateBudget } from '@/pages/budget/services/calculate-budget';
+import { isInvalidDate } from '@/common/utils/isInvalidDate';
 
 @Component({
   selector: 'app-budget-summary',
@@ -63,7 +64,14 @@ import { CalculateBudget } from '@/pages/budget/services/calculate-budget';
                   <div class="w-full flex flex-col justify-center py-1">
                     <h1 class="!text-lg !m-0">Fecha fin</h1>
                     <p>
-                      {{ data?.info?.deadLine | date: 'dd/MM/yyyy' }}
+                      @if (
+                        data?.info?.deadLine &&
+                        !isInvalidDate(data?.info?.deadLine!)
+                      ) {
+                        {{ data?.info?.deadLine | date: 'dd/MM/yyyy' }}
+                      } @else {
+                        {{ '-' }}
+                      }
                     </p>
                   </div>
 
@@ -245,6 +253,8 @@ export class BudgetSummaryStep
   protected clientLoading = true;
   private $clientList?: ClientResponse[];
 
+  protected readonly isInvalidDate = isInvalidDate;
+
   constructor(
     private clientService: Client,
     private messageService: MessageService,
@@ -286,6 +296,10 @@ export class BudgetSummaryStep
   protected get diffDays() {
     if (!this.data) {
       return 0;
+    }
+
+    if (!this.data.info?.deadLine || isInvalidDate(this.data.info.deadLine)) {
+      return '∞';
     }
 
     return moment(this.data.info.deadLine).diff(

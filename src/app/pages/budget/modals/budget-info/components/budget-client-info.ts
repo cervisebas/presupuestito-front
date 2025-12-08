@@ -18,6 +18,7 @@ import { BudgetStorageInfo } from '@/pages/budget/services/budget-storage-info';
 import { ContenteditableValueAccessorDirective } from '@/common/directives/contenteditable-value-accessor';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation';
+import { isInvalidDate } from '@/common/utils/isInvalidDate';
 
 @Component({
   selector: 'app-budget-client-info',
@@ -110,7 +111,13 @@ import { IBudgetInformation } from '@/pages/budget/interfaces/IBudgetInformation
     
                   <div class="flex flex-row gap-2">
                     <b>Validez:</b> 
-                    <span>{{ section.endDate | date: 'dd/MM/yyyy' }}</span>
+                    <span>
+                      @if (section.endDate && !isInvalidDate(section.endDate)) {
+                        {{ section.endDate | date: 'dd/MM/yyyy' }}
+                      } @else {
+                        {{ '-' }}
+                      }
+                    </span>
                   </div>
                 </div>
               </th>
@@ -237,6 +244,8 @@ export class BudgetClientInfo implements AfterViewInit, OnChanges {
   protected sections: ISectionBudgetItem[] = [];
 
   protected clientLoading = true;
+
+  protected readonly isInvalidDate = isInvalidDate;
 
   constructor(
     private generateBudgetSections: GenerateBudgetSections,

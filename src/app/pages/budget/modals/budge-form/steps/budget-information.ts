@@ -216,7 +216,7 @@ export class BudgetInformationStep
 
     client.setValue(data.clientId);
     startDate.setValue(moment(data.dateCreated).toDate());
-    endDate.setValue(moment(data.deadLine).toDate());
+    endDate.setValue(data.deadLine ? moment(data.deadLine).toDate() : null);
     description.setValue(data.descriptionBudget);
     status.setValue(data.budgetStatus);
   }
