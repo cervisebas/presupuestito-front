@@ -56,6 +56,8 @@ import moment from 'moment';
                   [formControlName]="SettingFields.WORK_HOURS"
                   [min]="0"
                   [max]="24"
+                  [minFractionDigits]="1"
+                  [maxFractionDigits]="2"
                 />
               </div>
 
@@ -71,6 +73,8 @@ import moment from 'moment';
                   [showButtons]="true"
                   [formControlName]="SettingFields.HOUR_COST"
                   [min]="0"
+                  [minFractionDigits]="1"
+                  [maxFractionDigits]="2"
                 />
               </div>
 
@@ -226,8 +230,6 @@ export class SettingsPage implements OnInit {
         });
       }
     }
-
-    console.log('saveValues:', saveValues);
 
     try {
       this.loadingService.setLoading(true);
