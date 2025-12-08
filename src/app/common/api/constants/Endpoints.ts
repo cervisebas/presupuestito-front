@@ -8,8 +8,10 @@ export const Endpoints = {
   BUDGETS_BY_CLIENT: API_BASE_URL + '/Budget/ByClient',
   BUDGET_PRICE: API_BASE_URL + '/Budget/CalculatePrice',
 
+  // Client Service
   CLIENTS: API_BASE_URL + '/Client',
   CLIENT_HISTORIES: API_BASE_URL + '/ClientHistory',
+
   COSTS: API_BASE_URL + '/Cost',
   WORKS: API_BASE_URL + '/Work',
   ITEMS: API_BASE_URL + '/Item',
@@ -30,4 +32,7 @@ export const Endpoints = {
   PERSONS: API_BASE_URL + '/Person',
   PERSONS_LOCALITIES: API_BASE_URL + '/Person/Localities',
   STATS: API_BASE_URL + '/Stats',
+
+  // Setting Service
+  SETTINGS: API_BASE_URL + '/Setting',
 };
