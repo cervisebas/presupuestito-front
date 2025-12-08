@@ -143,7 +143,11 @@ import { TooltipModule } from 'primeng/tooltip';
                   <label for="work-{{ index }}-notes">Notas</label>
                 </p-floatlabel>
 
-                <p-floatlabel class="w-full" variant="on">
+                <p-floatlabel
+                  class="w-full"
+                  variant="on"
+                  [ngClass]="{ '!hidden !h-0': !isEditing }"
+                >
                   <p-select
                     class="w-full"
                     inputId="work-{{ index }}-status"
@@ -314,6 +318,9 @@ export class WorkItem implements OnInit, OnDestroy {
 
   @Input()
   public disableRemove?: boolean;
+
+  @Input()
+  public isEditing?: boolean;
 
   @Output()
   public dataChange = new EventEmitter<IWorkFormData>();
