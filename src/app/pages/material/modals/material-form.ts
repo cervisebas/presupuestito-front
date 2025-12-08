@@ -23,6 +23,7 @@ import { Material } from '@/common/api/services/material';
 import { LoadingService } from '@/common/services/loading';
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { UnitExamples } from '../constants/UnitExamples';
 
 @Component({
   selector: 'app-material-form',
@@ -133,21 +134,14 @@ import { InputNumberModule } from 'primeng/inputnumber';
             </label>
           </p-floatlabel>
 
-          <!-- <p-select
-            [options]="cities"
-            [(ngModel)]="selectedCity"
-            placeholder="Select a City"
-            [editable]="true"
-            optionLabel="name"
-            class="w-full md:w-56"
-          /> -->
-          <p-floatlabel variant="on" class="w-full">
-            <input
-              pInputText
-              id="unit-size-input"
+          <p-floatlabel class="w-full" variant="on">
+            <p-select
+              inputId="unit-size-input"
+              [options]="UnitExamples"
               class="w-full"
-              autocomplete="off"
+              [editable]="true"
               formControlName="unitSize"
+              appendTo="body"
             />
             <label for="unit-size-input">
               Unidad de cantidad
@@ -247,6 +241,8 @@ export class MaterialForm {
   private $subCategoryList?: SubCategoryMaterialResponse[];
 
   private $editData?: MaterialResponse;
+
+  protected readonly UnitExamples = UnitExamples;
 
   constructor(
     private categoryService: Category,
