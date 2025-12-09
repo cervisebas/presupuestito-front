@@ -42,7 +42,9 @@ import { isInvalidDate } from '@/common/utils/isInvalidDate';
             <tr>
               <th colspan="100%" class="!border-b-2">
                 <div class="flex w-full py-8 justify-center">
-                  <h1 class="!text-2xl !text-black !m-0">{{ section.title }}</h1>
+                  <h1 class="!text-2xl !text-black !m-0" [contentEditable]="true">
+                    {{ section.title }}
+                  </h1>
                 </div>
               </th>
             </tr>
@@ -111,7 +113,7 @@ import { isInvalidDate } from '@/common/utils/isInvalidDate';
     
                   <div class="flex flex-row gap-2">
                     <b>Validez:</b> 
-                    <span>
+                    <span [contentEditable]="true">
                       @if (section.endDate && !isInvalidDate(section.endDate)) {
                         {{ section.endDate | date: 'dd/MM/yyyy' }}
                       } @else {
@@ -128,32 +130,41 @@ import { isInvalidDate } from '@/common/utils/isInvalidDate';
             </tr>
 
             <tr>
-              <th class="text-left ps-6 py-2 w-4/10"><b>Descripción</b></th>
-              <th class="text-center py-2 w-2/10"><b>Cantidad</b></th>
+              <th class="text-left ps-6 py-2 w-3/10"><b>Trabajo</b></th>
+              <th class="text-center py-2 w-5/10"><b>Descripción</b></th>
               <th class="text-center py-2 w-2/10"><b>Precio</b></th>
-              <th class="text-center py-2 w-2/10"><b>Importe</b></th>
             </tr>
           </thead>
 
           <tbody>
-            @for (item of section.items; track $index) {
+            @for (item of workList; track $index) {
               <tr>
                 <td class="text-left ps-6 py-3">
-                  <span class="font-normal">{{ item.materialName }} <b>x  {{ getMaterialQuantity(item.priceTotal, item.pricePeerUnit) }} {{ item.quantityUnit }}</b></span>  
+                  <span class="font-normal">{{ item.name }}</span>  
                 </td>
                 <td class="text-center py-3">
-                  <span class="font-normal">{{ item.quantityTotal }} {{ item.quantityUnit }}</span>  
+                  <span class="font-normal">
+                    @if (item.description.trim().length) {
+                      {{ item.description }}
+                    } @else {
+                      {{ '-' }}
+                    }
+                  </span>  
                 </td>
                 <td class="text-center py-3">
-                  <span class="font-normal">{{ item.pricePeerUnit ?? 0 | currency }}</span>  
-                </td>
-                <td class="text-center py-3">
-                  <span class="font-normal">{{ item.priceTotal ?? 0 | currency }}</span>  
+                  <span class="font-normal" [contentEditable]="true">
+                    {{ item.price | currency }}
+                  </span>  
                 </td>
               </tr>
             }
 
             <tr>
+              <td class="!border-0 !border-b-2"></td>
+              <td class="!border-0 !border-b-2"></td>
+              <td class="!border-0 !border-b-2"></td>
+            </tr>
+            <!-- <tr>
               <td class="text-left ps-6 py-3 !border-b-2">
                 <span class="font-normal">Ganancias</span>  
               </td>
@@ -166,7 +177,7 @@ import { isInvalidDate } from '@/common/utils/isInvalidDate';
               <td class="text-center py-3 !border-b-2">
                 <span class="font-normal">{{ section.total - section.subtotal | currency }}</span>  
               </td>
-            </tr>
+            </tr> -->
 
             <tr>
               <th colspan="100%" class="!border-0 py-2"></th>
@@ -175,16 +186,20 @@ import { isInvalidDate } from '@/common/utils/isInvalidDate';
 
           <tfoot class="border-2">
             <tr>
+              <th class="pt-3"></th>
+            </tr>
+            <!-- <tr>
               <th></th>
               <th></th>
               <th class="pt-3 pb-1 pe-2 text-lg text-right"><b>SUBTOTAL:</b> </th>
               <th class="pt-3 pb-1 ps-2 text-lg text-left"><span>{{ section.subtotal | currency }}</span></th>
-            </tr>
+            </tr> -->
             <tr>
               <th></th>
-              <th></th>
               <th class="pt-1 pb-3 pe-2 text-lg text-right"><b>TOTAL:</b> </th>
-              <th class="pt-1 pb-3 ps-2 text-lg text-left"><span>{{ section.total | currency }}</span></th>
+              <th class="pt-1 pb-3 ps-2 text-lg text-left">
+                <span [contentEditable]="true">{{ section.total | currency }}</span>
+              </th>
             </tr>
           </tfoot>
         </table>
@@ -254,6 +269,7 @@ export class BudgetClientInfo implements AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void {
     this.loadEnterpriceData();
+    console.log('data:', this.data);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -328,5 +344,17 @@ export class BudgetClientInfo implements AfterViewInit, OnChanges {
 
   public getElement() {
     return this.element?.nativeElement;
+  }
+
+  protected get workList() {
+    return this.data?.works.map((value) => ({
+      name: value.name,
+      description: value.notes,
+      price:
+        value.materials.reduce(
+          (sum, material) => sum + (material.priceTotal ?? 0),
+          0,
+        ) + value.cost,
+    }));
   }
 }
