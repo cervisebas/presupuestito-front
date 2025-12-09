@@ -23,6 +23,7 @@ import { Material } from '@/common/api/services/material';
 import { LoadingService } from '@/common/services/loading';
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { UnitExamples } from '../constants/UnitExamples';
 
 @Component({
   selector: 'app-material-form',
@@ -117,28 +118,37 @@ import { InputNumberModule } from 'primeng/inputnumber';
           <label for="color-input">Color</label>
         </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="size-input"
-            type="number"
-            class="w-full"
-            autocomplete="off"
-            formControlName="size"
-          />
-          <label for="size-input">Medida</label>
-        </p-floatlabel>
+        <div class="flex flex-row gap-3">
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="size-input"
+              type="number"
+              class="w-full"
+              autocomplete="off"
+              formControlName="size"
+            />
+            <label for="size-input">
+              Cantidad
+              <b class="text-red-400">*</b>
+            </label>
+          </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="unit-size-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="unitSize"
-          />
-          <label for="unit-size-input">Unidad de medida</label>
-        </p-floatlabel>
+          <p-floatlabel class="w-full" variant="on">
+            <p-select
+              inputId="unit-size-input"
+              [options]="UnitExamples"
+              class="w-full"
+              [editable]="true"
+              formControlName="unitSize"
+              appendTo="body"
+            />
+            <label for="unit-size-input">
+              Unidad de cantidad
+              <b class="text-red-400">*</b>
+            </label>
+          </p-floatlabel>
+        </div>
 
         <p-floatlabel class="w-full" variant="on">
           <p-select
@@ -232,6 +242,8 @@ export class MaterialForm {
 
   private $editData?: MaterialResponse;
 
+  protected readonly UnitExamples = UnitExamples;
+
   constructor(
     private categoryService: Category,
     private subcategoryService: Subcategory,
@@ -263,14 +275,14 @@ export class MaterialForm {
     if (this.$editData) {
       const data = this.$editData;
 
-      this.formGroup.patchValue({
+      this.formGroup.setValue({
         name: data.materialName,
         description: data.materialDescription || '',
-        brand: data.materialBrand,
+        brand: data.materialBrand || null,
         price: data.price,
-        color: data.materialColor,
+        color: data.materialColor || null,
         size: Number(data.materialMeasure),
-        unitSize: data.materialUnitMeasure,
+        unitSize: data.materialUnitMeasure || null,
         category: data.subCategoryMaterialId.categoryId.categoryName,
         subCategory: null,
       });

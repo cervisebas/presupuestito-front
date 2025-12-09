@@ -63,7 +63,7 @@ import { Router } from '@angular/router';
 
       <ng-template #footer>
         <div class="w-full flex flex-row pt-3">
-          @if (tabValue === BudgetTabName) {
+          <!-- @if (tabValue === BudgetTabName) {
             <div class="px-4 flex flex-row items-center gap-3">
               <p-checkbox
                 inputId="budget-separate-by-work"
@@ -74,7 +74,7 @@ import { Router } from '@angular/router';
                 Separar por trabajo
               </label>
             </div>
-          }
+          } -->
           <div class="flex flex-1 justify-end gap-2">
             @if (tabValue !== BudgetTabName) {
               <p-button

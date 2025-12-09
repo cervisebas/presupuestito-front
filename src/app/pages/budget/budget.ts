@@ -20,6 +20,8 @@ import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 import { Router } from '@angular/router';
 import { waitTo } from '@/common/utils/waitTo';
+import { BudgetFilter } from './components/budget-filter';
+import { BudgetFilterSettings } from './interfaces/BudgetFilterSettings';
 
 @Component({
   selector: 'app-budget',
@@ -38,6 +40,7 @@ import { waitTo } from '@/common/utils/waitTo';
     CurrencyPipe,
     DatePipe,
     BudgetInfo,
+    BudgetFilter,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -59,6 +62,8 @@ import { waitTo } from '@/common/utils/waitTo';
         </p-iconfield>
 
         <div class="flex flex-row gap-4">
+          <app-budget-filter (onFilter)="onFilter($event)" />
+
           <p-button
             label="Añadir"
             icon="pi pi-plus"
@@ -190,6 +195,8 @@ export class BudgetPage implements OnInit {
   //private filterValue?: MaterialFilterSettings;
   private searchValue = '';
   private openBudgetId?: number;
+
+  private filterValue?: BudgetFilterSettings;
 
   constructor(
     private budget: Budget,
@@ -334,5 +341,25 @@ export class BudgetPage implements OnInit {
     }
 
     return price;
+  }
+
+  private applyFilters() {
+    if (!this.filterValue) {
+      return;
+    }
+
+    if (!this.filterValue.budgetStatus) {
+      return;
+    }
+
+    this.budgetData = this.budgetData.filter(
+      (budget) => budget.budgetStatus === this.filterValue?.budgetStatus,
+    );
+  }
+
+  protected onFilter(_filter: BudgetFilterSettings) {
+    this.filterValue = _filter;
+    this.applySearch();
+    this.applyFilters();
   }
 }

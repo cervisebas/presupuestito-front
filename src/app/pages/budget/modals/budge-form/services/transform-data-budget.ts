@@ -15,7 +15,7 @@ export class TransformDataBudget {
         clientId: data.clientId.clientId,
         budgetStatus: data.budgetStatus,
         dateCreated: moment(data.dateCreated).toDate(),
-        deadLine: moment(data.deadLine).toDate(),
+        deadLine: data.deadLine ? moment(data.deadLine).toDate() : null,
       },
       works: data.works.map<IBudgetData['works'][0]>((work) => {
         const materials: IBudgetData['works'][0]['materials'] =
