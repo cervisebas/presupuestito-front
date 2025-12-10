@@ -1,5 +1,11 @@
 import { DialogOptionsBase } from '@/common/classes/DialogOptions';
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { ISteapForm } from '../interfaces/ISteapForm';
 import { WorkItem } from '../components/work-item';
 import { Material } from '@/common/api/services/material';
@@ -32,6 +38,7 @@ import { IClearForm } from '@/common/interfaces/IClearForm';
             [(data)]="works[$index]"
             [disableRemove]="works.length === 1"
             (onRemove)="removeWork($index)"
+            [isEditing]="isEditing"
           />
         }
 
@@ -55,6 +62,9 @@ export class AddWorkStep
   private workItems?: QueryList<WorkItem>;
 
   protected readonly budgetStatements = BudgetStatements;
+
+  @Input()
+  public isEditing?: boolean;
 
   protected materialLoading = true;
   protected materialError = null;
@@ -84,10 +94,10 @@ export class AddWorkStep
       notes: '',
       status: this.budgetStatements.at(0)!.value,
       materials: [
-        {
+        /* {
           materialId: null,
           quantity: 1,
-        },
+        }, */
       ],
     });
   }
