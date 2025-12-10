@@ -45,8 +45,8 @@ export class Budget {
   }
 
   public updateItemPrices(id_budget: number) {
-    return this.http.put<any>(
-      `${Endpoints.BUDGET}/${id_budget}/update-item-prices`,
+    return this.http.put<void>(
+      `${Endpoints.BUDGET_UPDATE_PRICES}/${id_budget}`,
       {},
     );
   }
