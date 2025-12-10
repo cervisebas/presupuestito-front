@@ -2,69 +2,92 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 import { Dialog } from 'primeng/dialog';
-import { SharedModule } from 'primeng/api';
+import { MessageService, SharedModule } from 'primeng/api';
 import { Button } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { LoadingService } from '@/common/services/loading';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-budget-price-update',
   template: `
     <p-dialog
-      header="Actualizar precios del presupuesto"
       [(visible)]="visible"
       [modal]="true"
-      [style]="{ width: '600px' }"
+      [draggable]="false"
+      [closable]="true"
+      [closeOnEscape]="false"
+      header="Actualizar precios del presupuesto"
+      styleClass="w-[30rem] h-max max-w-[95vw]"
+      contentStyleClass="size-full"
     >
-      <p>
+      <p class="m-0">
         ¿Desea recalcular los precios de los materiales y actualizar el total
         del presupuesto?
       </p>
 
       <ng-template pTemplate="footer">
-        <p-button
-          label="Cancelar"
-          severity="secondary"
-          (onClick)="close()"
-        ></p-button>
+        <p-button label="Cancelar" severity="secondary" (onClick)="close()" />
 
-        <p-button
-          label="Actualizar precios"
-          severity="success"
-          (onClick)="confirmUpdate()"
-        ></p-button>
+        <p-button label="Actualizar precios" (onClick)="confirmUpdate()" />
       </ng-template>
     </p-dialog>
+
+    <p-toast position="bottom-right" />
   `,
-  imports: [Dialog, SharedModule, Button],
+  imports: [Dialog, SharedModule, Button, ToastModule],
 })
 export class BudgetPriceUpdate {
-  @Input() budget?: BudgetResponse;
-  @Output() updated = new EventEmitter<void>();
+  @Input()
+  public budget?: BudgetResponse;
 
-  visible = false;
+  @Output()
+  public reloadTable = new EventEmitter<void>();
 
-  constructor(private budgetService: Budget) {} // ← Faltaba INYECTAR el servicio
+  protected visible = false;
 
-  open(budget: BudgetResponse) {
+  constructor(
+    private budgetService: Budget,
+    private messageService: MessageService,
+    private loadingService: LoadingService,
+  ) {}
+
+  public open(budget: BudgetResponse) {
     this.budget = budget;
     this.visible = true;
   }
 
-  close() {
+  public close() {
     this.visible = false;
   }
 
-  confirmUpdate() {
+  protected async confirmUpdate() {
     if (!this.budget) return;
+    this.visible = false;
+    this.loadingService.setLoading(true);
 
-    this.budgetService.updateItemPrices(this.budget.budgetId).subscribe({
-      next: () => {
-        this.updated.emit();
-        this.visible = false;
-      },
-      error: (err) => {
-        console.error('Error al actualizar precios:', err);
-        this.visible = false;
-      },
-    });
+    try {
+      await lastValueFrom(
+        this.budgetService.updateItemPrices(this.budget.budgetId),
+      );
+
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Presupuesto actualizado!',
+        detail:
+          'Se actualizo el precio de los materiales y presupuesto correctamente.',
+      });
+    } catch (error) {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al actualizar el presupuesto',
+        detail:
+          'Ocurrio un error innesperado al actualizar los valores del presupuesto, por favor pruebe de nuevo más tarde.',
+      });
+    } finally {
+      this.loadingService.setLoading(false);
+      this.reloadTable.emit();
+    }
   }
 }

@@ -21,6 +21,7 @@ import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse
 import { Router } from '@angular/router';
 import { waitTo } from '@/common/utils/waitTo';
 import { BudgetPriceUpdate } from './modals/budge-update/components/budget-price-update';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-budget',
@@ -38,6 +39,7 @@ import { BudgetPriceUpdate } from './modals/budge-update/components/budget-price
     NgStyle,
     CurrencyPipe,
     DatePipe,
+    Tooltip,
     BudgetInfo,
     BudgetPriceUpdate,
   ],
@@ -116,36 +118,32 @@ import { BudgetPriceUpdate } from './modals/budge-update/components/budget-price
             <td>{{ getBudgetPrice(product) | currency }}</td>
             <td>
               <div class="flex flex-row items-center gap-2">
-                <div class="w-6 flex justify-center">
-                  @if (product.isCloseToExpiration) {
-                    <p-button
-                      icon="pi pi-refresh"
-                      severity="help"
-                      aria-label="Actualizar precios"
-                      (onClick)="priceUpdate?.open(product)"
-                    ></p-button>
-                  }
-                </div>
                 <div class="flex flex-row gap-2">
+                  <p-button
+                    icon="pi pi-refresh"
+                    severity="help"
+                    pTooltip="Actualizar precios"
+                    (onClick)="priceUpdate?.open(product)"
+                  />
                   <p-button
                     icon="pi pi-info-circle"
                     severity="info"
-                    aria-label="Información"
+                    pTooltip="Información"
                     (onClick)="budgetInfo?.open(product)"
-                  ></p-button>
+                  />
                   <p-button
                     icon="pi pi-pencil"
                     severity="warn"
-                    aria-label="Editar"
+                    pTooltip="Editar"
                     (onClick)="materialForm?.open(product)"
-                  ></p-button>
+                  />
 
                   <p-button
                     icon="pi pi-trash"
                     severity="danger"
-                    aria-label="Eliminar"
+                    pTooltip="Eliminar"
                     (onClick)="deleteBudget($event, product)"
-                  ></p-button>
+                  />
                 </div>
               </div>
             </td>
@@ -159,7 +157,7 @@ import { BudgetPriceUpdate } from './modals/budge-update/components/budget-price
 
     <app-budget-form (reloadTable)="loadData()" />
     <app-budget-info />
-    <app-budget-price-update (updated)="loadData()" />
+    <app-budget-price-update (reloadTable)="loadData()" />
   `,
 })
 export class BudgetPage implements OnInit {
