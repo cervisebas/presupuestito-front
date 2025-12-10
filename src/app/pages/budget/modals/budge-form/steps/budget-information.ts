@@ -1,7 +1,7 @@
 import { ClientResponse } from '@/common/api/interfaces/responses/ClientResponse';
 import { Client } from '@/common/api/services/client';
 import { BudgetStatements } from '@/pages/budget/constants/BudgetStatements';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -22,10 +22,12 @@ import { BudgetRequest } from '@/common/api/interfaces/requests/BudgetRequest';
 import { IClearForm } from '@/common/interfaces/IClearForm';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import moment from 'moment';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-bugde-information',
   imports: [
+    NgClass,
     Select,
     Toast,
     DatePickerModule,
@@ -86,10 +88,7 @@ import moment from 'moment';
           dateFormat="dd/mm/yy"
           appendTo="body"
         />
-        <label for="budget-end-data">
-          Fecha limite
-          <b class="text-red-400">*</b>
-        </label>
+        <label for="budget-end-data">Fecha limite</label>
       </p-floatlabel>
 
       <p-floatlabel class="w-full" variant="on">
@@ -105,7 +104,11 @@ import moment from 'moment';
         <label for="budget-description">Descripción</label>
       </p-floatlabel>
 
-      <p-floatlabel class="w-full" variant="on">
+      <p-floatlabel
+        class="w-full"
+        variant="on"
+        [ngClass]="{ '!hidden !h-0': !isEditing }"
+      >
         <p-select
           class="w-full"
           inputId="budget-status"
@@ -131,12 +134,17 @@ export class BudgetInformationStep
 {
   protected readonly budgetStatements = BudgetStatements;
 
+  @Input()
+  public isEditing?: boolean;
+
   protected formGroup = new FormGroup({
     client: new FormControl<number | null>(null, [Validators.required]),
     startDate: new FormControl(new Date(), [Validators.required]),
-    endDate: new FormControl(new Date(), [Validators.required]),
+    endDate: new FormControl<Date | null>(null),
     description: new FormControl('', []),
-    status: new FormControl<string | null>(null, [Validators.required]),
+    status: new FormControl<string | null>(BudgetStatements[0].value, [
+      Validators.required,
+    ]),
   });
 
   protected clientList: ISelectItem<number>[] = [];
@@ -163,7 +171,6 @@ export class BudgetInformationStep
       }));
       this.$clientList = clients;
     } catch (error) {
-      // En caso de error de se muestra en consola lo que sucedio y se notifica al usuario.
       console.error(error);
       this.messageService.add({
         severity: 'error',
@@ -184,7 +191,10 @@ export class BudgetInformationStep
 
   public clearForm(): void {
     this.loadClients();
-    this.formGroup.reset();
+    this.formGroup.reset({
+      startDate: new Date(),
+      status: BudgetStatements[0].value,
+    });
   }
 
   public getData(): BudgetRequest {
@@ -196,7 +206,7 @@ export class BudgetInformationStep
       clientId: client.clientId,
       budgetStatus: status.value!,
       dateCreated: startDate.value!,
-      deadLine: endDate.value!,
+      deadLine: endDate.value as Date,
     };
   }
 
@@ -206,7 +216,7 @@ export class BudgetInformationStep
 
     client.setValue(data.clientId);
     startDate.setValue(moment(data.dateCreated).toDate());
-    endDate.setValue(moment(data.deadLine).toDate());
+    endDate.setValue(data.deadLine ? moment(data.deadLine).toDate() : null);
     description.setValue(data.descriptionBudget);
     status.setValue(data.budgetStatus);
   }
@@ -220,6 +230,10 @@ export class BudgetInformationStep
   }
 
   get dialogStyle() {
+    if (!this.isEditing) {
+      return 'h-[28rem]';
+    }
+
     return 'h-[32rem]';
   }
 }

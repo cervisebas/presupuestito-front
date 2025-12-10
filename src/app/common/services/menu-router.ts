@@ -46,6 +46,11 @@ export class MenuRouter {
           icon: 'pi pi-building',
           routerLink: ['/suppliers'],
         },
+        {
+          label: 'Configuraciones',
+          icon: 'pi pi-cog',
+          routerLink: ['/settings'],
+        },
       ],
     },
   ];

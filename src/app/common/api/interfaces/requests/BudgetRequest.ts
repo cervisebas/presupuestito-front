@@ -4,5 +4,5 @@ export interface BudgetRequest {
   clientId: number;
   budgetStatus: string;
   dateCreated: Date;
-  deadLine: Date;
+  deadLine?: Date | null;
 }

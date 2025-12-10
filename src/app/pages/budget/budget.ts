@@ -20,6 +20,10 @@ import { Budget } from '@/common/api/services/budget';
 import { BudgetResponse } from '@/common/api/interfaces/responses/BudgetResponse';
 import { Router } from '@angular/router';
 import { waitTo } from '@/common/utils/waitTo';
+import { BudgetPriceUpdate } from './modals/budge-update/components/budget-price-update';
+import { Tooltip } from 'primeng/tooltip';
+import { BudgetFilter } from './components/budget-filter';
+import { BudgetFilterSettings } from './interfaces/BudgetFilterSettings';
 
 @Component({
   selector: 'app-budget',
@@ -37,7 +41,10 @@ import { waitTo } from '@/common/utils/waitTo';
     NgStyle,
     CurrencyPipe,
     DatePipe,
+    Tooltip,
     BudgetInfo,
+    BudgetPriceUpdate,
+    BudgetFilter,
   ],
   providers: [ConfirmationService, MessageService],
   template: `
@@ -59,6 +66,8 @@ import { waitTo } from '@/common/utils/waitTo';
         </p-iconfield>
 
         <div class="flex flex-row gap-4">
+          <app-budget-filter (onFilter)="onFilter($event)" />
+
           <p-button
             label="Añadir"
             icon="pi pi-plus"
@@ -101,31 +110,46 @@ import { waitTo } from '@/common/utils/waitTo';
               {{ product.clientId.personId.lastName }}
             </td>
             <td>{{ product.dateCreated | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ product.deadLine | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              @if (product.deadLine) {
+                <ng-container>
+                  {{ product.deadLine | date: 'dd/MM/yyyy' }}
+                </ng-container>
+              } @else {
+                <ng-container>-</ng-container>
+              }
+            </td>
             <td>{{ product.budgetStatus }}</td>
             <td>{{ getBudgetPrice(product) | currency }}</td>
             <td>
-              <div class="flex flex-row gap-4">
-                <p-button
-                  icon="pi pi-info-circle"
-                  severity="info"
-                  aria-label="Información"
-                  (onClick)="budgetInfo?.open(product)"
-                />
+              <div class="flex flex-row items-center gap-2">
+                <div class="flex flex-row gap-2">
+                  <p-button
+                    icon="pi pi-refresh"
+                    severity="help"
+                    pTooltip="Actualizar precios"
+                    (onClick)="priceUpdate?.open(product)"
+                  />
+                  <p-button
+                    icon="pi pi-info-circle"
+                    severity="info"
+                    pTooltip="Información"
+                    (onClick)="budgetInfo?.open(product)"
+                  />
+                  <p-button
+                    icon="pi pi-pencil"
+                    severity="warn"
+                    pTooltip="Editar"
+                    (onClick)="materialForm?.open(product)"
+                  />
 
-                <p-button
-                  icon="pi pi-pencil"
-                  severity="warn"
-                  aria-label="Editar"
-                  (onClick)="materialForm?.open(product)"
-                />
-
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  aria-label="Eliminar"
-                  (onClick)="deleteBudget($event, product)"
-                />
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    pTooltip="Eliminar"
+                    (onClick)="deleteBudget($event, product)"
+                  />
+                </div>
               </div>
             </td>
           </tr>
@@ -138,6 +162,7 @@ import { waitTo } from '@/common/utils/waitTo';
 
     <app-budget-form (reloadTable)="loadData()" />
     <app-budget-info />
+    <app-budget-price-update (reloadTable)="loadData()" />
   `,
 })
 export class BudgetPage implements OnInit {
@@ -151,6 +176,9 @@ export class BudgetPage implements OnInit {
 
   @ViewChild(BudgetInfo)
   protected budgetInfo?: BudgetInfo;
+
+  @ViewChild(BudgetPriceUpdate)
+  protected priceUpdate?: BudgetPriceUpdate;
 
   protected tableHeaderItems = [
     {
@@ -175,13 +203,15 @@ export class BudgetPage implements OnInit {
     },
     {
       key: null,
-      label: 'Acciónes',
+      label: 'Acciones',
     },
   ];
 
   //private filterValue?: MaterialFilterSettings;
   private searchValue = '';
   private openBudgetId?: number;
+
+  private filterValue?: BudgetFilterSettings;
 
   constructor(
     private budget: Budget,
@@ -326,5 +356,25 @@ export class BudgetPage implements OnInit {
     }
 
     return price;
+  }
+
+  private applyFilters() {
+    if (!this.filterValue) {
+      return;
+    }
+
+    if (!this.filterValue.budgetStatus) {
+      return;
+    }
+
+    this.budgetData = this.budgetData.filter(
+      (budget) => budget.budgetStatus === this.filterValue?.budgetStatus,
+    );
+  }
+
+  protected onFilter(_filter: BudgetFilterSettings) {
+    this.filterValue = _filter;
+    this.applySearch();
+    this.applyFilters();
   }
 }

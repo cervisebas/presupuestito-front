@@ -20,8 +20,8 @@ export class GenerateBudgetSections {
       title: `Presupuesto Nº${data.info.budgetId}`,
       items: items,
       total: this.calculateBudget.getTotalPrice(data),
-      startDate: data.info.dateCreated,
-      endDate: data.info.deadLine,
+      startDate: data.info.dateCreated ?? null,
+      endDate: data.info.deadLine ?? null,
       subtotal: this.calculateBudget.getTotalPriceMaterial(data),
     };
 
@@ -41,8 +41,8 @@ export class GenerateBudgetSections {
         title: work.name,
         items: work.materials,
         total: totalMaterials + work.cost,
-        startDate: data.info.dateCreated,
-        endDate: data.info.deadLine,
+        startDate: data.info.dateCreated ?? null,
+        endDate: data.info.deadLine ?? null,
         subtotal: totalMaterials,
       });
     }

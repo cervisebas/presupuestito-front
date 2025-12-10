@@ -43,4 +43,11 @@ export class Budget {
   public calculateBudgetPrice(id_budget: number) {
     return this.http.get<number>(`${Endpoints.BUDGET_PRICE}/${id_budget}`);
   }
+
+  public updateItemPrices(id_budget: number) {
+    return this.http.put<void>(
+      `${Endpoints.BUDGET_UPDATE_PRICES}/${id_budget}`,
+      {},
+    );
+  }
 }

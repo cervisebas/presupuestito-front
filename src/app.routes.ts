@@ -8,6 +8,7 @@ import { BudgetPage } from '@/pages/budget/budget';
 import { SupplierPage } from '@/pages/supplier/supplier';
 import { WorkPage } from '@/pages/work/work';
 import { CategoriesAndSubcategoriesPage } from '@/pages/categories-and-subcategories/categories-and-subcategories';
+import { SettingsPage } from '@/pages/settings/settings';
 
 export const appRoutes: Routes = [
   {
@@ -20,6 +21,7 @@ export const appRoutes: Routes = [
       { path: 'budgets', component: BudgetPage },
       { path: 'suppliers', component: SupplierPage },
       { path: 'works', component: WorkPage },
+      { path: 'settings', component: SettingsPage },
       {
         path: 'categories-and-subcategories',
         component: CategoriesAndSubcategoriesPage,

@@ -23,6 +23,7 @@ import { Material } from '@/common/api/services/material';
 import { LoadingService } from '@/common/services/loading';
 import { MaterialResponse } from '@/common/api/interfaces/responses/MaterialResponse';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { UnitExamples } from '../constants/UnitExamples';
 
 @Component({
   selector: 'app-material-form',
@@ -87,10 +88,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="brand"
           />
-          <label for="brand-input">
-            Marca
-            <b class="text-red-400">*</b>
-          </label>
+          <label for="brand-input">Marca</label>
         </p-floatlabel>
 
         <p-floatlabel variant="on" class="w-full">
@@ -117,40 +115,40 @@ import { InputNumberModule } from 'primeng/inputnumber';
             autocomplete="off"
             formControlName="color"
           />
-          <label for="color-input">
-            Color
-            <b class="text-red-400">*</b>
-          </label>
+          <label for="color-input">Color</label>
         </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="size-input"
-            type="number"
-            class="w-full"
-            autocomplete="off"
-            formControlName="size"
-          />
-          <label for="size-input">
-            Medida
-            <b class="text-red-400">*</b>
-          </label>
-        </p-floatlabel>
+        <div class="flex flex-row gap-3">
+          <p-floatlabel variant="on" class="w-full">
+            <input
+              pInputText
+              id="size-input"
+              type="number"
+              class="w-full"
+              autocomplete="off"
+              formControlName="size"
+            />
+            <label for="size-input">
+              Cantidad
+              <b class="text-red-400">*</b>
+            </label>
+          </p-floatlabel>
 
-        <p-floatlabel variant="on" class="w-full">
-          <input
-            pInputText
-            id="unit-size-input"
-            class="w-full"
-            autocomplete="off"
-            formControlName="unitSize"
-          />
-          <label for="unit-size-input">
-            Unidad de medida
-            <b class="text-red-400">*</b>
-          </label>
-        </p-floatlabel>
+          <p-floatlabel class="w-full" variant="on">
+            <p-select
+              inputId="unit-size-input"
+              [options]="UnitExamples"
+              class="w-full"
+              [editable]="true"
+              formControlName="unitSize"
+              appendTo="body"
+            />
+            <label for="unit-size-input">
+              Unidad de cantidad
+              <b class="text-red-400">*</b>
+            </label>
+          </p-floatlabel>
+        </div>
 
         <p-floatlabel class="w-full" variant="on">
           <p-select
@@ -223,14 +221,11 @@ export class MaterialForm {
   protected formGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
     description: new FormControl('', []),
-    brand: new FormControl('', [Validators.required]),
+    brand: new FormControl<string | null>(null),
     price: new FormControl(1, [Validators.required, Validators.min(1)]),
-    color: new FormControl('', [Validators.required]),
-    size: new FormControl<number | null>(1, [
-      Validators.required,
-      Validators.min(1),
-    ]),
-    unitSize: new FormControl('', [Validators.required]),
+    color: new FormControl<string | null>(null),
+    size: new FormControl<number | null>(null),
+    unitSize: new FormControl<string | null>(null),
 
     category: new FormControl('', [Validators.required]),
     subCategory: new FormControl('', [Validators.required]),
@@ -246,6 +241,8 @@ export class MaterialForm {
   private $subCategoryList?: SubCategoryMaterialResponse[];
 
   private $editData?: MaterialResponse;
+
+  protected readonly UnitExamples = UnitExamples;
 
   constructor(
     private categoryService: Category,
@@ -281,11 +278,11 @@ export class MaterialForm {
       this.formGroup.setValue({
         name: data.materialName,
         description: data.materialDescription || '',
-        brand: data.materialBrand,
+        brand: data.materialBrand || null,
         price: data.price,
-        color: data.materialColor,
+        color: data.materialColor || null,
         size: Number(data.materialMeasure),
-        unitSize: data.materialUnitMeasure,
+        unitSize: data.materialUnitMeasure || null,
         category: data.subCategoryMaterialId.categoryId.categoryName,
         subCategory: null,
       });
